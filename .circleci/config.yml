@@ -72,7 +72,7 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms1024m -Xmx2024m'
-    resource_class: xlarge
+    resource_class: 2xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -103,7 +103,7 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms2048m -Xmx4096m'
-    resource_class: xlarge
+    resource_class: 2xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -123,7 +123,7 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms2048m -Xmx4096m'
-    resource_class: xlarge
+    resource_class: 2xlarge
     parallelism: 2
     steps:
       - attach_workspace:
@@ -187,7 +187,7 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms2048m -Xmx4096m'
-    resource_class: xlarge
+    resource_class: 2xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -238,7 +238,7 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     environment:
       _JAVA_OPTIONS: '-Xms1024m -Xmx2048m'
-    resource_class: xlarge
+    resource_class: 2xlarge
     steps:
       - attach_workspace:
           at: ~/
