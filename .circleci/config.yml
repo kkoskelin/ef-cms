@@ -1,4 +1,6 @@
-version: 2
+orbs:
+  git-shallow-clone: guitarrapc/git-shallow-clone@2.0.3
+version: 2.1
 jobs:
   bundle:
     resource_class: large
@@ -14,12 +16,7 @@ jobs:
             - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
             - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
             - source-{{ .Environment.CACHE_VERSION }}-
-      - run:
-          name: checkout code
-          command: |
-            git clone --depth 1 "$CIRCLE_REPOSITORY_URL"
-            echo "$CIRCLE_SHA1"
-            git reset --hard "$CIRCLE_SHA1"
+      - git-shallow-clone/checkout
       - save_cache:
           name: Source - Saving Cache
           key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
@@ -273,11 +270,7 @@ jobs:
     machine:
       docker_layer_caching: true
     steps:
-      - run:
-          name: checkout code
-          command: |
-            git clone --depth 1 "$CIRCLE_REPOSITORY_URL"
-            git reset --hard "$CIRCLE_SHA1"
+      - git-shallow-clone/checkout
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
