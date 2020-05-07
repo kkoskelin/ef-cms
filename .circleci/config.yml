@@ -14,7 +14,11 @@ jobs:
             - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
             - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
             - source-{{ .Environment.CACHE_VERSION }}-
-      - checkout
+      - run:
+          name: checkout code
+          command: |
+            git clone --depth 1 "$CIRCLE_REPOSITORY_URL"
+            git reset --hard "$CIRCLE_SHA1"
       - save_cache:
           name: Source - Saving Cache
           key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
