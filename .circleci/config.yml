@@ -1,6 +1,4 @@
-orbs:
-  git-shallow-clone: guitarrapc/git-shallow-clone@2.0.3
-version: 2.1
+version: 2
 jobs:
   bundle:
     resource_class: large
@@ -272,7 +270,9 @@ jobs:
     steps:
       - run:
           name: checkout code
-          command: git clone --depth 1 $CIRCLE_REPOSITORY_URL
+          command: |
+            git clone --depth 1 "$CIRCLE_REPOSITORY_URL"
+            git reset --hard "$CIRCLE_SHA1"
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
