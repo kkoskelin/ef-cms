@@ -1,4 +1,6 @@
-version: 2
+orbs:
+  git-shallow-clone: guitarrapc/git-shallow-clone@2.0.3
+version: 2.1
 jobs:
   bundle:
     resource_class: large
@@ -268,7 +270,7 @@ jobs:
     machine:
       docker_layer_caching: true
     steps:
-      - checkout
+      - git-shallow-clone/checkout
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
