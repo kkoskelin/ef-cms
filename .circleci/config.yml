@@ -270,7 +270,9 @@ jobs:
     machine:
       docker_layer_caching: true
     steps:
-      - git-shallow-clone/checkout
+      - run:
+          name: checkout code
+          command: git clone --depth 1 $CIRCLE_REPOSITORY_URL
       - run:
           name: Setup Env
           command: echo "export ENV=$(./get-env.sh $CIRCLE_BRANCH)" >> $BASH_ENV
