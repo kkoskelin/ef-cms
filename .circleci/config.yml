@@ -18,6 +18,7 @@ jobs:
           name: checkout code
           command: |
             git clone --depth 1 "$CIRCLE_REPOSITORY_URL"
+            echo "$CIRCLE_SHA1"
             git reset --hard "$CIRCLE_SHA1"
       - save_cache:
           name: Source - Saving Cache
