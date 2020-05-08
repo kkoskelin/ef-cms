@@ -10,18 +10,18 @@ jobs:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     steps:
-      - restore_cache:
-          name: Source - Restoring Cache
-          keys:
-            - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
-            - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
-            - source-{{ .Environment.CACHE_VERSION }}-
+      # - restore_cache:
+      #     name: Source - Restoring Cache
+      #     keys:
+      #       - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
+      #       - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
+      #       - source-{{ .Environment.CACHE_VERSION }}-
       - git-shallow-clone/checkout
-      - save_cache:
-          name: Source - Saving Cache
-          key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - '.git'
+      # - save_cache:
+      #     name: Source - Saving Cache
+      #     key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
+      #     paths:
+      #       - '.git'
       - run:
           name: NPM - Install
           command: npm ci && npm rebuild node-sass
