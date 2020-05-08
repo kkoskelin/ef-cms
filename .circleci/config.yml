@@ -23,6 +23,11 @@ jobs:
       - run:
           name: NPM - Install
           command: npm ci && npm rebuild node-sass
+      - run:
+          name: prune
+          command: |
+            curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | sh
+            ./bin/node-prune
       - persist_to_workspace:
           root: ~/
           paths:
