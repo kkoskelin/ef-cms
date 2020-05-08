@@ -15,19 +15,15 @@ jobs:
             - source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-
             - source-{{ .Environment.CACHE_VERSION }}-
       - checkout
+      - run:
+          name: NPM - Install
+          command: npm i && npm rebuild node-sass
       - save_cache:
           name: Source - Saving Cache
           key: source-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ .Revision }}
           paths:
             - '.git'
-      - run:
-          name: NPM - Install
-          command: npm ci && npm rebuild node-sass
-      - run:
-          name: prune
-          command: |
-            curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | sh
-            ./bin/node-prune
+            - 'node_modules'
       - persist_to_workspace:
           root: ~/
           paths:
