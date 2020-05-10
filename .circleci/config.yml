@@ -3,7 +3,7 @@ orbs:
 version: 2.1
 jobs:
   bundle:
-    resource_class: medium
+    resource_class: xlarge
     docker:
       - image: $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ef-cms-us-east-1:latest
         aws_auth:
@@ -28,6 +28,7 @@ jobs:
             - project
 
   build-api:
+    resource_class: medium
     docker:
       - image: $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ef-cms-us-east-1:latest
         aws_auth:
@@ -69,7 +70,7 @@ jobs:
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-    resource_class: xlarge
+    resource_class: medium
     steps:
       - attach_workspace:
           at: ~/
@@ -98,7 +99,7 @@ jobs:
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-    resource_class: xlarge
+    resource_class: medium
     steps:
       - attach_workspace:
           at: ~/
@@ -144,6 +145,7 @@ jobs:
             - project/web-client/coverage-integration-*
 
   build-client-coverage:
+    resource_class: xlarge
     docker:
       - image: $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ef-cms-us-east-1:latest
         aws_auth:
