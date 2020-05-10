@@ -3,7 +3,7 @@ orbs:
 version: 2.1
 jobs:
   bundle:
-    resource_class: xlarge
+    resource_class: medium
     docker:
       - image: $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ef-cms-us-east-1:latest
         aws_auth:
@@ -11,17 +11,9 @@ jobs:
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     steps:
       - git-shallow-clone/checkout
-      - restore_cache:
-          keys:
-            - v1-npm-deps-{{ checksum "package-lock.json" }}
-            - v1-npm-deps-
       - run:
           name: NPM - Install
-          command: npm i && npm rebuild node-sass
-      - save_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
+          command: npm ci && npm rebuild node-sass
       - persist_to_workspace:
           root: ~/
           paths:
@@ -70,7 +62,7 @@ jobs:
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -99,7 +91,7 @@ jobs:
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
-    resource_class: medium
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
