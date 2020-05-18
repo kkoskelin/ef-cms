@@ -89,7 +89,7 @@ jobs:
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
-      uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v1
         with:
           name: pa11y-run-server-logs
           path: pa11y-server.txt
