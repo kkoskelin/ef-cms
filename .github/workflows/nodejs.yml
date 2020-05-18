@@ -24,7 +24,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run build:all
-    - run: npm run test:client:unit
+    - run: npm ci --no-optional
+    - name: Linting of JS, CSS and swagger
+      run: npm run lint
+    - name: Build all bundles
+      run: npm run build:all
+    - name: Client: unit tests
+      run: npm run test:client:unit
