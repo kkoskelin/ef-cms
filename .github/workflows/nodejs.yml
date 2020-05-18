@@ -5,15 +5,13 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, experimental, master ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, experimental, master ]
 
 jobs:
-  build:
-
+  bundle:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x]
@@ -24,10 +22,57 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci --no-optional
-    - name: Linting of JS, CSS and swagger
+    - name: NPM Install
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass    
+        npm run build:assets
+
+  lint:
+    needs: bundle
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - name: Lint
       run: npm run lint
-    - name: Build all bundles
-      run: npm run build:all
-    - name: Client unit tests
+    - name: Shellcheck
+      run: ./run-shellcheck.sh
+
+  test-api:
+    needs: bundle, lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - name: Web API - Test
+      run: npm run test:api
+    - name: Normalize Coverage for SonarQube
+      run: npx istanbul-combine -d web-api/coverage web-api/coverage/coverage-final.json
+
+  test-shared:
+    needs: bundle, lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - name: Shared - Test
+      run: npm run test:shared
+
+  test-client-unit:
+    needs: bundle, lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - name: Web Client - Unit Test
       run: npm run test:client:unit
