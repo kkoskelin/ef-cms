@@ -19,7 +19,7 @@ jobs:
         working-directory: ./
     strategy:
       matrix:
-        node-version: 12.x
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
