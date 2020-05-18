@@ -42,7 +42,7 @@ jobs:
       run: ./run-shellcheck.sh
 
   test-api:
-    needs: bundle, lint
+    needs: [bundle, lint]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,7 +55,7 @@ jobs:
       run: npx istanbul-combine -d web-api/coverage web-api/coverage/coverage-final.json
 
   test-shared:
-    needs: bundle, lint
+    needs: [bundle, lint]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -66,7 +66,7 @@ jobs:
       run: npm run test:shared
 
   test-client-unit:
-    needs: bundle, lint
+    needs: [bundle, lint]
     runs-on: ubuntu-latest
 
     strategy:
