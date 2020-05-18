@@ -76,7 +76,12 @@ jobs:
     - name: E2E Pa11y tests
       run: |
         npm run build:all
-        SKIP_CACHE_INVALIDATION=true SLS_DEBUG="*" AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop npx run-p start:api:ci start:client:ci start:public:ci > /tmp/pa11y/pa11y-server.txt &
+        SKIP_CACHE_INVALIDATION=true \
+          SLS_DEBUG="*" \
+          AWS_ACCESS_KEY_ID=noop \
+          AWS_SECRET_ACCESS_KEY=noop \
+          npx run-p start:api:ci start:client:ci start:public:ci \
+          > pa11y-server.txt &
         ./wait-until-services.sh
         ./wait-until.sh http://localhost:3000/api/swagger
         sleep 15
@@ -84,4 +89,7 @@ jobs:
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
-
+      uses: actions/upload-artifact@v1
+        with:
+          name: pa11y-run-server-logs
+          path: pa11y-server.txt
