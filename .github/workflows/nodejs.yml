@@ -10,13 +10,12 @@ on:
     branches: [ develop, experimental, master ]
 
 jobs:
-  defaults:
-    run:
-      shell: bash
-      working-directory: ./
-
   bundle:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
@@ -36,6 +35,10 @@ jobs:
   lint:
     needs: bundle
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
@@ -54,6 +57,10 @@ jobs:
   test-api:
     needs: [bundle, lint]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
@@ -67,6 +74,10 @@ jobs:
   test-shared:
     needs: [bundle, lint]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
@@ -82,7 +93,10 @@ jobs:
   test-client-unit:
     needs: [bundle, lint]
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
