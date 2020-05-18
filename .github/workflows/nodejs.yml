@@ -11,6 +11,7 @@ on:
 
 jobs:
   bundle:
+    name: Build and bundle
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -18,93 +19,33 @@ jobs:
         working-directory: ./
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: 12.x
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
     - name: NPM Install
       run: |
         npm ci --no-optional
-        npm rebuild node-sass    
-        npm run build:assets
-
-  lint:
-    needs: bundle
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    strategy:
-      matrix:
-        node-version: [12.x]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}      
+        npm rebuild node-sass
+        npm run build:assets        
     - name: Lint
       run: npm run lint
     - name: Shellcheck
       run: ./run-shellcheck.sh
-
-  test-api:
-    needs: [bundle, lint]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    strategy:
-      matrix:
-        node-version: [12.x]
-
-    steps:
     - name: Web API - Test
       run: npm run test:api
-    - name: Normalize Coverage for SonarQube
-      run: npx istanbul-combine -d web-api/coverage web-api/coverage/coverage-final.json
-
-  test-shared:
-    needs: [bundle, lint]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    strategy:
-      matrix:
-        node-version: [12.x]
-
-    steps:
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}      
     - name: Shared - Test
       run: npm run test:shared
-
-  test-client-unit:
-    needs: [bundle, lint]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    strategy:
-      matrix:
-        node-version: [12.x]
-
-    steps:
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}      
     - name: Web Client - Unit Test
       run: npm run test:client:unit
