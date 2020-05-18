@@ -29,5 +29,5 @@ jobs:
       run: npm run lint
     - name: Build all bundles
       run: npm run build:all
-    - name: Client: unit tests
+    - name: Client unit tests
       run: npm run test:client:unit

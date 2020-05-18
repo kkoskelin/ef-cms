@@ -51,6 +51,9 @@ describe('setPDFForSigningAction', () => {
       },
     });
 
+    expect(
+      applicationContext.getUseCases().loadPDFForSigningInteractor,
+    ).toHaveBeenCalled();
     expect(result.state.pdfForSigning.documentId).toEqual(documentId);
     expect(result.state.pdfForSigning.pdfjsObj).toEqual(mockPDFObj);
   });
