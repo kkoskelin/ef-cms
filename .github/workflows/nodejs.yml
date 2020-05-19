@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Linting and Unit Tests
 
 on:
   push:
@@ -39,58 +39,13 @@ jobs:
         npm ci --no-optional
         npm rebuild node-sass
         npm run build:assets        
-    # - name: Lint
-    #   run: npm run lint
-    # - name: Shellcheck
-    #   run: ./run-shellcheck.sh
-    # - name: Web API - Test
-    #   run: npm run test:api
-    # - name: Shared - Test
-    #   run: npm run test:shared
-    # - name: Web Client - Unit Test
-    #   run: npm run test:client:unit
-    # - name: Setup DynamoDB Local
-    #   uses: rrainn/dynamodb-action@v2.0.0
-    #   with:
-    #     dbPath: # undefined by default, if this is undefined inMemory will be used
-    #     sharedDb: # undefined by default
-    #     delayTransientStatuses: # undefined by default
-    #     optimizeDbBeforeStartup: # undefined by default
-    #     port: 8000
-    #     cors: '*'
-    - name: Configure sysctl limits
-      run: |
-        sudo swapoff -a
-        sudo sysctl -w vm.swappiness=1
-        sudo sysctl -w fs.file-max=262144
-        sudo sysctl -w vm.max_map_count=262144
-    - name: Start elasticsearch
-      uses: getong/elasticsearch-action@v1.2
-      with:
-        elasticsearch version: '7.6.1'
-        host port: 9200
-        container port: 9200
-        host node port: 9300
-        node port: 9300
-        discovery type: 'single-node'
-    - name: E2E Pa11y tests
-      env:
-        SKIP_CACHE_INVALIDATION: "true"
-        SLS_DEBUG: "*"
-        AWS_ACCESS_KEY_ID: "noop"
-        AWS_SECRET_ACCESS_KEY: "noop"
-      run: |
-        npm run build:all
-        npx run-p start:api:ci start:client:ci start:public:ci &
-        ./wait-until.sh http://localhost:3000/api/swagger
-        ./wait-until-services.sh
-        npx run-p start:client:ci start:public:ci &
-        sleep 15
-        npm run test:pa11y:1 --node-flags --max-old-space-size=1024
-        npm run test:pa11y:2 --node-flags --max-old-space-size=1024
-        npm run test:pa11y:3 --node-flags --max-old-space-size=1024
-        npm run test:pa11y:public --node-flags --max-old-space-size=1024
-    - uses: actions/upload-artifact@v1
-      with:
-        name: pa11y-run-server-logs
-        path: pa11y-server.txt
+    - name: Lint
+      run: npm run lint
+    - name: Shellcheck
+      run: ./run-shellcheck.sh
+    - name: Web API - Test
+      run: npm run test:api
+    - name: Shared - Test
+      run: npm run test:shared
+    - name: Web Client - Unit Test
+      run: npm run test:client:unit
