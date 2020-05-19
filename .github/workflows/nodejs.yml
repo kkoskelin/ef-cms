@@ -49,15 +49,15 @@ jobs:
     #   run: npm run test:shared
     # - name: Web Client - Unit Test
     #   run: npm run test:client:unit
-    - name: Setup DynamoDB Local
-      uses: rrainn/dynamodb-action@v2.0.0
-      with:
-        dbPath: # undefined by default, if this is undefined inMemory will be used
-        sharedDb: # undefined by default
-        delayTransientStatuses: # undefined by default
-        optimizeDbBeforeStartup: # undefined by default
-        port: 8000
-        cors: '*'
+    # - name: Setup DynamoDB Local
+    #   uses: rrainn/dynamodb-action@v2.0.0
+    #   with:
+    #     dbPath: # undefined by default, if this is undefined inMemory will be used
+    #     sharedDb: # undefined by default
+    #     delayTransientStatuses: # undefined by default
+    #     optimizeDbBeforeStartup: # undefined by default
+    #     port: 8000
+    #     cors: '*'
     - name: Configure sysctl limits
       run: |
         sudo swapoff -a
