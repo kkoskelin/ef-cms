@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -z "$CIRCLECI" ]]; then
+if [[ -z "$CI" ]]; then
   echo "killing dynamo if already running"
   pkill -f DynamoDBLocal
 
