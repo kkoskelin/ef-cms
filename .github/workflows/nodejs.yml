@@ -86,13 +86,15 @@ jobs:
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npm run start:api:ci &
+        ls dist/
+        npm run start:api:ci > api-log.txt &
         sleep 15
         ./wait-until.sh http://localhost:3000/api/swagger
         ./wait-until-services.sh
         npx run-p start:client:ci start:public:ci &
         ./wait-until.sh http://localhost:1234/
         ./wait-until.sh http://localhost:5678/
+        echo "Internal and public are now listening"
         sleep 15
         npm run test:pa11y:1 --node-flags --max-old-space-size=1024
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
