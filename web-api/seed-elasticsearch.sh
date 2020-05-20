@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -X DELETE "localhost:9200/efcms-case"
-curl -X DELETE "localhost:9200/efcms-document"
-curl -X DELETE "localhost:9200/efcms-user"
+curl -s -X DELETE "localhost:9200/efcms-case" > /dev/null
+curl -s -X DELETE "localhost:9200/efcms-document" > /dev/null
+curl -s -X DELETE "localhost:9200/efcms-user" > /dev/null
 ELASTICSEARCH_PORT=9200 ELASTICSEARCH_PROTOCOL="http" node ./web-api/elasticsearch/elasticsearch-index-settings.js
