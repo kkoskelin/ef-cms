@@ -7,10 +7,12 @@ export const CaseDetailSubnavTabs = connect(
   {
     caseDetailSubnavHelper: state.caseDetailSubnavHelper,
     clearAlertSequence: sequences.clearAlertSequence,
+    setCaseDetailPrimaryTabSequence: sequences.setCaseDetailPrimaryTabSequence,
   },
   function CaseDetailSubnavTabs({
     caseDetailSubnavHelper,
     clearAlertSequence,
+    setCaseDetailPrimaryTabSequence,
   }) {
     return (
       <div className="case-detail-primary-tabs__container">
@@ -18,7 +20,10 @@ export const CaseDetailSubnavTabs = connect(
           <Tabs
             bind="currentViewMetadata.caseDetail.primaryTab"
             className="container-tabs-dark"
-            onSelect={() => clearAlertSequence()}
+            onSelect={() => {
+              clearAlertSequence();
+              setCaseDetailPrimaryTabSequence();
+            }}
           >
             <Tab
               className="padding-left-2"
@@ -26,14 +31,21 @@ export const CaseDetailSubnavTabs = connect(
               tabName="docketRecord"
               title="Docket Record"
             />
-            {caseDetailSubnavHelper.showDeadlinesTab && (
-              <Tab id="tab-deadlines" tabName="deadlines" title="Deadlines" />
-            )}
-            {caseDetailSubnavHelper.showInProgressTab && (
+            {caseDetailSubnavHelper.showTrackedItemsTab && (
               <Tab
-                id="tab-in-progress"
-                tabName="inProgress"
-                title="In Progress"
+                id="tab-tracked-items"
+                tabName="trackedItems"
+                title="Tracked Items"
+              />
+            )}
+            {caseDetailSubnavHelper.showDraftsTab && (
+              <Tab id="tab-drafts" tabName="drafts" title="Drafts" />
+            )}
+            {caseDetailSubnavHelper.showCorrespondenceTab && (
+              <Tab
+                id="tab-correspondence"
+                tabName="correspondence"
+                title="Correspondence"
               />
             )}
             {caseDetailSubnavHelper.showCaseInformationTab && (
@@ -41,6 +53,13 @@ export const CaseDetailSubnavTabs = connect(
                 id="tab-case-information"
                 tabName="caseInformation"
                 title="Case Information"
+              />
+            )}
+            {caseDetailSubnavHelper.showMessagesTab && (
+              <Tab
+                id="tab-case-messages"
+                tabName="messages"
+                title="Case Messages"
               />
             )}
             {caseDetailSubnavHelper.showNotesTab && (

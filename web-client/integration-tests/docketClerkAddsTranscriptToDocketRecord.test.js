@@ -1,6 +1,6 @@
 import { docketClerkAddsTranscriptDocketEntryFromOrder } from './journey/docketClerkAddsTranscriptDocketEntryFromOrder';
 import { docketClerkCreatesAnOrder } from './journey/docketClerkCreatesAnOrder';
-import { docketClerkServesOrder } from './journey/docketClerkServesOrder';
+import { docketClerkServesDocument } from './journey/docketClerkServesDocument';
 import { docketClerkViewsDraftOrder } from './journey/docketClerkViewsDraftOrder';
 import { fakeFile, loginAs, setupTest } from './helpers';
 import { formattedCaseDetail as formattedCaseDetailComputed } from '../src/presenter/computeds/formattedCaseDetail';
@@ -26,12 +26,12 @@ describe('Docket Clerk Adds Transcript to Docket Record', () => {
     jest.setTimeout(30000);
   });
 
-  loginAs(test, 'petitioner');
+  loginAs(test, 'petitioner@example.com');
   petitionerChoosesProcedureType(test, { procedureType: 'Regular' });
   petitionerChoosesCaseType(test);
   petitionerCreatesNewCase(test, fakeFile);
 
-  loginAs(test, 'docketclerk');
+  loginAs(test, 'docketclerk@example.com');
   docketClerkCreatesAnOrder(test, {
     documentTitle: 'Order to do something',
     eventCode: 'O',
@@ -44,7 +44,7 @@ describe('Docket Clerk Adds Transcript to Docket Record', () => {
     month: '01',
     year: '2019',
   });
-  docketClerkServesOrder(test, 0);
+  docketClerkServesDocument(test, 0);
   docketClerkCreatesAnOrder(test, {
     documentTitle: 'Order to do something',
     eventCode: 'O',
@@ -58,9 +58,9 @@ describe('Docket Clerk Adds Transcript to Docket Record', () => {
     month: today.getMonth() + 1,
     year: today.getFullYear(),
   });
-  docketClerkServesOrder(test, 1);
+  docketClerkServesDocument(test, 1);
 
-  loginAs(test, 'petitioner');
+  loginAs(test, 'petitioner@example.com');
   it('petitioner views transcript on docket record', async () => {
     await test.runSequence('gotoCaseDetailSequence', {
       docketNumber: test.docketNumber,
@@ -73,7 +73,9 @@ describe('Docket Clerk Adds Transcript to Docket Record', () => {
     );
     // first transcript should be available to the user
     expect(transcriptDocuments[0].showLinkToDocument).toEqual(true);
+    expect(transcriptDocuments[0].isUnservable).toEqual(true);
     // second transcript should NOT be available to the user
     expect(transcriptDocuments[1].showLinkToDocument).toEqual(false);
+    expect(transcriptDocuments[1].isUnservable).toEqual(true);
   });
 });

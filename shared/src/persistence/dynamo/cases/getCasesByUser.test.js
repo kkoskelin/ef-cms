@@ -1,10 +1,9 @@
 const client = require('../../../../../shared/src/persistence/dynamodbClientService');
-const { getCasesByUser } = require('./getCasesByUser');
-const { User } = require('../../../business/entities/User');
-
 const {
   applicationContext,
 } = require('../../../business/test/createTestApplicationContext');
+const { getCasesByUser } = require('./getCasesByUser');
+const { ROLES } = require('../../../business/entities/EntityConstants');
 
 let queryStub = jest.fn().mockReturnValue({
   promise: async () => ({
@@ -18,8 +17,8 @@ applicationContext.getDocumentClient.mockReturnValue({
 });
 
 const user = {
-  role: User.ROLES.petitioner,
-  userId: 'petitioner',
+  role: ROLES.petitioner,
+  userId: '522573b0-dc40-47f7-96fd-64758da315f5',
 };
 
 describe('getCasesByUser', () => {
@@ -49,9 +48,11 @@ describe('getCasesByUser', () => {
       applicationContext,
       user,
     });
+
     expect(result).toEqual([
       {
         caseId: '123',
+        correspondence: [],
         docketRecord: [],
         documents: [],
         irsPractitioners: [],

@@ -7,77 +7,79 @@ import React from 'react';
 
 export const DocumentSearchResults = connect(
   {
-    advancedOrderSearchHelper: state.advancedOrderSearchHelper,
-    baseUrl: state.baseUrl,
-    pageSize: state.constants.CASE_SEARCH_PAGE_SIZE,
+    advancedDocumentSearchHelper: state.advancedDocumentSearchHelper,
+    openCaseDocumentDownloadUrlSequence:
+      sequences.openCaseDocumentDownloadUrlSequence,
     showMoreResultsSequence: sequences.showMoreResultsSequence,
-    token: state.token,
   },
   function DocumentSearchResults({
-    advancedOrderSearchHelper,
-    baseUrl,
-    pageSize,
+    advancedDocumentSearchHelper,
+    openCaseDocumentDownloadUrlSequence,
     showMoreResultsSequence,
-    token,
   }) {
     return (
       <>
-        {advancedOrderSearchHelper.showSearchResults && (
+        {advancedDocumentSearchHelper.showSearchResults && (
           <>
             <h1 className="margin-top-4">
-              ({advancedOrderSearchHelper.searchResultsCount}) Results
+              ({advancedDocumentSearchHelper.searchResultsCount}) Results
             </h1>
 
-            <table className="usa-table search-results responsive-table row-border-only">
+            <table className="usa-table search-results docket-record responsive-table row-border-only">
               <thead>
                 <tr>
                   <th aria-hidden="true" className="small-column"></th>
                   <th aria-hidden="true" className="small-column"></th>
-                  <th>Docket number</th>
-                  <th>Case title</th>
-                  <th>Order</th>
+                  <th aria-label="docket number">Docket No.</th>
+                  <th>Case Title</th>
+                  <th>{advancedDocumentSearchHelper.documentTypeVerbiage}</th>
                   <th>Pages</th>
                   <th>Date</th>
                   <th>Judge</th>
                 </tr>
               </thead>
               <tbody>
-                {advancedOrderSearchHelper.formattedSearchResults.map(
+                {advancedDocumentSearchHelper.formattedSearchResults.map(
                   (result, idx) => (
                     <tr className="search-result" key={idx}>
                       <td aria-hidden="true" className="small-column">
                         {idx + 1}
                       </td>
                       <td aria-hidden="true" className="small-column">
-                        {result.isSealed && (
-                          <Icon
-                            aria-label="sealed"
-                            className="iconSealed"
-                            icon={['fa', 'lock']}
-                            size="1x"
-                          />
-                        )}
+                        {advancedDocumentSearchHelper.showSealedIcon &&
+                          result.isSealed && (
+                            <Icon
+                              aria-label="sealed"
+                              className="iconSealed"
+                              icon={['fa', 'lock']}
+                              size="1x"
+                            />
+                          )}
                       </td>
                       <td>
                         <CaseLink formattedCase={result} />
                       </td>
                       <td>{result.caseTitle}</td>
                       <td>
-                        <a
-                          href={
-                            advancedOrderSearchHelper.isPublic
-                              ? `${baseUrl}/public-api/${result.caseId}/${result.documentId}/public-document-download-url`
-                              : `${baseUrl}/case-documents/${result.caseId}/${result.documentId}/document-download-url?token=${token}`
-                          }
-                          rel="noopener noreferrer"
-                          target="_blank"
+                        <Button
+                          link
+                          onClick={() => {
+                            openCaseDocumentDownloadUrlSequence({
+                              caseId: result.caseId,
+                              documentId: result.documentId,
+                              isPublic: advancedDocumentSearchHelper.isPublic,
+                            });
+                          }}
                         >
                           {result.documentTitle}
-                        </a>
+                        </Button>
                       </td>
                       <td>{result.numberOfPages}</td>
                       <td>{result.formattedFiledDate}</td>
-                      <td>{result.formattedSignedJudgeName}</td>
+                      <td>
+                        {result.formattedSignedJudgeName ||
+                          result.formattedJudgeName}
+                      </td>
                     </tr>
                   ),
                 )}
@@ -85,16 +87,16 @@ export const DocumentSearchResults = connect(
             </table>
           </>
         )}
-        {advancedOrderSearchHelper.showLoadMore && (
+        {advancedDocumentSearchHelper.showLoadMore && (
           <Button
             secondary
-            aria-label={`load ${pageSize} more results`}
+            aria-label={'load more results'}
             onClick={() => showMoreResultsSequence()}
           >
-            Load {pageSize} More
+            Load More
           </Button>
         )}
-        {advancedOrderSearchHelper.showNoMatches && (
+        {advancedDocumentSearchHelper.showNoMatches && (
           <div id="no-search-results">
             <h1 className="margin-top-4">No Matches Found</h1>
             <p>Check your search terms and try again.</p>

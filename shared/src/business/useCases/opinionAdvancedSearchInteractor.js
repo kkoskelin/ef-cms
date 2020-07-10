@@ -5,7 +5,9 @@ const {
   isAuthorized,
   ROLE_PERMISSIONS,
 } = require('../../authorization/authorizationClientService');
-const { Document } = require('../../business/entities/Document');
+const {
+  OPINION_EVENT_CODES,
+} = require('../../business/entities/EntityConstants');
 const { UnauthorizedError } = require('../../errors/errors');
 
 /**
@@ -25,6 +27,7 @@ exports.opinionAdvancedSearchInteractor = async ({
   endDateYear,
   judge,
   keyword,
+  opinionType,
   startDateDay,
   startDateMonth,
   startDateYear,
@@ -43,6 +46,7 @@ exports.opinionAdvancedSearchInteractor = async ({
     endDateYear,
     judge,
     keyword,
+    opinionType,
     startDateDay,
     startDateMonth,
     startDateYear,
@@ -54,7 +58,7 @@ exports.opinionAdvancedSearchInteractor = async ({
     .getPersistenceGateway()
     .advancedDocumentSearch({
       applicationContext,
-      documentEventCodes: Document.OPINION_DOCUMENT_TYPES,
+      documentEventCodes: OPINION_EVENT_CODES,
       judgeType: 'judge',
       ...rawSearch,
     });

@@ -2,12 +2,16 @@ import { updateCourtIssuedDocketEntryInteractor } from './updateCourtIssuedDocke
 const {
   applicationContext,
 } = require('../../test/createTestApplicationContext');
-const { Case } = require('../../entities/cases/Case');
-const { ContactFactory } = require('../../entities/contacts/ContactFactory');
-const { User } = require('../../entities/User');
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../../entities/EntityConstants');
+const { CASE_STATUS_TYPES } = require('../../entities/EntityConstants');
 
 describe('updateCourtIssuedDocketEntryInteractor', () => {
   let caseRecord;
+  const mockUserId = applicationContext.getUniqueId();
 
   beforeAll(() => {
     caseRecord = {
@@ -17,7 +21,7 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
       contactPrimary: {
         address1: '123 Main St',
         city: 'Somewhere',
-        countryType: 'domestic',
+        countryType: COUNTRY_TYPES.DOMESTIC,
         email: 'fieri@example.com',
         name: 'Guy Fieri',
         phone: '1234567890',
@@ -41,31 +45,41 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
           docketNumber: '45678-18',
           documentId: '30413c1e-9a71-4c22-8c11-41f8689313ae',
           documentType: 'Answer',
-          userId: 'irsPractitioner',
+          eventCode: 'A',
+          filedBy: 'Test Petitioner',
+          userId: mockUserId,
         },
         {
           docketNumber: '45678-18',
           documentId: 'e27d2d4e-f768-4167-b2c9-989dccbbb738',
           documentType: 'Answer',
-          userId: 'irsPractitioner',
+          eventCode: 'A',
+          filedBy: 'Test Petitioner',
+          userId: mockUserId,
         },
         {
           docketNumber: '45678-18',
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
           documentType: 'Answer',
-          userId: 'irsPractitioner',
+          eventCode: 'A',
+          filedBy: 'Test Petitioner',
+          userId: mockUserId,
         },
         {
           docketNumber: '45678-18',
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335ba',
           documentType: 'Order',
-          userId: 'irsPractitioner',
+          eventCode: 'O',
+          signedAt: '2019-03-01T21:40:46.415Z',
+          signedByUserId: mockUserId,
+          signedJudgeName: 'Dredd',
+          userId: mockUserId,
           workItems: [
             {
-              assigneeId: 'bob',
+              assigneeId: '8b4cd447-6278-461b-b62b-d9e357eea62c',
               assigneeName: 'bob',
               caseId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
-              caseStatus: Case.STATUS_TYPES.new,
+              caseStatus: CASE_STATUS_TYPES.new,
               caseTitle: 'Johnny Joe Jacobson',
               docketNumber: '101-18',
               docketNumberSuffix: 'S',
@@ -81,15 +95,15 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
           docketNumber: '45678-18',
           documentId: '7f61161c-ede8-43ba-8fab-69e15d057012',
           documentTitle: 'Transcript of [anything] on [date]',
-          documentType: 'TRAN - Transcript',
+          documentType: 'Transcript',
           eventCode: 'TRAN',
-          userId: 'irsPractitioner',
+          userId: mockUserId,
           workItems: [
             {
-              assigneeId: 'bob',
+              assigneeId: '8b4cd447-6278-461b-b62b-d9e357eea62c',
               assigneeName: 'bob',
               caseId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
-              caseStatus: Case.STATUS_TYPES.new,
+              caseStatus: CASE_STATUS_TYPES.new,
               docketNumber: '101-18',
               docketNumberSuffix: 'S',
               document: {},
@@ -102,15 +116,15 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
         },
       ],
       filingType: 'Myself',
-      partyType: ContactFactory.PARTY_TYPES.petitioner,
+      partyType: PARTY_TYPES.petitioner,
       preferredTrialCity: 'Fresno, California',
       procedureType: 'Regular',
-      role: User.ROLES.petitioner,
-      userId: 'petitioner',
+      role: ROLES.petitioner,
+      userId: '8100e22a-c7f2-4574-b4f6-eb092fca9f35',
     };
 
     applicationContext.getPersistenceGateway().getUserById.mockReturnValue({
-      name: 'Olivia Jade',
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -129,6 +143,7 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
           caseId: caseRecord.caseId,
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bc',
           documentType: 'Memorandum in Support',
+          eventCode: 'MISP',
         },
       }),
     ).rejects.toThrow('Unauthorized');
@@ -136,8 +151,8 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
 
   it('should throw an error if the document is not found on the case', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -148,6 +163,10 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
           caseId: caseRecord.caseId,
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bc',
           documentType: 'Order',
+          eventCode: 'O',
+          signedAt: '2019-03-01T21:40:46.415Z',
+          signedByUserId: mockUserId,
+          signedJudgeName: 'Dredd',
         },
       }),
     ).rejects.toThrow('Document not found');
@@ -155,8 +174,8 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
 
   it('should call updateCase, createUserInboxRecord, and createSectionInboxRecord', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -166,6 +185,10 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
         caseId: caseRecord.caseId,
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335ba',
         documentType: 'Order',
+        eventCode: 'O',
+        signedAt: '2019-03-01T21:40:46.415Z',
+        signedByUserId: mockUserId,
+        signedJudgeName: 'Dredd',
       },
     });
 
@@ -182,8 +205,8 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
 
   it('should set secondaryDate on the created document if the eventCode is TRAN', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       section: 'docket',
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
@@ -195,7 +218,7 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
         date: '2019-03-01T21:40:46.415Z',
         documentId: '7f61161c-ede8-43ba-8fab-69e15d057012',
         documentTitle: 'Transcript of [anything] on [date]',
-        documentType: 'TRAN - Transcript',
+        documentType: 'Transcript',
         eventCode: 'TRAN',
         freeText: 'Dogs',
         generatedDocumentTitle: 'Transcript of Dogs on 03-01-19',
@@ -215,8 +238,8 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
 
   it('should not update non-editable fields on the document', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -226,7 +249,11 @@ describe('updateCourtIssuedDocketEntryInteractor', () => {
         caseId: caseRecord.caseId,
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335ba',
         documentType: 'Order',
+        eventCode: 'O',
         objections: 'No',
+        signedAt: '2019-03-01T21:40:46.415Z',
+        signedByUserId: mockUserId,
+        signedJudgeName: 'Dredd',
       },
     });
 

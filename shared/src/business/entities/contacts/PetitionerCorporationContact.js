@@ -9,6 +9,7 @@ exports.getPetitionerCorporationContact = ContactFactory.createContactFactory({
     inCareOf: 'Enter name for in care of',
   },
   additionalValidation: {
-    inCareOf: joi.string().required(),
+    inCareOf: joi.string().max(100).required(),
   },
+  contactName: 'PetitionerCorporationContact',
 });

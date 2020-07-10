@@ -1,5 +1,6 @@
 const { CaseExternal } = require('./CaseExternal');
 const { ContactFactory } = require('../contacts/ContactFactory');
+const { COUNTRY_TYPES, PARTY_TYPES } = require('../EntityConstants');
 
 const contactErrorMessages =
   ContactFactory.INTERNATIONAL_VALIDATION_ERROR_MESSAGES;
@@ -12,7 +13,7 @@ describe('CaseExternal', () => {
         contactPrimary: {
           address1: '876 12th Ave',
           city: 'Nashville',
-          countryType: 'international',
+          countryType: COUNTRY_TYPES.INTERNATIONAL,
           email: 'someone@example.com',
           name: 'Jimmy Dean',
           phone: '1234567890',
@@ -22,10 +23,10 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: {},
         petitionFileSize: 1,
-        preferredTrialCity: 'Chattanooga, Tennessee',
+        preferredTrialCity: 'Memphis, Tennessee',
         procedureType: 'Small',
         signature: true,
         stinFile: {},
@@ -43,7 +44,7 @@ describe('CaseExternal', () => {
           address1: '876 12th Ave',
           city: 'Nashville',
           country: 'USA',
-          countryType: 'international',
+          countryType: COUNTRY_TYPES.INTERNATIONAL,
           email: 'someone@example.com',
           name: 'Jimmy Dean',
           phone: '1234567890',
@@ -53,10 +54,10 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: {},
         petitionFileSize: 1,
-        preferredTrialCity: 'Chattanooga, Tennessee',
+        preferredTrialCity: 'Memphis, Tennessee',
         procedureType: 'Small',
         signature: true,
         stinFile: {},

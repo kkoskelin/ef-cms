@@ -1,6 +1,4 @@
-import { Case } from '../../../shared/src/business/entities/cases/Case';
-import { CaseInternal } from '../../../shared/src/business/entities/cases/CaseInternal';
-import { ContactFactory } from '../../../shared/src/business/entities/contacts/ContactFactory';
+import { applicationContextForClient as applicationContext } from '../../../shared/src/business/test/createTestApplicationContext';
 import { reviewSavedPetitionHelper as reviewSavedPetitionHelperComputed } from '../../src/presenter/computeds/reviewSavedPetitionHelper';
 import { runCompute } from 'cerebral/test';
 import { withAppContextDecorator } from '../../src/withAppContext';
@@ -8,6 +6,12 @@ import { withAppContextDecorator } from '../../src/withAppContext';
 const reviewSavedPetitionHelper = withAppContextDecorator(
   reviewSavedPetitionHelperComputed,
 );
+const {
+  COUNTRY_TYPES,
+  DEFAULT_PROCEDURE_TYPE,
+  PARTY_TYPES,
+  PAYMENT_STATUS,
+} = applicationContext.getConstants();
 
 export const petitionsClerkCreatesNewCaseFromPaper = (
   test,
@@ -90,11 +94,11 @@ export const petitionsClerkCreatesNewCaseFromPaper = (
     },
     {
       key: 'partyType',
-      value: ContactFactory.PARTY_TYPES.petitionerDeceasedSpouse,
+      value: PARTY_TYPES.petitionerDeceasedSpouse,
     },
     {
       key: 'contactPrimary.countryType',
-      value: 'international',
+      value: COUNTRY_TYPES.INTERNATIONAL,
     },
     {
       key: 'contactPrimary.country',
@@ -131,7 +135,7 @@ export const petitionsClerkCreatesNewCaseFromPaper = (
     },
     {
       key: 'petitionPaymentStatus',
-      value: Case.PAYMENT_STATUS.WAIVED,
+      value: PAYMENT_STATUS.WAIVED,
     },
     {
       key: 'paymentDateWaivedDay',
@@ -162,9 +166,7 @@ export const petitionsClerkCreatesNewCaseFromPaper = (
   });
 
   it('should default to Regular procedureType when creating a new case', async () => {
-    expect(test.getState('form.procedureType')).toEqual(
-      CaseInternal.DEFAULT_PROCEDURE_TYPE,
-    );
+    expect(test.getState('form.procedureType')).toEqual(DEFAULT_PROCEDURE_TYPE);
   });
 
   it('should generate case caption from primary and secondary contact information', async () => {

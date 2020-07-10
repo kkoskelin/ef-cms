@@ -1,4 +1,4 @@
-import { applicationContext } from '../../applicationContext';
+import { applicationContextForClient as applicationContext } from '../../../../shared/src/business/test/createTestApplicationContext';
 import { reviewSavedPetitionHelper as reviewSavedPetitionHelperComputed } from './reviewSavedPetitionHelper';
 import { runCompute } from 'cerebral/test';
 import { withAppContextDecorator } from '../../withAppContext';
@@ -10,14 +10,7 @@ const {
 
 const reviewSavedPetitionHelper = withAppContextDecorator(
   reviewSavedPetitionHelperComputed,
-  {
-    ...applicationContext,
-    getConstants: () => {
-      return {
-        ...applicationContext.getConstants(),
-      };
-    },
-  },
+  applicationContext,
 );
 
 describe('reviewSavedPetitionHelper', () => {
@@ -27,13 +20,13 @@ describe('reviewSavedPetitionHelper', () => {
         form: {},
       },
     });
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       hasIrsNoticeFormatted: 'No',
       hasOrders: false,
       irsNoticeDateFormatted: undefined,
       ownershipDisclosureFile: undefined,
       petitionFile: undefined,
-      petitionPaymentStatusFormatted: 'Not paid',
+      petitionPaymentStatusFormatted: PAYMENT_STATUS.UNPAID,
       preferredTrialCityFormatted: 'No requested place of trial',
       receivedAtFormatted: undefined,
       requestForPlaceOfTrialFile: undefined,
@@ -74,7 +67,7 @@ describe('reviewSavedPetitionHelper', () => {
       },
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       applicationForWaiverOfFilingFeeFile: {
         documentType:
           INITIAL_DOCUMENT_TYPES.applicationForWaiverOfFilingFee.documentType,
@@ -100,6 +93,21 @@ describe('reviewSavedPetitionHelper', () => {
     });
   });
 
+  it('returns a petitionPaymentStatusFormatted for a waived payment status', () => {
+    const result = runCompute(reviewSavedPetitionHelper, {
+      state: {
+        form: {
+          petitionPaymentStatus: PAYMENT_STATUS.WAIVED,
+          petitionPaymentWaivedDate: '2019-03-01T21:40:46.415Z',
+        },
+      },
+    });
+
+    expect(result).toMatchObject({
+      petitionPaymentStatusFormatted: 'Waived 03/01/19',
+    });
+  });
+
   it('returns a message when preferred trial city has not been selected', () => {
     const result = runCompute(reviewSavedPetitionHelper, {
       state: {
@@ -107,13 +115,13 @@ describe('reviewSavedPetitionHelper', () => {
       },
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       hasIrsNoticeFormatted: 'No',
       hasOrders: false,
       irsNoticeDateFormatted: undefined,
       ownershipDisclosureFile: undefined,
       petitionFile: undefined,
-      petitionPaymentStatusFormatted: 'Not paid',
+      petitionPaymentStatusFormatted: PAYMENT_STATUS.UNPAID,
       preferredTrialCityFormatted: 'No requested place of trial',
       receivedAtFormatted: undefined,
       requestForPlaceOfTrialFile: undefined,
@@ -132,13 +140,13 @@ describe('reviewSavedPetitionHelper', () => {
       },
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       hasIrsNoticeFormatted: 'No',
       hasOrders: false,
       irsNoticeDateFormatted: undefined,
       ownershipDisclosureFile: undefined,
       petitionFile: undefined,
-      petitionPaymentStatusFormatted: 'Not paid',
+      petitionPaymentStatusFormatted: PAYMENT_STATUS.UNPAID,
       preferredTrialCityFormatted: mockCity,
       receivedAtFormatted: undefined,
       requestForPlaceOfTrialFile: undefined,
@@ -170,5 +178,71 @@ describe('reviewSavedPetitionHelper', () => {
         hasOrders: true,
       });
     });
+  });
+
+  it('returns showStatistics false if the statistics array is not present on the form', () => {
+    const result = runCompute(reviewSavedPetitionHelper, {
+      state: {
+        form: {},
+      },
+    });
+
+    expect(result.showStatistics).toBeFalsy();
+  });
+
+  it('returns showStatistics false if the statistics array is present on the form but has length 0', () => {
+    const result = runCompute(reviewSavedPetitionHelper, {
+      state: {
+        form: { statistics: [] },
+      },
+    });
+
+    expect(result.showStatistics).toBeFalsy();
+  });
+
+  it('returns showStatistics true if the statistics array is present on the form and has length greater than 0', () => {
+    const result = runCompute(reviewSavedPetitionHelper, {
+      state: {
+        form: { statistics: [{ yearOrPeriod: 'Year' }] },
+      },
+    });
+
+    expect(result.showStatistics).toBeTruthy();
+  });
+
+  it('formats statistics with formatted dates and money', () => {
+    const result = runCompute(reviewSavedPetitionHelper, {
+      state: {
+        form: {
+          statistics: [
+            {
+              irsDeficiencyAmount: 123,
+              irsTotalPenalties: 30000,
+              year: '2012',
+              yearOrPeriod: 'Year',
+            },
+            {
+              irsDeficiencyAmount: 0,
+              irsTotalPenalties: 21,
+              lastDateOfPeriod: '2019-03-01T21:40:46.415Z',
+              yearOrPeriod: 'Period',
+            },
+          ],
+        },
+      },
+    });
+
+    expect(result.formattedStatistics).toMatchObject([
+      {
+        formattedDate: '2012',
+        formattedIrsDeficiencyAmount: '$123.00',
+        formattedIrsTotalPenalties: '$30,000.00',
+      },
+      {
+        formattedDate: '03/01/19',
+        formattedIrsDeficiencyAmount: '$0.00',
+        formattedIrsTotalPenalties: '$21.00',
+      },
+    ]);
   });
 });

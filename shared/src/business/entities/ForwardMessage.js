@@ -1,7 +1,11 @@
 const joi = require('@hapi/joi');
 const {
+  JoiValidationConstants,
+} = require('../../utilities/JoiValidationConstants');
+const {
   joiValidationDecorator,
 } = require('../../utilities/JoiValidationDecorator');
+const { CHAMBERS_SECTIONS, SECTIONS } = require('./EntityConstants');
 
 ForwardMessage.VALIDATION_ERROR_MESSAGES = {
   assigneeId: 'Select a recipient',
@@ -23,14 +27,12 @@ function ForwardMessage(rawMessage) {
 joiValidationDecorator(
   ForwardMessage,
   joi.object().keys({
-    assigneeId: joi
+    assigneeId: JoiValidationConstants.UUID.required(),
+    forwardMessage: joi.string().max(500).required(),
+    section: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
+      .valid(...SECTIONS, ...CHAMBERS_SECTIONS)
       .required(),
-    forwardMessage: joi.string().required(),
-    section: joi.string().required(),
   }),
   ForwardMessage.VALIDATION_ERROR_MESSAGES,
 );

@@ -1,21 +1,23 @@
 const joi = require('@hapi/joi');
 const {
+  ALL_DOCUMENT_TYPES,
+  ALL_EVENT_CODES,
+  DOCUMENT_EXTERNAL_CATEGORIES_MAP,
+  MAX_FILE_SIZE_MB,
+} = require('../EntityConstants');
+const {
   ExternalDocumentFactory,
 } = require('../externalDocument/ExternalDocumentFactory');
+const {
+  JoiValidationConstants,
+} = require('../../../utilities/JoiValidationConstants');
 const {
   joiValidationDecorator,
 } = require('../../../utilities/JoiValidationDecorator');
 const {
-  MAX_FILE_SIZE_BYTES,
-  MAX_FILE_SIZE_MB,
-} = require('../../../persistence/s3/getUploadPolicy');
-const {
   VALIDATION_ERROR_MESSAGES,
 } = require('../externalDocument/ExternalDocumentInformationFactory');
-const { Document } = require('../Document');
-const { getTimestampSchema } = require('../../../utilities/dateSchema');
 
-const joiStrictTimestamp = getTimestampSchema();
 DocketEntryFactory.VALIDATION_ERROR_MESSAGES = {
   ...VALIDATION_ERROR_MESSAGES,
   dateReceived: [
@@ -51,6 +53,7 @@ function DocketEntryFactory(rawProps) {
     this.certificateOfServiceDate = rawPropsParam.certificateOfServiceDate;
     this.dateReceived = rawPropsParam.dateReceived;
     this.documentType = rawPropsParam.documentType;
+    this.isDocumentRequired = rawPropsParam.isDocumentRequired;
     this.eventCode = rawPropsParam.eventCode;
     this.serviceDate = rawPropsParam.serviceDate;
     this.freeText = rawPropsParam.freeText;
@@ -79,26 +82,42 @@ function DocketEntryFactory(rawProps) {
     additionalInfo2: joi.string(),
     attachments: joi.boolean(),
     certificateOfService: joi.boolean(),
-    dateReceived: joiStrictTimestamp.max('now').required(),
-    documentType: joi.string().optional(),
-    eventCode: joi.string().required(),
+    dateReceived: JoiValidationConstants.ISO_DATE.max('now').required(),
+    documentType: joi
+      .string()
+      .valid(...ALL_DOCUMENT_TYPES)
+      .optional(),
+    eventCode: joi
+      .string()
+      .valid(...ALL_EVENT_CODES)
+      .required(),
     freeText: joi.string().optional(),
     hasSupportingDocuments: joi.boolean(),
+    isDocumentRequired: joi.boolean().optional(),
     lodged: joi.boolean(),
     ordinalValue: joi.string().optional(),
     previousDocument: joi.object().optional(),
-    primaryDocumentFile: joi.object().optional(),
-    primaryDocumentFileSize: joi.when('primaryDocumentFile', {
-      is: joi.exist().not(null),
-      otherwise: joi.optional().allow(null),
-      then: joi.number().required().min(1).max(MAX_FILE_SIZE_BYTES).integer(),
+    primaryDocumentFile: joi.object().when('isDocumentRequired', {
+      is: true,
+      otherwise: joi.optional(),
+      then: joi.required(),
     }),
-    serviceDate: joiStrictTimestamp.max('now').optional(),
+    primaryDocumentFileSize: JoiValidationConstants.MAX_FILE_SIZE_BYTES.when(
+      'primaryDocumentFile',
+      {
+        is: joi.exist().not(null),
+        otherwise: joi.optional().allow(null),
+        then: joi.required(),
+      },
+    ),
+    serviceDate: JoiValidationConstants.ISO_DATE.max('now').optional(),
     trialLocation: joi.string().optional(),
   });
 
   let schemaOptionalItems = {
-    certificateOfServiceDate: joiStrictTimestamp.max('now').required(),
+    certificateOfServiceDate: JoiValidationConstants.ISO_DATE.max(
+      'now',
+    ).required(),
     objections: joi.string().required(),
     partyIrsPractitioner: joi.boolean().required(),
     partyPrimary: joi.boolean().invalid(false).required(),
@@ -126,7 +145,7 @@ function DocketEntryFactory(rawProps) {
   }
 
   const objectionDocumentTypes = [
-    ...Document.CATEGORY_MAP['Motion'].map(entry => {
+    ...DOCUMENT_EXTERNAL_CATEGORIES_MAP['Motion'].map(entry => {
       return entry.documentType;
     }),
     'Motion to Withdraw Counsel (filed by petitioner)',

@@ -1,5 +1,8 @@
 const React = require('react');
-const { ContactFactory } = require('../../../entities/contacts/ContactFactory');
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+} = require('../../../entities/EntityConstants');
 const { DocketRecord } = require('./DocketRecord.jsx');
 const { mount } = require('enzyme');
 
@@ -28,7 +31,7 @@ describe('DocketRecord', () => {
       name: 'Test Petitioner',
       phone: '123-124-1234',
       postalCode: '12345',
-      state: 'STATE',
+      state: 'AL',
     };
 
     contactSecondary = {
@@ -40,7 +43,7 @@ describe('DocketRecord', () => {
       name: 'Test Petitioner 2',
       phone: '123-124-5678',
       postalCode: '12345',
-      state: 'STATE',
+      state: 'AL',
     };
 
     privatePractitioner = {
@@ -53,7 +56,7 @@ describe('DocketRecord', () => {
         country: 'USA',
         phone: '234-123-4567',
         postalCode: '12345',
-        state: 'STATE',
+        state: 'AL',
       },
       formattedName: 'Test Private Practitioner (PT20001)',
       name: 'Test Private Practitioner',
@@ -69,7 +72,7 @@ describe('DocketRecord', () => {
         country: 'USA',
         phone: '234-123-4567',
         postalCode: '12345',
-        state: 'STATE',
+        state: 'AL',
       },
       name: 'Test IRS Practitioner',
     };
@@ -77,7 +80,7 @@ describe('DocketRecord', () => {
     caseDetail = {
       contactPrimary,
       irsPractitioners: [],
-      partyType: 'Petitioner',
+      partyType: PARTY_TYPES.petitioner,
       privatePractitioners: [],
     };
 
@@ -107,14 +110,16 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
     );
 
     const contacts = wrapper.find('#petitioner-contacts');
-    expect(contacts.find('.party-info-header').text()).toEqual('Petitioner');
+    expect(contacts.find('.party-info-header').text()).toEqual(
+      PARTY_TYPES.petitioner,
+    );
     expect(contacts.find('.party-details').length).toEqual(1);
 
     const contactPrimaryEl = contacts.find('.party-details');
@@ -132,62 +137,14 @@ describe('DocketRecord', () => {
     expect(contactPrimaryEl.text()).not.toContain('c/o');
   });
 
-  it('displays the case title in place of the primary contact name if showCaseTitleForPrimary is true', () => {
-    caseDetail.showCaseTitleForPrimary = true;
-
-    const wrapper = mount(
-      <DocketRecord
-        caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
-        entries={entries}
-        options={options}
-      />,
-    );
-
-    const contactPrimaryEl = wrapper.find(
-      '#petitioner-contacts .party-details',
-    );
-
-    expect(contactPrimaryEl.text()).not.toContain(contactPrimary.name);
-    expect(contactPrimaryEl.text()).toContain(options.caseTitle);
-  });
-
-  it('renders the secondary contact information if provided', () => {
-    caseDetail.contactSecondary = contactSecondary;
-
-    const wrapper = mount(
-      <DocketRecord
-        caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
-        entries={entries}
-        options={options}
-      />,
-    );
-
-    const contacts = wrapper.find('#petitioner-contacts');
-    expect(contacts.find('.party-info-header').text()).toEqual('Petitioner');
-    expect(contacts.find('.party-details').length).toEqual(2);
-
-    const contactSecondaryEl = contacts.find('.party-details').at(1);
-
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.name);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.address1);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.address2);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.address3);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.city);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.state);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.postalCode);
-    expect(contactSecondaryEl.text()).toContain(contactSecondary.phone);
-  });
-
   it("displays a party's country if international", () => {
-    contactPrimary.countryType = ContactFactory.COUNTRY_TYPES.INTERNATIONAL;
+    contactPrimary.countryType = COUNTRY_TYPES.INTERNATIONAL;
     contactPrimary.country = 'The Republic of Texas';
 
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -205,7 +162,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -225,7 +182,7 @@ describe('DocketRecord', () => {
     let wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -238,7 +195,7 @@ describe('DocketRecord', () => {
     wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -279,7 +236,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -308,7 +265,7 @@ describe('DocketRecord', () => {
     let wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -321,7 +278,7 @@ describe('DocketRecord', () => {
     wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -350,7 +307,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -376,7 +333,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -394,7 +351,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -411,7 +368,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -428,7 +385,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,
@@ -446,7 +403,7 @@ describe('DocketRecord', () => {
     const wrapper = mount(
       <DocketRecord
         caseDetail={caseDetail}
-        countryTypes={ContactFactory.COUNTRY_TYPES}
+        countryTypes={COUNTRY_TYPES}
         entries={entries}
         options={options}
       />,

@@ -23,6 +23,7 @@
       "pending": false,
       "partySecondary": false,
       "documentId": "ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
+      "numberOfPages": 1,
       "receivedAt": "2020-01-23T21:44:54.043Z",
       "filingDate": "2020-01-23T21:44:54.043Z",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
@@ -35,7 +36,8 @@
     "isInitializeCase": true,
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-23T21:44:54.043Z",
     "highPriority": true,
     "assigneeName": null,
@@ -55,7 +57,39 @@
     "updatedAt": "2020-01-23T21:44:54.044Z"
   },
   {
-    "docketNumberSuffix": "L",
+    "draftState": {
+      "eventCode": "MISC",
+      "generatedDocumentTitle": "First draft",
+      "documentType": "Miscellaneous",
+      "scenario": "Type A",
+      "primaryDocumentFileSize": 3028,
+      "freeText": "Hello draft",
+      "caseId": "24fcb050-9c95-4d69-a149-96acba0196b8",
+      "documentTitle": "First draft",
+      "docketNumber": "103-20"
+    },
+    "documentType": "Miscellaneous",
+    "filingDate": "2020-07-06T14:37:36.755Z",
+    "workItems": [],
+    "pending": false,
+    "receivedAt": "2020-07-06T14:37:36.755Z",
+    "userId": "3805d1ab-18d0-43ec-bafb-654e83405416",
+    "eventCode": "MISC",
+    "processingStatus": "complete",
+    "createdAt": "2020-07-06T14:37:36.753Z",
+    "scenario": "Type A",
+    "entityName": "Document",
+    "filedBy": "Test Petitionsclerk",
+    "freeText": "Hello draft",
+    "sk": "document|06f60736-5f37-4590-b62a-5c7edf84ffc6",
+    "documentId": "06f60736-5f37-4590-b62a-5c7edf84ffc6",
+    "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
+    "documentTitle": "First draft",
+    "relationship": "primaryDocument",
+    "docketNumber": "103-20"
+  },
+  {
+    "docketNumberWithSuffix": "103-20L",
     "caseStatus": "Calendared",
     "caseIsInProgress": false,
     "gsi1pk": "work-item|2a3955ca-baad-4ca7-be23-d862d2ef5310",
@@ -79,6 +113,7 @@
       "certificateOfService": false,
       "certificateOfServiceDate": null,
       "documentId": "2cca1543-21b2-4783-a1de-eeaaf269d32c",
+      "numberOfPages": 1,
       "category": "Miscellaneous",
       "documentTitle": "Administrative Record",
       "relationship": "primaryDocument",
@@ -90,7 +125,8 @@
     "workItemId": "2a3955ca-baad-4ca7-be23-d862d2ef5310",
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-23T21:45:34.520Z",
     "highPriority": true,
     "assigneeName": null,
@@ -142,6 +178,7 @@
       "certificateOfService": false,
       "certificateOfServiceDate": null,
       "documentId": "2cca1543-21b2-4783-a1de-eeaaf269d32c",
+      "numberOfPages": 1,
       "category": "Miscellaneous",
       "documentTitle": "Administrative Record",
       "relationship": "primaryDocument",
@@ -153,7 +190,8 @@
     "workItemId": "2a3955ca-baad-4ca7-be23-d862d2ef5310",
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-23T21:45:34.520Z",
     "highPriority": true,
     "assigneeName": null,
@@ -173,7 +211,7 @@
     "updatedAt": "2020-01-23T21:45:34.520Z"
   },
   {
-    "docketNumberSuffix": "L",
+    "docketNumberWithSuffix": "103-20L",
     "caseStatus": "Calendared",
     "caseIsInProgress": false,
     "document": {
@@ -187,6 +225,7 @@
       "pending": false,
       "partySecondary": false,
       "documentId": "ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
+      "numberOfPages": 1,
       "receivedAt": "2020-01-23T21:44:54.043Z",
       "filingDate": "2020-01-23T21:44:54.043Z",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
@@ -199,7 +238,8 @@
     "isInitializeCase": true,
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-23T21:44:54.043Z",
     "highPriority": true,
     "assigneeName": null,
@@ -220,7 +260,15 @@
   },
   {
     "sk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
-    "pk": "user|7805d1ab-18d0-43ec-bafb-654e83405416"
+    "gsi1pk": "user-case|24fcb050-9c95-4d69-a149-96acba0196b8",
+    "pk": "user|7805d1ab-18d0-43ec-bafb-654e83405416",
+    "caseId": "24fcb050-9c95-4d69-a149-96acba0196b8",
+    "caseCaption": "Reuben Blair, Petitioner",
+    "createdAt": "2020-01-23T21:45:34.520Z",
+    "docketNumber": "103-20",
+    "docketNumberWithSuffix": "103-20L",
+    "status": "Calendared",
+    "entityName": "UserCase"
   },
   {
     "associatedJudge": "Judge Armen",
@@ -250,7 +298,7 @@
       "name": "Reuben Blair",
       "state": "DC",
       "countryType": "domestic",
-      "email": "petitioner"
+      "email": "petitioner@example.com"
     },
     "createdAt": "2020-01-23T21:44:54.034Z",
     "noticeOfAttachments": false,
@@ -264,7 +312,6 @@
     "initialDocketNumberSuffix": "L",
     "trialSessionId": "959c4338-0fac-42eb-b0eb-d53b8d0195cc",
     "docketNumberSuffix": "L",
-    "orderToChangeDesignatedPlaceOfTrial": false,
     "trialDate": "2020-11-27T05:00:00.000Z",
     "noticeOfTrialDate": "2020-01-23T21:45:14.136Z",
     "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
@@ -275,13 +322,15 @@
     "orderForAmendedPetitionAndFilingFee": false,
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
     "docketNumber": "103-20",
+    "docketNumberWithSuffix": "103-20L",
     "status": "Calendared"
   },
   {
     "eventCode": "P",
     "description": "Petition",
-    "index": 1,
     "documentId": "ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
+    "numberOfPages": 1,
+    "index": 1,
     "filingDate": "2020-01-23T21:44:54.043Z",
     "filedBy": "Petr. Reuben Blair",
     "docketRecordId": "6083daae-a943-4987-a658-1d28b2f2f029",
@@ -298,9 +347,10 @@
     "sk": "docket-record|2a3825e3-9144-446c-96c1-3c2b2f4b7b1c"
   },
   {
-    "eventCode": "NDT",
+    "eventCode": "NTD",
     "description": "Notice of Trial",
     "index": 3,
+    "numberOfPages": 1,
     "documentId": "4d736f72-6312-4f7f-886e-210a0074fdc3",
     "filingDate": "2020-01-23T21:45:14.136Z",
     "filedBy": "Test Docketclerk",
@@ -313,6 +363,7 @@
     "description": "Administrative Record",
     "index": 4,
     "documentId": "2cca1543-21b2-4783-a1de-eeaaf269d32c",
+    "numberOfPages": 1,
     "filingDate": "2020-01-23T21:45:34.520Z",
     "docketRecordId": "f4e8b2a1-71d3-4225-b904-1e87dbddd854",
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
@@ -322,7 +373,7 @@
     "servedParties": [
       {
         "name": "Reuben Blair",
-        "email": "petitioner"
+        "email": "petitioner@example.com"
       }
     ],
     "attachments": false,
@@ -368,6 +419,7 @@
           "certificateOfService": false,
           "certificateOfServiceDate": null,
           "documentId": "2cca1543-21b2-4783-a1de-eeaaf269d32c",
+          "numberOfPages": 1,
           "category": "Miscellaneous",
           "documentTitle": "Administrative Record",
           "relationship": "primaryDocument",
@@ -379,7 +431,8 @@
         "workItemId": "2a3955ca-baad-4ca7-be23-d862d2ef5310",
         "assigneeId": null,
         "isQC": true,
-        "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+        "sentBy": "Test Petitioner",
+        "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
         "createdAt": "2020-01-23T21:45:34.520Z",
         "highPriority": true,
         "assigneeName": null,
@@ -402,6 +455,7 @@
     "processingStatus": "complete",
     "certificateOfServiceDate": null,
     "documentId": "2cca1543-21b2-4783-a1de-eeaaf269d32c",
+    "numberOfPages": 1,
     "servedAt": "2020-01-23T21:45:34.521Z",
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
     "docketNumber": "103-20",
@@ -411,7 +465,7 @@
     "servedParties": [
       {
         "name": "Reuben Blair",
-        "email": "petitioner"
+        "email": "petitioner@example.com"
       }
     ],
     "documentType": "Notice of Trial",
@@ -421,14 +475,16 @@
     "pending": false,
     "receivedAt": "2020-01-23T21:45:14.136Z",
     "userId": "1805d1ab-18d0-43ec-bafb-654e83405416",
-    "eventCode": "NDT",
+    "eventCode": "NTD",
     "createdAt": "2020-01-23T21:45:14.136Z",
     "processingStatus": "complete",
     "filedBy": "Test Docketclerk",
     "caseId": "24fcb050-9c95-4d69-a149-96acba0196b8",
     "sk": "document|4d736f72-6312-4f7f-886e-210a0074fdc3",
     "documentId": "4d736f72-6312-4f7f-886e-210a0074fdc3",
+    "numberOfPages": 1,
     "servedAt": "2020-01-23T21:45:14.148Z",
+    "signedAt": "2020-01-23T21:45:14.136Z",
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8",
     "documentTitle": "Notice of Trial on 11/27/2020 at Houston, Texas",
     "status": "served"
@@ -456,6 +512,7 @@
           "pending": false,
           "partySecondary": false,
           "documentId": "ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
+          "numberOfPages": 1,
           "receivedAt": "2020-01-23T21:44:54.043Z",
           "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
         },
@@ -465,7 +522,8 @@
         "isInitializeCase": true,
         "assigneeId": null,
         "isQC": true,
-        "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+        "sentBy": "Test Petitioner",
+        "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
         "createdAt": "2020-01-23T21:44:54.043Z",
         "assigneeName": null,
         "caseId": "24fcb050-9c95-4d69-a149-96acba0196b8",
@@ -493,6 +551,7 @@
     "sk": "document|ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
     "partySecondary": false,
     "documentId": "ac62f25a-49f9-46a5-aed7-d6b955a2dc34",
+    "numberOfPages": 1,
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8"
   },
   {
@@ -513,6 +572,7 @@
     "sk": "document|f6f9ce81-8b65-433c-8c7b-f0ffa7a74068",
     "partySecondary": false,
     "documentId": "f6f9ce81-8b65-433c-8c7b-f0ffa7a74068",
+    "numberOfPages": 1,
     "pk": "case|24fcb050-9c95-4d69-a149-96acba0196b8"
   }
 ]

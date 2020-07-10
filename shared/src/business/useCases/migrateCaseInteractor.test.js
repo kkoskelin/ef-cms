@@ -1,5 +1,9 @@
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../entities/EntityConstants');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { ContactFactory } = require('../entities/contacts/ContactFactory');
 const { migrateCaseInteractor } = require('./migrateCaseInteractor');
 const { MOCK_CASE } = require('../../test/mockCase.js');
 const { User } = require('../entities/User');
@@ -16,7 +20,7 @@ describe('migrateCaseInteractor', () => {
 
     adminUser = new User({
       name: 'Joe Exotic',
-      role: 'admin',
+      role: ROLES.admin,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -42,13 +46,14 @@ describe('migrateCaseInteractor', () => {
     });
 
     caseMetadata = {
+      caseCaption: 'Custom Caption',
       caseType: 'Other',
       contactPrimary: {
         address1: '99 South Oak Lane',
         address2: 'Address 2',
         address3: 'Address 3',
         city: 'Some City',
-        countryType: 'domestic',
+        countryType: COUNTRY_TYPES.DOMESTIC,
         email: 'petitioner1@example.com',
         name: 'Diana Prince',
         phone: '+1 (215) 128-6587',
@@ -60,7 +65,7 @@ describe('migrateCaseInteractor', () => {
       documents: MOCK_CASE.documents,
       filingType: 'Myself',
       hasIrsNotice: true,
-      partyType: ContactFactory.PARTY_TYPES.petitioner,
+      partyType: PARTY_TYPES.petitioner,
       petitionFile: new File([], 'test.pdf'),
       petitionFileSize: 1,
       preferredTrialCity: 'Fresno, California',
@@ -91,7 +96,7 @@ describe('migrateCaseInteractor', () => {
           docketNumber: '00101-00',
           filingType: 'Myself',
           hasIrsNotice: true,
-          partyType: ContactFactory.PARTY_TYPES.petitioner,
+          partyType: PARTY_TYPES.petitioner,
           preferredTrialCity: 'Fresno, California',
           procedureType: 'Small',
         },
@@ -145,6 +150,100 @@ describe('migrateCaseInteractor', () => {
           },
         }),
       ).rejects.toThrow('The Case entity was invalid');
+    });
+  });
+
+  describe('Practitioners via barNumber', () => {
+    it('finds an associated privatePractitioner with a barNumber to migrate', async () => {
+      applicationContext
+        .getPersistenceGateway()
+        .getPractitionerByBarNumber.mockResolvedValueOnce({
+          userId: '26e21f82-d029-4603-a954-544d8123ea04',
+        });
+
+      await migrateCaseInteractor({
+        applicationContext,
+        caseMetadata: {
+          ...caseMetadata,
+          privatePractitioners: [
+            {
+              barNumber: 'PT1234',
+              role: 'privatePractitioner',
+            },
+          ],
+        },
+      });
+
+      expect(
+        applicationContext.getPersistenceGateway().getPractitionerByBarNumber,
+      ).toHaveBeenCalled();
+    });
+
+    it('does not find an associated privatePractitioner with a barNumber to migrate', async () => {
+      applicationContext
+        .getPersistenceGateway()
+        .getPractitionerByBarNumber.mockResolvedValueOnce(null);
+
+      await migrateCaseInteractor({
+        applicationContext,
+        caseMetadata: {
+          ...caseMetadata,
+          privatePractitioners: [
+            {
+              barNumber: 'PT1234',
+              role: 'privatePractitioner',
+            },
+          ],
+        },
+      });
+
+      expect(applicationContext.getUniqueId).toHaveBeenCalled();
+    });
+
+    it('finds an associated irsPractitioner with a barNumber to migrate', async () => {
+      applicationContext
+        .getPersistenceGateway()
+        .getPractitionerByBarNumber.mockResolvedValueOnce({
+          userId: '26e21f82-d029-4603-a954-544d8123ea04',
+        });
+
+      await migrateCaseInteractor({
+        applicationContext,
+        caseMetadata: {
+          ...caseMetadata,
+          irsPractitioners: [
+            {
+              barNumber: 'PT1234',
+              role: 'irsPractitioner',
+            },
+          ],
+        },
+      });
+
+      expect(
+        applicationContext.getPersistenceGateway().getPractitionerByBarNumber,
+      ).toHaveBeenCalled();
+    });
+
+    it('does not find an associated irsPractitioner with a barNumber to migrate', async () => {
+      applicationContext
+        .getPersistenceGateway()
+        .getPractitionerByBarNumber.mockResolvedValueOnce(null);
+
+      await migrateCaseInteractor({
+        applicationContext,
+        caseMetadata: {
+          ...caseMetadata,
+          irsPractitioners: [
+            {
+              barNumber: 'PT1234',
+              role: 'irsPractitioner',
+            },
+          ],
+        },
+      });
+
+      expect(applicationContext.getUniqueId).toHaveBeenCalled();
     });
   });
 });

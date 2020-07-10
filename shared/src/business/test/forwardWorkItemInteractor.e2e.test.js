@@ -1,4 +1,9 @@
 const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../entities/EntityConstants');
+const {
   forwardWorkItemInteractor,
 } = require('../useCases/workitems/forwardWorkItemInteractor');
 const {
@@ -8,7 +13,6 @@ const {
   getSentMessagesForUserInteractor,
 } = require('../useCases/workitems/getSentMessagesForUserInteractor');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { ContactFactory } = require('../entities/contacts/ContactFactory');
 const { createCaseInteractor } = require('../useCases/createCaseInteractor');
 const { getCaseInteractor } = require('../useCases/getCaseInteractor');
 const { User } = require('../entities/User');
@@ -21,7 +25,7 @@ describe('forwardWorkItemInteractor integration test', () => {
   });
 
   it('should create the expected case into the database', async () => {
-    const { caseId } = await createCaseInteractor({
+    const { docketNumber } = await createCaseInteractor({
       applicationContext,
       petitionFileId: '92eac064-9ca5-4c56-80a0-c5852c752277',
       petitionMetadata: {
@@ -31,17 +35,17 @@ describe('forwardWorkItemInteractor integration test', () => {
           address2: 'Ad cumque quidem lau',
           address3: 'Anim est dolor animi',
           city: 'Rerum eaque cupidata',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner@example.com',
           name: 'Rick Petitioner',
           phone: '+1 (599) 681-5435',
           postalCode: '89614',
-          state: 'AP',
+          state: 'AL',
         },
         contactSecondary: {},
         filingType: 'Myself',
         hasIrsNotice: false,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         preferredTrialCity: 'Aberdeen, South Dakota',
         procedureType: 'Small',
       },
@@ -51,14 +55,14 @@ describe('forwardWorkItemInteractor integration test', () => {
     applicationContext.getCurrentUser.mockReturnValue(
       new User({
         name: 'richard',
-        role: User.ROLES.petitionsClerk,
+        role: ROLES.petitionsClerk,
         userId: '3805d1ab-18d0-43ec-bafb-654e83405416',
       }),
     );
 
     const createdCase = await getCaseInteractor({
       applicationContext,
-      caseId,
+      docketNumber,
     });
 
     const workItem = createdCase.documents.find(
@@ -116,7 +120,7 @@ describe('forwardWorkItemInteractor integration test', () => {
     applicationContext.getCurrentUser = () => {
       return new User({
         name: 'bob',
-        role: User.ROLES.docketClerk,
+        role: ROLES.docketClerk,
         userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
       });
     };
@@ -130,7 +134,7 @@ describe('forwardWorkItemInteractor integration test', () => {
         assigneeId: '1805d1ab-18d0-43ec-bafb-654e83405416',
         assigneeName: 'Test Docketclerk',
         docketNumber: '101-19',
-        docketNumberSuffix: 'S',
+        docketNumberWithSuffix: '101-19S',
         document: {
           documentType: 'Petition',
           filedBy: 'Petr. Rick Petitioner',
@@ -160,7 +164,7 @@ describe('forwardWorkItemInteractor integration test', () => {
 
     const caseAfterAssign = await getCaseInteractor({
       applicationContext,
-      caseId,
+      docketNumber,
     });
     expect(
       caseAfterAssign.documents.find(d => d.documentType === 'Petition'),

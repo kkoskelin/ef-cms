@@ -1,5 +1,7 @@
 import { AccessibilityStatement } from './Accessibility/AccessibilityStatement';
+import { AddDeficiencyStatistics } from './CaseDetail/AddDeficiencyStatistics';
 import { AddDocketEntry } from './AddDocketEntry/AddDocketEntry';
+import { AddOtherStatistics } from './CaseDetail/AddOtherStatistics';
 import { AddTrialSession } from './TrialSessions/AddTrialSession';
 import { AdvancedSearch } from './AdvancedSearch/AdvancedSearch';
 import { BatchDownloadProgress } from './TrialSessionWorkingCopy/BatchDownloadProgress';
@@ -11,6 +13,7 @@ import { CaseDetail } from './CaseDetail/CaseDetail';
 import { CaseDetailInternal } from './CaseDetail/CaseDetailInternal';
 import { CaseInventoryReport } from './CaseInventoryReport/CaseInventoryReport';
 import { CaseInventoryReportModal } from './CaseInventoryReport/CaseInventoryReportModal';
+import { CaseMessages } from './Messages/CaseMessages';
 import { CaseSearchNoMatches } from './CaseSearchNoMatches';
 import { CourtIssuedDocketEntry } from './CourtIssuedDocketEntry/CourtIssuedDocketEntry';
 import { CreateOrder } from './CreateOrder/CreateOrder';
@@ -23,8 +26,11 @@ import { DashboardPetitioner } from './Dashboards/DashboardPetitioner';
 import { DashboardPractitioner } from './Dashboards/DashboardPractitioner';
 import { DashboardRespondent } from './Dashboards/DashboardRespondent';
 import { DocumentDetail } from './DocumentDetail/DocumentDetail';
+import { EditCorrespondenceDocument } from './Correspondence/EditCorrespondenceDocument';
+import { EditDeficiencyStatistic } from './CaseDetail/EditDeficiencyStatistic';
 import { EditDocketEntry } from './EditDocketEntry/EditDocketEntry';
 import { EditDocketEntryMeta } from './EditDocketEntry/EditDocketEntryMeta';
+import { EditOtherStatistics } from './CaseDetail/EditOtherStatistics';
 import { EditPetitionDetails } from './CaseDetail/EditPetitionDetails';
 import { EditPetitionerInformation } from './CaseDetail/EditPetitionerInformation';
 import { EditPractitionerUser } from './Practitioners/EditPractitionerUser';
@@ -33,13 +39,16 @@ import { EditUploadCourtIssuedDocument } from './EditUploadCourtIssuedDocument/E
 import { Error } from './Error';
 import { FileCompressionErrorModal } from './TrialSessionWorkingCopy/FileCompressionErrorModal';
 import { FileDocumentWizard } from './FileDocument/FileDocumentWizard';
+import { FilePetitionSuccess } from './StartCase/FilePetitionSuccess';
 import { Footer } from './Footer';
 import { Header } from './Header/Header';
 import { IdleLogout } from './IdleLogout';
 import { Interstitial } from './Interstitial';
 import { Loading } from './Loading';
 import { LogIn } from './LogIn';
+import { MessageDetail } from './Messages/MessageDetail';
 import { Messages } from './Messages/Messages';
+import { OtherFilerInformation } from './CaseDetail/OtherFilerInformation';
 import { PendingReport } from './PendingReport/PendingReport';
 import { PetitionQc } from './PetitionQc/PetitionQc';
 import { PractitionerDetail } from './Practitioners/PractitionerDetail';
@@ -64,6 +73,7 @@ import { TrialSessionPlanningModal } from './TrialSessionPlanningModal';
 import { TrialSessionPlanningReport } from './TrialSessions/TrialSessionPlanningReport';
 import { TrialSessionWorkingCopy } from './TrialSessionWorkingCopy/TrialSessionWorkingCopy';
 import { TrialSessions } from './TrialSessions/TrialSessions';
+import { UploadCorrespondenceDocument } from './Correspondence/UploadCorrespondenceDocument';
 import { UploadCourtIssuedDocument } from './UploadCourtIssuedDocument/UploadCourtIssuedDocument';
 import { UsaBanner } from './UsaBanner';
 import { UserContactEdit } from './UserContactEdit';
@@ -73,7 +83,9 @@ import React, { useEffect } from 'react';
 
 const pages = {
   AccessibilityStatement,
+  AddDeficiencyStatistics,
   AddDocketEntry,
+  AddOtherStatistics,
   AddTrialSession,
   AdvancedSearch,
   BeforeStartingCase,
@@ -83,6 +95,7 @@ const pages = {
   CaseDetail,
   CaseDetailInternal,
   CaseInventoryReport,
+  CaseMessages,
   CaseSearchNoMatches,
   CourtIssuedDocketEntry,
   CreateOrder,
@@ -95,8 +108,11 @@ const pages = {
   DashboardPractitioner,
   DashboardRespondent,
   DocumentDetail,
+  EditCorrespondenceDocument,
+  EditDeficiencyStatistic,
   EditDocketEntry,
   EditDocketEntryMeta,
+  EditOtherStatistics,
   EditPetitionDetails,
   EditPetitionerInformation,
   EditPractitionerUser,
@@ -104,11 +120,14 @@ const pages = {
   EditUploadCourtIssuedDocument,
   Error,
   FileDocumentWizard,
+  FilePetitionSuccess,
   IdleLogout,
   Interstitial,
   Loading,
   LogIn,
+  MessageDetail,
   Messages,
+  OtherFilerInformation,
   PendingReport,
   PetitionQc,
   PractitionerDetail,
@@ -132,6 +151,7 @@ const pages = {
   TrialSessionPlanningReport,
   TrialSessionWorkingCopy,
   TrialSessions,
+  UploadCorrespondenceDocument,
   UploadCourtIssuedDocument,
   UserContactEdit,
 };
@@ -155,7 +175,7 @@ export const AppComponent = connect(
 
     useEffect(() => {
       focusMain();
-    });
+    }, [currentPage]);
 
     const CurrentPage = pages[currentPage];
     return (

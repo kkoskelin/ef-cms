@@ -1,3 +1,7 @@
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+} = require('../business/entities/EntityConstants');
 const { MOCK_DOCUMENTS } = require('./mockDocuments');
 
 exports.MOCK_CASE = {
@@ -7,7 +11,7 @@ exports.MOCK_CASE = {
   contactPrimary: {
     address1: '123 Main St',
     city: 'Somewhere',
-    countryType: 'domestic',
+    countryType: COUNTRY_TYPES.DOMESTIC,
     email: 'petitioner@example.com',
     name: 'Test Petitioner',
     phone: '1234567',
@@ -15,7 +19,10 @@ exports.MOCK_CASE = {
     state: 'TN',
     title: 'Executor',
   },
+  correspondence: [],
+  createdAt: '2018-03-01T21:40:46.415Z',
   docketNumber: '101-18',
+  docketNumberWithSuffix: '101-18',
   docketRecord: [
     {
       description: 'first record',
@@ -45,7 +52,7 @@ exports.MOCK_CASE = {
   documents: MOCK_DOCUMENTS,
   filingType: 'Myself',
   irsNoticeDate: '2018-03-01T00:00:00.000Z',
-  partyType: 'Petitioner',
+  partyType: PARTY_TYPES.petitioner,
   preferredTrialCity: 'Washington, District of Columbia',
   procedureType: 'Regular',
   status: 'New',
@@ -59,7 +66,7 @@ exports.MOCK_CASE_WITHOUT_PENDING = {
   contactPrimary: {
     address1: '123 Main St',
     city: 'Somewhere',
-    countryType: 'domestic',
+    countryType: COUNTRY_TYPES.DOMESTIC,
     email: 'petitioner@example.com',
     name: 'Test Petitioner',
     phone: '1234567',
@@ -97,7 +104,7 @@ exports.MOCK_CASE_WITHOUT_PENDING = {
   documents: MOCK_DOCUMENTS.slice(0, 3), // exclude proposed stipulated decision
   filingType: 'Myself',
   irsNoticeDate: '2018-03-01T00:00:00.000Z',
-  partyType: 'Petitioner',
+  partyType: PARTY_TYPES.petitioner,
   preferredTrialCity: 'Washington, District of Columbia',
   procedureType: 'Regular',
   status: 'New',
@@ -109,7 +116,7 @@ exports.MOCK_CASE_WITHOUT_NOTICE = {
   contactPrimary: {
     address1: '123 Main St',
     city: 'Somewhere',
-    countryType: 'domestic',
+    countryType: COUNTRY_TYPES.DOMESTIC,
     email: 'petitioner@example.com',
     name: 'Test Petitioner',
     phone: '1234567',
@@ -130,7 +137,7 @@ exports.MOCK_CASE_WITHOUT_NOTICE = {
   ],
   documents: MOCK_DOCUMENTS,
   filingType: 'Myself',
-  partyType: 'Petitioner',
+  partyType: PARTY_TYPES.petitioner,
   preferredTrialCity: 'Washington, District of Columbia',
   procedureType: 'Regular',
   status: 'New',

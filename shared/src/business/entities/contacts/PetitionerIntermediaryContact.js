@@ -9,6 +9,7 @@ exports.getPetitionerIntermediaryContact = ContactFactory.createContactFactory({
     inCareOf: 'In care of has errors.',
   },
   additionalValidation: {
-    inCareOf: joi.string().optional(),
+    inCareOf: joi.string().max(100).optional(),
   },
+  contactName: 'PetitionerIntermediaryContact',
 });

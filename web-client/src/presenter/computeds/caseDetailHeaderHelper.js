@@ -23,6 +23,9 @@ export const caseDetailHeaderHelper = (get, applicationContext) => {
 
   const isCaseSealed = !!caseDetail.isSealed;
 
+  const isCurrentPageFilePetitionSuccess =
+    get(state.currentPage) === 'FilePetitionSuccess';
+
   let showRequestAccessToCaseButton = false;
   let showPendingAccessToCaseButton = false;
   let showFileFirstDocumentButton = false;
@@ -30,12 +33,18 @@ export const caseDetailHeaderHelper = (get, applicationContext) => {
   if (isExternalUser && !userAssociatedWithCase) {
     if (user.role === USER_ROLES.privatePractitioner) {
       showRequestAccessToCaseButton =
-        !pendingAssociation && !isRequestAccessForm && !isCaseSealed;
+        !pendingAssociation &&
+        !isRequestAccessForm &&
+        !isCaseSealed &&
+        !isCurrentPageFilePetitionSuccess;
       showPendingAccessToCaseButton = pendingAssociation;
     } else if (user.role === USER_ROLES.irsPractitioner) {
       showFileFirstDocumentButton = !caseHasRespondent && !isCaseSealed;
       showRequestAccessToCaseButton =
-        caseHasRespondent && !isRequestAccessForm && !isCaseSealed;
+        caseHasRespondent &&
+        !isRequestAccessForm &&
+        !isCaseSealed &&
+        !isCurrentPageFilePetitionSuccess;
     }
   }
 
@@ -50,14 +59,22 @@ export const caseDetailHeaderHelper = (get, applicationContext) => {
   const showFileDocumentButton =
     permissions.FILE_EXTERNAL_DOCUMENT && userAssociatedWithCase;
 
+  const showAddCorrespondenceButton = permissions.CASE_CORRESPONDENCE;
+
+  const petitionDocument = applicationContext
+    .getUtilities()
+    .getPetitionDocumentFromDocuments(caseDetail.documents);
+  const petitionIsServed = petitionDocument && !!petitionDocument.servedAt;
+
   return {
     hidePublicCaseInformation: !isExternalUser,
+    showAddCorrespondenceButton,
     showAddDocketEntryButton,
     showCaseDetailHeaderMenu,
     showConsolidatedCaseIcon,
     showCreateOrderButton,
     showEditCaseButton: permissions.UPDATE_CASE_CONTEXT,
-    showExternalButtons: isExternalUser,
+    showExternalButtons: isExternalUser && petitionIsServed,
     showFileDocumentButton,
     showFileFirstDocumentButton,
     showPendingAccessToCaseButton,

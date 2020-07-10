@@ -4,8 +4,8 @@ const {
   createCaseFromPaperInteractor,
 } = require('./createCaseFromPaperInteractor');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { Case } = require('../entities/cases/Case');
-const { ContactFactory } = require('../entities/contacts/ContactFactory');
+const { COUNTRY_TYPES, ROLES } = require('../entities/EntityConstants');
+const { PARTY_TYPES, PAYMENT_STATUS } = require('../entities/EntityConstants');
 const { UnauthorizedError } = require('../../errors/errors');
 const { User } = require('../entities/User');
 
@@ -24,7 +24,7 @@ describe('createCaseFromPaperInteractor', () => {
     applicationContext.getCurrentUser.mockReturnValue(
       new User({
         name: 'Test Petitionsclerk',
-        role: User.ROLES.petitionsClerk,
+        role: ROLES.petitionsClerk,
         userId: '6805d1ab-18d0-43ec-bafb-654e83405416',
       }),
     );
@@ -35,7 +35,7 @@ describe('createCaseFromPaperInteractor', () => {
 
     applicationContext.getPersistenceGateway().getUserById.mockReturnValue({
       name: 'Test Petitionsclerk',
-      role: User.ROLES.petitionsClerk,
+      role: ROLES.petitionsClerk,
       section: 'petitions',
       userId: '6805d1ab-18d0-43ec-bafb-654e83405416',
     });
@@ -75,7 +75,7 @@ describe('createCaseFromPaperInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -87,10 +87,10 @@ describe('createCaseFromPaperInteractor', () => {
         hasIrsNotice: true,
         irsNoticeDate: DATE,
         mailingDate: 'testing',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: new File([], 'petitionFile.pdf'),
         petitionFileSize: 1,
-        petitionPaymentStatus: Case.PAYMENT_STATUS.UNPAID,
+        petitionPaymentStatus: PAYMENT_STATUS.UNPAID,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Small',
         receivedAt: new Date().toISOString(),
@@ -122,22 +122,33 @@ describe('createCaseFromPaperInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
           postalCode: '69580',
           state: 'AR',
         },
-        contactSecondary: { name: 'Bob Prince' },
+        contactSecondary: {
+          address1: '99 South Oak Lane',
+          address2: 'Culpa numquam saepe ',
+          address3: 'Eaque voluptates com',
+          city: 'Dignissimos voluptat',
+          countryType: COUNTRY_TYPES.DOMESTIC,
+          email: 'petitioner1@example.com',
+          name: 'Bob Prince',
+          phone: '+1 (215) 128-6587',
+          postalCode: '69580',
+          state: 'AR',
+        },
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: DATE,
         mailingDate: 'test',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitionerSpouse,
         petitionFile: new File([], 'petitionFile.pdf'),
         petitionFileSize: 1,
-        petitionPaymentStatus: Case.PAYMENT_STATUS.UNPAID,
+        petitionPaymentStatus: PAYMENT_STATUS.UNPAID,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Small',
         receivedAt: new Date().toISOString(),
@@ -169,7 +180,7 @@ describe('createCaseFromPaperInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -181,10 +192,10 @@ describe('createCaseFromPaperInteractor', () => {
         hasIrsNotice: true,
         irsNoticeDate: DATE,
         mailingDate: 'testing',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: new File([], 'petitionFile.pdf'),
         petitionFileSize: 1,
-        petitionPaymentStatus: Case.PAYMENT_STATUS.UNPAID,
+        petitionPaymentStatus: PAYMENT_STATUS.UNPAID,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Small',
         receivedAt: new Date().toISOString(),
@@ -217,7 +228,7 @@ describe('createCaseFromPaperInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -229,10 +240,10 @@ describe('createCaseFromPaperInteractor', () => {
         hasIrsNotice: true,
         irsNoticeDate: DATE,
         mailingDate: 'testing',
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: new File([], 'petitionFile.pdf'),
         petitionFileSize: 1,
-        petitionPaymentStatus: Case.PAYMENT_STATUS.UNPAID,
+        petitionPaymentStatus: PAYMENT_STATUS.UNPAID,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Small',
         receivedAt: new Date().toISOString(),

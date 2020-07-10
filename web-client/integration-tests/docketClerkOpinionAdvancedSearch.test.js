@@ -1,5 +1,4 @@
 import { DocumentSearch } from '../../shared/src/business/entities/documents/DocumentSearch';
-
 import { loginAs, refreshElasticsearchIndex, setupTest } from './helpers';
 
 const test = setupTest({
@@ -13,7 +12,7 @@ describe('docket clerk opinion advanced search', () => {
     jest.setTimeout(30000);
   });
 
-  loginAs(test, 'docketclerk');
+  loginAs(test, 'docketclerk@example.com');
 
   it('go to advanced opinion search tab', async () => {
     await refreshElasticsearchIndex();
@@ -27,37 +26,115 @@ describe('docket clerk opinion advanced search', () => {
     });
   });
 
-  it('search for a keyword that is not present in any served opinion', async () => {
-    test.setState('advancedSearchForm', {
-      opinionSearch: {
-        keyword: 'osteodontolignikeratic',
-      },
+  describe('search for things that should not be found', () => {
+    it('search for a keyword that is not present in any served opinion', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          keyword: 'osteodontolignikeratic',
+        },
+      });
+
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('validationErrors')).toEqual({});
+      expect(test.getState('searchResults')).toEqual([]);
     });
 
-    await test.runSequence('submitOpinionAdvancedSearchSequence');
+    it('search for an opinion type that is not present in any served opinion', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          keyword: 'opinion',
+          opinionType: 'Summary Opinion',
+        },
+      });
 
-    expect(test.getState('validationErrors')).toEqual({});
-    expect(test.getState('searchResults')).toEqual([]);
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('validationErrors')).toEqual({});
+      expect(test.getState('searchResults')).toEqual([]);
+    });
   });
 
-  it('search for a keyword that is present in a served opinion', async () => {
-    test.setState('advancedSearchForm', {
-      opinionSearch: {
-        keyword: 'sunglasses',
-      },
+  describe('search for things that should be found', () => {
+    it('search for a keyword that is present in a served opinion', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          keyword: 'sunglasses',
+        },
+      });
+
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('searchResults')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            documentId: '130a3790-7e82-4f5c-8158-17f5d9d560e7',
+            documentTitle:
+              'T.C. Opinion Judge Armen Some very strong opinions about sunglasses',
+          }),
+        ]),
+      );
     });
 
-    await test.runSequence('submitOpinionAdvancedSearchSequence');
+    it('search for a keyword and docket number that is present in a served opinion', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          docketNumber: '105-20',
+          keyword: 'sunglasses',
+        },
+      });
 
-    expect(test.getState('searchResults')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          documentId: '130a3790-7e82-4f5c-8158-17f5d9d560e7',
-          documentTitle:
-            'T.C. Opinion Judge Armen Some very strong opinions about sunglasses',
-        }),
-      ]),
-    );
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('searchResults')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            documentId: '130a3790-7e82-4f5c-8158-17f5d9d560e7',
+            documentTitle:
+              'T.C. Opinion Judge Armen Some very strong opinions about sunglasses',
+          }),
+        ]),
+      );
+    });
+
+    it('includes the number of pages present in each document in the search results', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          keyword: 'sunglasses',
+        },
+      });
+
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('searchResults')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            numberOfPages: 1,
+          }),
+        ]),
+      );
+    });
+
+    it('search for an opinion type that is present in any served opinion', async () => {
+      test.setState('advancedSearchForm', {
+        opinionSearch: {
+          keyword: 'opinion',
+          opinionType: 'T.C. Opinion',
+        },
+      });
+
+      await test.runSequence('submitOpinionAdvancedSearchSequence');
+
+      expect(test.getState('searchResults')).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            documentId: '130a3790-7e82-4f5c-8158-17f5d9d560e7',
+            documentTitle:
+              'T.C. Opinion Judge Armen Some very strong opinions about sunglasses',
+          }),
+        ]),
+      );
+    });
   });
 
   it('clears search fields', async () => {

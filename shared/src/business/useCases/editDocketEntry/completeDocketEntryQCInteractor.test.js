@@ -6,7 +6,12 @@ const {
 const {
   completeDocketEntryQCInteractor,
 } = require('./completeDocketEntryQCInteractor');
-const { User } = require('../../entities/User');
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../../entities/EntityConstants');
+
 const testAssetsPath = path.join(__dirname, '../../../../test-assets/');
 
 describe('completeDocketEntryQCInteractor', () => {
@@ -27,11 +32,14 @@ describe('completeDocketEntryQCInteractor', () => {
       document: {
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
         documentType: 'Answer',
+        eventCode: 'A',
+        filedBy: 'Test Petitoner',
         userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
       },
       isQC: true,
       section: 'docket',
-      sentBy: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
+      sentBy: 'Test User',
+      sentByUserId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
       updatedAt: new Date().toISOString(),
       workItemId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     };
@@ -43,7 +51,7 @@ describe('completeDocketEntryQCInteractor', () => {
       contactPrimary: {
         address1: '123 Main St',
         city: 'Somewhere',
-        countryType: 'domestic',
+        countryType: COUNTRY_TYPES.DOMESTIC,
         email: 'fieri@example.com',
         name: 'Guy Fieri',
         phone: '1234567890',
@@ -68,27 +76,32 @@ describe('completeDocketEntryQCInteractor', () => {
           documentTitle: 'Answer',
           documentType: 'Answer',
           eventCode: 'A',
+          filedBy: 'Test Petitoner',
           userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
           workItems: [workItem],
         },
         {
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335b2',
           documentType: 'Answer',
+          eventCode: 'A',
+          filedBy: 'Test Petitoner',
           userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
           workItems: [workItem],
         },
         {
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
           documentType: 'Answer',
+          eventCode: 'A',
+          filedBy: 'Test Petitoner',
           userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
           workItems: [workItem],
         },
       ],
       filingType: 'Myself',
-      partyType: 'Petitioner',
+      partyType: PARTY_TYPES.petitioner,
       preferredTrialCity: 'Fresno, California',
       procedureType: 'Regular',
-      role: User.ROLES.petitioner,
+      role: ROLES.petitioner,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     };
 
@@ -96,23 +109,20 @@ describe('completeDocketEntryQCInteractor', () => {
       compile: () => () => '',
     }));
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       section: 'docket',
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
     applicationContext.getPersistenceGateway().getUserById.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.docketClerk,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.docketClerk,
       section: 'docket',
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
     applicationContext
       .getPersistenceGateway()
       .getCaseByCaseId.mockReturnValue(caseRecord);
-    applicationContext
-      .getUseCaseHelpers()
-      .generatePaperServiceAddressPagePdf.mockReturnValue(testPdfDoc);
     applicationContext.getUniqueId.mockReturnValue(
       'b6f835aa-bf95-4996-b858-c8e94566db47',
     );
@@ -180,7 +190,7 @@ describe('completeDocketEntryQCInteractor', () => {
     caseRecord.contactPrimary = {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'test@example.com',
       name: 'Test Petitioner',
       phone: '1234567890',
@@ -289,7 +299,7 @@ describe('completeDocketEntryQCInteractor', () => {
     caseRecord.contactPrimary = {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       name: 'Test Petitioner',
       postalCode: '12345',
       state: 'AK',
@@ -328,7 +338,7 @@ describe('completeDocketEntryQCInteractor', () => {
     caseRecord.contactPrimary = {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       name: 'Test Petitioner',
       postalCode: '12345',
       state: 'AK',
@@ -367,7 +377,7 @@ describe('completeDocketEntryQCInteractor', () => {
     caseRecord.contactPrimary = {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'test@example.com',
       name: 'Test Petitioner',
       postalCode: '12345',

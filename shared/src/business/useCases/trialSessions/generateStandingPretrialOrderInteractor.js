@@ -35,16 +35,14 @@ exports.generateStandingPretrialOrderInteractor = async ({
   const fullStartDate = formatDateString(startDate, 'dddd, MMMM D, YYYY');
   const footerDate = formatNow('MMDDYYYY');
 
-  return await applicationContext
+  const pdfData = await applicationContext
     .getDocumentGenerators()
     .standingPretrialOrder({
       applicationContext,
       data: {
         caseCaptionExtension,
         caseTitle,
-        docketNumberWithSuffix: `${caseDetail.docketNumber}${
-          caseDetail.docketNumberSuffix || ''
-        }`,
+        docketNumberWithSuffix: caseDetail.docketNumberWithSuffix,
         footerDate,
         trialInfo: {
           ...trialSession,
@@ -52,4 +50,9 @@ exports.generateStandingPretrialOrderInteractor = async ({
         },
       },
     });
+
+  return await applicationContext.getUseCaseHelpers().addServedStampToDocument({
+    applicationContext,
+    pdfData,
+  });
 };

@@ -10,8 +10,10 @@ export const caseDetailSubnavHelper = (get, applicationContext) => {
   return {
     showCaseInformationTab:
       isInternalUser || (!isInternalUser && userAssociatedWithCase),
-    showDeadlinesTab: isInternalUser,
-    showInProgressTab: isInternalUser,
+    showCorrespondenceTab: isInternalUser,
+    showDraftsTab: isInternalUser,
+    showMessagesTab: isInternalUser,
     showNotesTab: isInternalUser,
+    showTrackedItemsTab: isInternalUser,
   };
 };

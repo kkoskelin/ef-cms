@@ -29,7 +29,7 @@
       "name": "Selma Horn",
       "state": "DE",
       "countryType": "domestic",
-      "email": "petitioner"
+      "email": "petitioner@example.com"
     },
     "createdAt": "2019-03-01T21:42:29.073Z",
     "receivedAt": "2019-03-01T21:42:29.073Z",
@@ -43,7 +43,7 @@
         "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
         "custom:role": "petitioner",
         "iat": 1551476326,
-        "email": "petitioner",
+        "email": "petitioner@example.com",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0YXhwYXllciIsInNlY3Rpb24iOiJwZXRpdGlvbmVyIiwibmFtZSI6IlRlc3QgUGV0aXRpb25lciIsImN1c3RvbTpyb2xlIjoicGV0aXRpb25lciIsInJvbGUiOiJwZXRpdGlvbmVyIiwiZW1haWwiOiJ0YXhwYXllciIsImlhdCI6MTU1MTQ3NjMyNn0.4oFS9lipN-OViu7SuWmkBrUeZMk8-i4o0XdbDLEkaaU"
       }
     ],
@@ -54,6 +54,7 @@
     "preferredTrialCity": "Boise, Idaho",
     "pk": "case|fa1179bd-04f5-4934-a716-964d8d7babc6",
     "docketNumber": "102-19",
+    "docketNumberWithSuffix": "102-19P",
     "status": "New",
     "hasVerifiedIrsNotice": true,
     "associatedJudge": "Chief Judge"
@@ -65,6 +66,7 @@
     "filedBy": "Test Petitioner",
     "index": 1,
     "docketRecordId": "8ac50e8e-3a86-4340-8383-ae76eaa02f8b",
+    "numberOfPages": 2,
     "pk": "case|fa1179bd-04f5-4934-a716-964d8d7babc6",
     "sk": "docket-record|8ac50e8e-3a86-4340-8383-ae76eaa02f8b"
   },
@@ -83,16 +85,25 @@
   },
   {
     "sk": "case|fa1179bd-04f5-4934-a716-964d8d7babc6",
-    "pk": "user|7805d1ab-18d0-43ec-bafb-654e83405416"
+    "gsi1pk": "user-case|fa1179bd-04f5-4934-a716-964d8d7babc6",
+    "pk": "user|7805d1ab-18d0-43ec-bafb-654e83405416",
+    "caseId": "fa1179bd-04f5-4934-a716-964d8d7babc6",
+    "docketNumberWithSuffix": "102-19P",
+    "docketNumber": "102-19",
+    "status": "New",
+    "createdAt": "2019-03-01T21:40:46.415Z",
+    "caseCaption": "Selma Horn & Cairo Harris, Petitioners",
+    "entityName": "UserCase"
   },
   {
-    "docketNumberSuffix": "P",
+    "docketNumberWithSuffix": "102-19P",
     "caseStatus": "New",
     "caseIsInProgress": false,
     "document": {
       "createdAt": "2019-03-01T21:42:29.073Z",
       "filingDate": "2019-03-01T21:42:29.073Z",
       "documentId": "89c781f6-71ba-4ead-93d8-c681c2183a73",
+      "numberOfPages": 1,
       "documentType": "Petition",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
       "filedBy": "Test Petitioner",
@@ -125,7 +136,7 @@
   {
     "sk": "work-item|4df3fa30-a1ad-45e1-ae1e-05256c538e72",
     "pk": "section|petitions",
-    "docketNumberSuffix": "P",
+    "docketNumberWithSuffix": "102-19P",
     "caseStatus": "New",
     "caseIsInProgress": false,
     "document": {
@@ -133,6 +144,7 @@
       "filingDate": "2019-03-01T21:40:46.415Z",
       "createdAt": "2019-03-01T21:42:29.073Z",
       "documentId": "89c781f6-71ba-4ead-93d8-c681c2183a73",
+      "numberOfPages": 1,
       "documentType": "Petition",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
       "filedBy": "Test Petitioner",
@@ -165,13 +177,14 @@
     "sk": "work-item|4df3fa30-a1ad-45e1-ae1e-05256c538e72",
     "pk": "work-item|4df3fa30-a1ad-45e1-ae1e-05256c538e72",
     "gsi1pk": "work-item|4df3fa30-a1ad-45e1-ae1e-05256c538e72",
-    "docketNumberSuffix": "P",
+    "docketNumberWithSuffix": "102-19P",
     "caseStatus": "New",
     "caseIsInProgress": false,
     "document": {
       "createdAt": "2019-03-01T21:42:29.073Z",
       "filingDate": "2019-03-01T21:42:29.073Z",
       "documentId": "89c781f6-71ba-4ead-93d8-c681c2183a73",
+      "numberOfPages": 1,
       "documentType": "Petition",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
       "filedBy": "Test Petitioner",
@@ -206,6 +219,7 @@
   },
   {
     "documentType": "Petition",
+    "eventCode": "P",
     "entityName": "Document",
     "filingDate": "2019-03-01T21:42:29.073Z",
     "workItems": [
@@ -218,6 +232,7 @@
           "createdAt": "2019-03-01T21:42:29.073Z",
           "documentId": "89c781f6-71ba-4ead-93d8-c681c2183a73",
           "documentTitle": "Petition",
+          "numberOfPages": 1,
           "documentType": "Petition",
           "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
           "filedBy": "Test Petitioner"
@@ -253,11 +268,13 @@
     "filedBy": "Test Petitioner",
     "caseId": "fa1179bd-04f5-4934-a716-964d8d7babc6",
     "sk": "document|89c781f6-71ba-4ead-93d8-c681c2183a73",
+    "numberOfPages": 1,
     "documentId": "89c781f6-71ba-4ead-93d8-c681c2183a73",
     "pk": "case|fa1179bd-04f5-4934-a716-964d8d7babc6"
   },
   {
     "documentType": "Statement of Taxpayer Identification",
+    "eventCode": "STIN",
     "filingDate": "2019-03-05T17:34:13.491Z",
     "workItems": [],
     "pending": false,
@@ -266,6 +283,7 @@
     "createdAt": "2019-03-05T17:34:13.491Z",
     "processingStatus": "complete",
     "filedBy": "Test Petitioner",
+    "numberOfPages": 1,
     "caseId": "fa1179bd-04f5-4934-a716-964d8d7babc6",
     "sk": "document|b1aa4aa2-c214-424c-8870-d0049c5744d8",
     "documentId": "b1aa4aa2-c214-424c-8870-d0049c5744d8",

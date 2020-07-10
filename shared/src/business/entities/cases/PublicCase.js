@@ -1,16 +1,22 @@
 const joi = require('@hapi/joi');
 const {
+  COURT_ISSUED_EVENT_CODES,
+  DOCKET_NUMBER_MATCHER,
+  DOCKET_NUMBER_SUFFIXES,
+  ORDER_TYPES,
+  TRANSCRIPT_EVENT_CODE,
+} = require('../EntityConstants');
+const {
+  JoiValidationConstants,
+} = require('../../../utilities/JoiValidationConstants');
+const {
   joiValidationDecorator,
 } = require('../../../utilities/JoiValidationDecorator');
-const { Document } = require('../Document');
-const { getTimestampSchema } = require('../../../utilities/dateSchema');
+const { compareStrings } = require('../../utilities/sortFunctions');
 const { map } = require('lodash');
-const { Order } = require('../orders/Order');
 const { PublicContact } = require('./PublicContact');
 const { PublicDocketRecordEntry } = require('./PublicDocketRecordEntry');
 const { PublicDocument } = require('./PublicDocument');
-
-const joiStrictTimestamp = getTimestampSchema();
 
 /**
  * Public Case Entity
@@ -25,6 +31,9 @@ function PublicCase(rawCase, { applicationContext }) {
   this.createdAt = rawCase.createdAt;
   this.docketNumber = rawCase.docketNumber;
   this.docketNumberSuffix = rawCase.docketNumberSuffix;
+  this.docketNumberWithSuffix =
+    rawCase.docketNumberWithSuffix ||
+    `${this.docketNumber}${this.docketNumberSuffix || ''}`;
   this.receivedAt = rawCase.receivedAt;
   this.isSealed = !!rawCase.sealedDate;
 
@@ -44,31 +53,38 @@ function PublicCase(rawCase, { applicationContext }) {
   this.documents = (rawCase.documents || [])
     .map(document => new PublicDocument(document, { applicationContext }))
     .filter(document => !isDraftDocument(document, this.docketRecord))
-    .sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1));
+    .sort((a, b) => compareStrings(a.createdAt, b.createdAt));
 }
 
 const publicCaseSchema = {
-  caseCaption: joi.string().optional(),
-  caseId: joi
+  caseCaption: joi.string().max(500).optional(),
+  caseId: JoiValidationConstants.UUID.optional(),
+  createdAt: JoiValidationConstants.ISO_DATE.optional(),
+  docketNumber: joi
     .string()
-    .uuid({
-      version: ['uuidv4'],
-    })
+    .regex(DOCKET_NUMBER_MATCHER)
+    .required()
+    .description('Unique case identifier in XXXXX-YY format.'),
+  docketNumberSuffix: joi
+    .string()
+    .allow(null)
+    .valid(...Object.values(DOCKET_NUMBER_SUFFIXES))
     .optional(),
-  createdAt: joiStrictTimestamp.optional(),
-  docketNumber: joi.string().optional(),
-  docketNumberSuffix: joi.string().allow(null).optional(),
   isSealed: joi.boolean(),
-  receivedAt: joiStrictTimestamp.optional(),
+  receivedAt: JoiValidationConstants.ISO_DATE.optional(),
 };
+
 const sealedCaseSchemaRestricted = {
   caseCaption: joi.any().forbidden(),
-  caseId: joi.string(),
+  caseId: JoiValidationConstants.UUID,
   contactPrimary: joi.any().forbidden(),
   contactSecondary: joi.any().forbidden(),
   createdAt: joi.any().forbidden(),
-  docketNumber: joi.string().required(),
-  docketNumberSuffix: joi.string().optional(),
+  docketNumber: joi.string().regex(DOCKET_NUMBER_MATCHER).required(),
+  docketNumberSuffix: joi
+    .string()
+    .valid(...Object.values(DOCKET_NUMBER_SUFFIXES))
+    .optional(),
   docketRecord: joi.array().max(0),
   documents: joi.array().max(0),
   isSealed: joi.boolean(),
@@ -84,9 +100,9 @@ joiValidationDecorator(
 );
 
 const isDraftDocument = function (document, docketRecord) {
-  const orderDocumentTypes = map(Order.ORDER_TYPES, 'documentType');
+  const orderDocumentTypes = map(ORDER_TYPES, 'documentType');
   const courtIssuedDocumentTypes = map(
-    Document.COURT_ISSUED_EVENT_CODES,
+    COURT_ISSUED_EVENT_CODES,
     'documentType',
   );
 
@@ -106,14 +122,14 @@ const isDraftDocument = function (document, docketRecord) {
 };
 
 const isPrivateDocument = function (document, docketRecord) {
-  const orderDocumentTypes = map(Order.ORDER_TYPES, 'documentType');
+  const orderDocumentTypes = map(ORDER_TYPES, 'documentType');
   const courtIssuedDocumentTypes = map(
-    Document.COURT_ISSUED_EVENT_CODES,
+    COURT_ISSUED_EVENT_CODES,
     'documentType',
   );
 
   const isStipDecision = document.documentType === 'Stipulated Decision';
-  const isTranscript = document.eventCode === Document.TRANSCRIPT_EVENT_CODE;
+  const isTranscript = document.eventCode === TRANSCRIPT_EVENT_CODE;
   const isOrder = orderDocumentTypes.includes(document.documentType);
   const isCourtIssuedDocument = courtIssuedDocumentTypes.includes(
     document.documentType,

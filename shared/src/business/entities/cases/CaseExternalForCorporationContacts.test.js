@@ -1,5 +1,5 @@
 const { CaseExternal } = require('./CaseExternal');
-const { ContactFactory } = require('../contacts/ContactFactory');
+const { COUNTRY_TYPES, PARTY_TYPES } = require('../EntityConstants');
 
 describe('CaseExternal', () => {
   describe('for Corporation Contacts', () => {
@@ -9,10 +9,10 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: ContactFactory.PARTY_TYPES.corporation,
+        partyType: PARTY_TYPES.corporation,
         petitionFile: {},
         petitionFileSize: 1,
-        preferredTrialCity: 'Chattanooga, Tennessee',
+        preferredTrialCity: 'Memphis, Tennessee',
         procedureType: 'Small',
         signature: true,
         stinFile: {},
@@ -28,7 +28,7 @@ describe('CaseExternal', () => {
           address1: '876 12th Ave',
           city: 'Nashville',
           country: 'USA',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'someone@example.com',
           name: 'Jimmy Dean',
           phone: '1234567890',
@@ -38,10 +38,10 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: ContactFactory.PARTY_TYPES.corporation,
+        partyType: PARTY_TYPES.corporation,
         petitionFile: {},
         petitionFileSize: 1,
-        preferredTrialCity: 'Chattanooga, Tennessee',
+        preferredTrialCity: 'Memphis, Tennessee',
         procedureType: 'Small',
         signature: true,
       });
@@ -55,7 +55,7 @@ describe('CaseExternal', () => {
           address1: '876 12th Ave',
           city: 'Nashville',
           country: 'USA',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'someone@example.com',
           inCareOf: 'USTC',
           name: 'Jimmy Dean',
@@ -66,10 +66,10 @@ describe('CaseExternal', () => {
         filingType: 'Myself',
         hasIrsNotice: true,
         irsNoticeDate: '2009-10-13',
-        partyType: ContactFactory.PARTY_TYPES.corporation,
+        partyType: PARTY_TYPES.corporation,
         petitionFile: {},
         petitionFileSize: 1,
-        preferredTrialCity: 'Chattanooga, Tennessee',
+        preferredTrialCity: 'Memphis, Tennessee',
         procedureType: 'Small',
         signature: true,
         stinFile: {},

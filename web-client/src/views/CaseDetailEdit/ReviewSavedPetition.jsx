@@ -1,9 +1,10 @@
-import { AddressDisplay } from '../CaseDetail/PetitionerInformation';
+import { AddressDisplay } from '../CaseDetail/AddressDisplay';
 import { Button } from '../../ustc-ui/Button/Button';
 import { CaseDetailHeader } from '../CaseDetail/CaseDetailHeader';
 import { ConfirmModal } from '../../ustc-ui/Modal/ConfirmModal';
 import { Focus } from '../../ustc-ui/Focus/Focus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FormCancelModalDialog } from '../FormCancelModalDialog';
 import { OrdersNeededSummary } from '../StartCaseInternal/OrdersNeededSummary';
 import { PDFPreviewButton } from '../PDFPreviewButton';
 import { connect } from '@cerebral/react';
@@ -97,11 +98,7 @@ export const ReviewSavedPetition = connect(
                         </span>
                         {form.contactPrimary && (
                           <address aria-labelledby="primary-label">
-                            {AddressDisplay(form.contactPrimary, constants, {
-                              nameOverride:
-                                startCaseHelper.showCaseTitleForPrimary &&
-                                startCaseHelper.caseTitle,
-                            })}
+                            <AddressDisplay contact={form.contactPrimary} />
                           </address>
                         )}
                       </div>
@@ -114,7 +111,7 @@ export const ReviewSavedPetition = connect(
                             >
                               Spouse’s information
                             </span>
-                            {AddressDisplay(form.contactSecondary, constants)}
+                            <AddressDisplay contact={form.contactSecondary} />
                           </>
                         )}
                       </div>
@@ -140,19 +137,13 @@ export const ReviewSavedPetition = connect(
                     <div className="grid-row grid-gap">
                       <div className="tablet:grid-col-6 margin-bottom-05">
                         <div className="margin-bottom-2">
-                          <span
-                            className="usa-label usa-label-display"
-                            htmlFor="filing-type"
-                          >
+                          <span className="usa-label usa-label-display">
                             Date received
                           </span>
                           {reviewSavedPetitionHelper.receivedAtFormatted}
                         </div>
                         <div className="margin-top-3 margin-bottom-2">
-                          <span
-                            className="usa-label usa-label-display"
-                            htmlFor="filing-type"
-                          >
+                          <span className="usa-label usa-label-display">
                             Case caption
                           </span>
                           {form.caseCaption} {constants.CASE_CAPTION_POSTFIX}
@@ -228,34 +219,25 @@ export const ReviewSavedPetition = connect(
                         Edit
                       </Button>
                     </h3>
-                    <div className="grid-row grid-gap">
-                      <div className="tablet:grid-col-4 margin-bottom-1">
+                    <div className="grid-row grid-gap margin-bottom-4">
+                      <div className="grid-col-4">
                         <div>
-                          <span
-                            className="usa-label usa-label-display"
-                            htmlFor="filing-type"
-                          >
+                          <span className="usa-label usa-label-display">
                             Notice attached to petition?
                           </span>
                           {reviewSavedPetitionHelper.hasIrsNoticeFormatted}
                         </div>
-                        <div className="margin-top-3 margin-bottom-2">
-                          <span
-                            className="usa-label usa-label-display"
-                            htmlFor="filing-type"
-                          >
-                            Type of notice/case
-                          </span>
-                          {form.caseType}
-                        </div>
                       </div>
-                      <div className="tablet:grid-col-4 margin-bottom-1">
+                      <div className="grid-col-4">
+                        <span className="usa-label usa-label-display">
+                          Type of notice/case
+                        </span>
+                        {form.caseType}
+                      </div>
+                      <div className="grid-col-4">
                         {reviewSavedPetitionHelper.shouldShowIrsNoticeDate && (
                           <div>
-                            <span
-                              className="usa-label usa-label-display"
-                              htmlFor="filing-type"
-                            >
+                            <span className="usa-label usa-label-display">
                               Date of notice
                             </span>
                             {reviewSavedPetitionHelper.irsNoticeDateFormatted}
@@ -263,6 +245,35 @@ export const ReviewSavedPetition = connect(
                         )}
                       </div>
                     </div>
+                    {reviewSavedPetitionHelper.showStatistics && (
+                      <>
+                        <h4>Statistics</h4>
+                        <table className="usa-table docket-record responsive-table row-border-only">
+                          <thead>
+                            <tr>
+                              <th>Year/Period</th>
+                              <th>Deficiency</th>
+                              <th>Total penalties</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {reviewSavedPetitionHelper.formattedStatistics.map(
+                              (statistic, index) => (
+                                <tr key={index}>
+                                  <td>{statistic.formattedDate}</td>
+                                  <td>
+                                    {statistic.formattedIrsDeficiencyAmount}
+                                  </td>
+                                  <td>
+                                    {statistic.formattedIrsTotalPenalties}
+                                  </td>
+                                </tr>
+                              ),
+                            )}
+                          </tbody>
+                        </table>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -365,6 +376,7 @@ export const ReviewSavedPetition = connect(
             </Button>
             <Button
               link
+              id="cancel-create-case"
               onClick={() => {
                 formCancelToggleCancelSequence();
               }}
@@ -374,6 +386,9 @@ export const ReviewSavedPetition = connect(
           </div>
         </section>
         {showModal == 'ConfirmServeToIrsModal' && <ConfirmServeToIrsModal />}
+        {showModal == 'FormCancelModalDialog' && (
+          <FormCancelModalDialog onCancelSequence="closeModalAndReturnToDocumentQCSequence" />
+        )}
       </>
     );
   },

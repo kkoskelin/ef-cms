@@ -32,6 +32,10 @@ option:first-child {
   }
 }
 
+.add-correspondence-file {
+  align-self: center;
+}
+
 .usa-alert {
   margin-bottom: 2rem;
   &.usa-alert-paragraph {
@@ -88,6 +92,10 @@ option:first-child {
   padding-top: unset;
   padding-bottom: 0;
   margin-top: auto;
+  margin-bottom: 20px;
+}
+
+.margin-bottom-20 {
   margin-bottom: 20px;
 }
 
@@ -303,4 +311,8 @@ textarea {
 input[type='file']::-webkit-file-upload-button {
   -webkit-appearance: initial;
   border-radius: 5px;
+}
+
+.modal-button-link .svg-inline--fa {
+  margin-right: 0.5rem;
 }

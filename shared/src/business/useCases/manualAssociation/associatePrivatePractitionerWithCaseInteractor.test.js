@@ -4,7 +4,11 @@ const {
 const {
   associatePrivatePractitionerWithCaseInteractor,
 } = require('./associatePrivatePractitionerWithCaseInteractor');
-const { User } = require('../../entities/User');
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../../entities/EntityConstants');
 
 describe('associatePrivatePractitionerWithCaseInteractor', () => {
   let caseRecord = {
@@ -14,7 +18,7 @@ describe('associatePrivatePractitionerWithCaseInteractor', () => {
     contactPrimary: {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'fieri@example.com',
       name: 'Guy Fieri',
       phone: '1234567890',
@@ -37,12 +41,14 @@ describe('associatePrivatePractitionerWithCaseInteractor', () => {
         documentId: 'c6b81f4d-1e47-423a-8caf-6d2fdc3d3859',
         documentTitle: 'Petition',
         documentType: 'Petition',
+        eventCode: 'P',
+        filedBy: 'Test Petitioner',
         processingStatus: 'pending',
-        userId: 'petitioner',
+        userId: 'd13d017b-28d1-45b6-aa7d-f54865b0121b',
       },
     ],
     filingType: 'Myself',
-    partyType: 'Petitioner',
+    partyType: PARTY_TYPES.petitioner,
     preferredTrialCity: 'Fresno, California',
     procedureType: 'Regular',
   };
@@ -59,16 +65,16 @@ describe('associatePrivatePractitionerWithCaseInteractor', () => {
 
   it('should add mapping for a practitioner', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      name: 'Olivia Jade',
-      role: User.ROLES.adc,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.adc,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
     applicationContext
       .getPersistenceGateway()
       .getUserById.mockImplementation(() => {
         return {
-          name: 'Olivia Jade',
-          role: User.ROLES.privatePractitioner,
+          name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+          role: ROLES.privatePractitioner,
           userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
         };
       });

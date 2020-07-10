@@ -5,6 +5,8 @@ const {
   isAuthorized,
   ROLE_PERMISSIONS,
 } = require('../../../authorization/authorizationClientService');
+const { Practitioner } = require('../../entities/Practitioner');
+const { ROLES } = require('../../entities/EntityConstants');
 const { UnauthorizedError } = require('../../../errors/errors');
 const { User } = require('../../entities/User');
 
@@ -18,28 +20,40 @@ const { User } = require('../../entities/User');
  */
 exports.createUserInteractor = async ({ applicationContext, user }) => {
   const requestUser = applicationContext.getCurrentUser();
+
   if (!isAuthorized(requestUser, ROLE_PERMISSIONS.CREATE_USER)) {
     throw new UnauthorizedError('Unauthorized');
   }
 
-  let userEntity = user;
+  let userEntity = null;
 
   if (
     [
-      User.ROLES.privatePractitioner,
-      User.ROLES.irsPractitioner,
-      User.ROLES.inactivePractitioner,
+      ROLES.privatePractitioner,
+      ROLES.irsPractitioner,
+      ROLES.inactivePractitioner,
     ].includes(user.role)
   ) {
-    userEntity = await createPractitionerUser({ applicationContext, user });
+    userEntity = new Practitioner(
+      await createPractitionerUser({ applicationContext, user }),
+    );
+  } else {
+    if (user.barNumber === '') {
+      delete user.barNumber;
+    }
+    userEntity = new User(
+      { ...user, userId: applicationContext.getUniqueId() },
+      { applicationContext },
+    );
   }
 
-  const createdUser = await applicationContext
-    .getPersistenceGateway()
-    .createUser({
-      applicationContext,
-      user: userEntity,
-    });
+  await applicationContext.getPersistenceGateway().createUser({
+    applicationContext,
+    user: {
+      ...userEntity.validate().toRawObject(),
+      password: user.password,
+    },
+  });
 
-  return new User(createdUser, { applicationContext }).validate().toRawObject();
+  return userEntity.validate().toRawObject();
 };

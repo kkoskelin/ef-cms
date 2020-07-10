@@ -3,17 +3,19 @@ const {
   calendarDatesCompared,
   createISODateString,
 } = require('./DateHandler');
+const {
+  CASE_STATUS_TYPES,
+  COURT_ISSUED_EVENT_CODES,
+  PAYMENT_STATUS,
+  TRANSCRIPT_EVENT_CODE,
+} = require('../entities/EntityConstants');
 const { Case } = require('../entities/cases/Case');
 const { cloneDeep, isEmpty } = require('lodash');
-const { Document } = require('../entities/Document');
-const { User } = require('../entities/User');
+const { ROLES } = require('../entities/EntityConstants');
 
-const courtIssuedDocumentTypes = Document.COURT_ISSUED_EVENT_CODES.map(
+const courtIssuedDocumentTypes = COURT_ISSUED_EVENT_CODES.map(
   courtIssuedDoc => courtIssuedDoc.documentType,
 );
-
-const formatDocketNumberWithSuffix = caseDetail =>
-  `${caseDetail.docketNumber}${caseDetail.docketNumberSuffix || ''}`;
 
 const formatDocument = (applicationContext, document) => {
   const result = cloneDeep(document);
@@ -39,7 +41,10 @@ const formatDocument = (applicationContext, document) => {
       .getUtilities()
       .formatDateString(result.certificateOfServiceDate, 'MMDDYY');
   }
-
+  if (result.lodged) {
+    result.eventCode = 'MISCL';
+  }
+  result.showLegacySealed = !!result.isLegacySealed;
   result.showServedAt = !!result.servedAt;
   result.isStatusServed = !!result.servedAt;
   result.isPetition =
@@ -61,7 +66,7 @@ const formatDocument = (applicationContext, document) => {
   result.isNotServedCourtIssuedDocument =
     result.isCourtIssuedDocument && !result.servedAt;
 
-  result.isTranscript = result.eventCode === Document.TRANSCRIPT_EVENT_CODE;
+  result.isTranscript = result.eventCode === TRANSCRIPT_EVENT_CODE;
 
   result.qcWorkItemsUntouched =
     !!qcWorkItems.length &&
@@ -73,7 +78,7 @@ const formatDocument = (applicationContext, document) => {
   if (result.servedParties && result.servedParties.length > 0) {
     if (
       result.servedParties.length === 1 &&
-      result.servedParties[0].role === User.ROLES.irsSuperuser
+      result.servedParties[0].role === ROLES.irsSuperuser
     ) {
       result.servedPartiesCode = 'R';
     } else {
@@ -98,7 +103,7 @@ const formatDocketRecord = (applicationContext, docketRecord) => {
 
 const TRANSCRIPT_AGE_DAYS_MIN = 90;
 const documentMeetsAgeRequirements = document => {
-  const transcriptCodes = [Document.TRANSCRIPT_EVENT_CODE];
+  const transcriptCodes = [TRANSCRIPT_EVENT_CODE];
   const isTranscript = transcriptCodes.includes(document.eventCode);
   if (!isTranscript) return true;
   const availableOnDate = calculateISODate({
@@ -247,7 +252,7 @@ const formatCase = (applicationContext, caseDetail) => {
       editUrl:
         document.documentType === 'Stipulated Decision'
           ? `/case-detail/${caseDetail.docketNumber}/documents/${document.documentId}/sign`
-          : document.documentType === 'MISC - Miscellaneous'
+          : document.documentType === 'Miscellaneous'
           ? `/case-detail/${caseDetail.docketNumber}/edit-upload-court-issued/${document.documentId}`
           : `/case-detail/${caseDetail.docketNumber}/edit-order/${document.documentId}`,
       signUrl:
@@ -262,6 +267,13 @@ const formatCase = (applicationContext, caseDetail) => {
         .formatDateString(document.signedAt, 'DATE_TIME_TZ'),
     }));
 
+  if (result.correspondence && result.correspondence.length) {
+    result.correspondence.forEach(doc => {
+      doc.formattedFilingDate = applicationContext
+        .getUtilities()
+        .formatDateString(doc.filingDate, 'MMDDYY');
+    });
+  }
   // establish an initial sort by ascending index
   result.docketRecordWithDocument.sort((a, b) => {
     return a.index - b.index;
@@ -293,8 +305,6 @@ const formatCase = (applicationContext, caseDetail) => {
     .getUtilities()
     .formatDateString(result.receivedAt, 'MMDDYY');
 
-  result.docketNumberWithSuffix = formatDocketNumberWithSuffix(caseDetail);
-
   result.irsNoticeDateFormatted = result.irsNoticeDate
     ? applicationContext
         .getUtilities()
@@ -307,15 +317,11 @@ const formatCase = (applicationContext, caseDetail) => {
     caseDetail.caseCaption || '',
   );
 
-  result.showCaseTitleForPrimary = !(
-    caseDetail.contactSecondary && caseDetail.contactSecondary.name
-  );
-
   result.formattedPreferredTrialCity =
     result.preferredTrialCity || 'No location selected';
 
-  if (result.trialSessionId && result.status !== Case.STATUS_TYPES.closed) {
-    if (result.status === Case.STATUS_TYPES.calendared) {
+  if (result.trialSessionId && result.status !== CASE_STATUS_TYPES.closed) {
+    if (result.status === CASE_STATUS_TYPES.calendared) {
       result.showTrialCalendared = true;
     } else {
       result.showScheduled = true;
@@ -372,12 +378,12 @@ const formatCase = (applicationContext, caseDetail) => {
 
   let paymentDate = '';
   let paymentMethod = '';
-  if (caseDetail.petitionPaymentStatus === Case.PAYMENT_STATUS.PAID) {
+  if (caseDetail.petitionPaymentStatus === PAYMENT_STATUS.PAID) {
     paymentDate = applicationContext
       .getUtilities()
       .formatDateString(caseDetail.petitionPaymentDate, 'MM/DD/YY');
     paymentMethod = caseDetail.petitionPaymentMethod;
-  } else if (caseDetail.petitionPaymentStatus === Case.PAYMENT_STATUS.WAIVED) {
+  } else if (caseDetail.petitionPaymentStatus === PAYMENT_STATUS.WAIVED) {
     paymentDate = applicationContext
       .getUtilities()
       .formatDateString(caseDetail.petitionPaymentWaivedDate, 'MM/DD/YY');
@@ -461,7 +467,6 @@ module.exports = {
   documentMeetsAgeRequirements,
   formatCase,
   formatCaseDeadlines,
-  formatDocketNumberWithSuffix,
   formatDocketRecord,
   formatDocketRecordWithDocument,
   formatDocument,

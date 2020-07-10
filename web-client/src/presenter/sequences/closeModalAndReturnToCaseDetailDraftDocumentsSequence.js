@@ -1,15 +1,15 @@
 import { clearModalAction } from '../actions/clearModalAction';
 import { navigateToCaseDetailAction } from '../actions/navigateToCaseDetailAction';
-import { setCaseDetailPageTabAction } from '../actions/setCaseDetailPageTabAction';
+import { setCaseDetailPageTabActionGenerator } from '../actions/setCaseDetailPageTabActionGenerator';
 import { setCaseDetailPageTabFrozenAction } from '../actions/CaseDetail/setCaseDetailPageTabFrozenAction';
 import { setCasePropFromStateAction } from '../actions/setCasePropFromStateAction';
-import { setTabToInProgressAction } from '../actions/editUploadCourtIssuedDocument/setTabToInProgressAction';
+import { setIsPrimaryTabAction } from '../actions/setIsPrimaryTabAction';
 
 export const closeModalAndReturnToCaseDetailDraftDocumentsSequence = [
   clearModalAction,
   setCasePropFromStateAction,
-  setTabToInProgressAction,
-  setCaseDetailPageTabAction,
+  setCaseDetailPageTabActionGenerator('drafts'),
+  setIsPrimaryTabAction,
   setCaseDetailPageTabFrozenAction,
   navigateToCaseDetailAction,
 ];

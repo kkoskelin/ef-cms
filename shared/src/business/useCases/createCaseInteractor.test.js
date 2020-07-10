@@ -1,5 +1,9 @@
+const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../entities/EntityConstants');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { ContactFactory } = require('../entities/contacts/ContactFactory');
 const { createCaseInteractor } = require('./createCaseInteractor');
 const { User } = require('../entities/User');
 
@@ -9,7 +13,7 @@ describe('createCaseInteractor', () => {
   beforeEach(() => {
     user = new User({
       name: 'Test Petitioner',
-      role: User.ROLES.petitioner,
+      role: ROLES.petitioner,
       userId: '6805d1ab-18d0-43ec-bafb-654e83405416',
     });
 
@@ -39,7 +43,7 @@ describe('createCaseInteractor', () => {
           caseType: 'Other',
           filingType: 'Myself',
           hasIrsNotice: true,
-          partyType: ContactFactory.PARTY_TYPES.petitioner,
+          partyType: PARTY_TYPES.petitioner,
           preferredTrialCity: 'Fresno, California',
           procedureType: 'Small',
         },
@@ -65,7 +69,7 @@ describe('createCaseInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -75,7 +79,7 @@ describe('createCaseInteractor', () => {
         contactSecondary: {},
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: new File([], 'test.pdf'),
         petitionFileSize: 1,
         preferredTrialCity: 'Fresno, California',
@@ -90,6 +94,9 @@ describe('createCaseInteractor', () => {
     expect(result).toBeDefined();
     expect(applicationContext.getPersistenceGateway().createCase).toBeCalled();
     expect(
+      applicationContext.getPersistenceGateway().associateUserWithCase,
+    ).toBeCalled();
+    expect(
       applicationContext.getPersistenceGateway().saveWorkItemForNonPaper,
     ).toBeCalled();
   });
@@ -97,7 +104,7 @@ describe('createCaseInteractor', () => {
   it('should create a case successfully as a practitioner', async () => {
     user = new User({
       name: 'Mister Peanutbutter',
-      role: User.ROLES.privatePractitioner,
+      role: ROLES.privatePractitioner,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -112,7 +119,7 @@ describe('createCaseInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -122,7 +129,7 @@ describe('createCaseInteractor', () => {
         contactSecondary: {},
         filingType: 'Myself',
         hasIrsNotice: true,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         petitionFile: new File([], 'test.pdf'),
         petitionFileSize: 1,
         preferredTrialCity: 'Fresno, California',
@@ -148,7 +155,7 @@ describe('createCaseInteractor', () => {
   it('should create a case with contact primary and secondary successfully as a practitioner', async () => {
     user = new User({
       name: 'Carole Baskin',
-      role: User.ROLES.privatePractitioner,
+      role: ROLES.privatePractitioner,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     });
 
@@ -163,7 +170,7 @@ describe('createCaseInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner1@example.com',
           name: 'Diana Prince',
           phone: '+1 (215) 128-6587',
@@ -175,7 +182,7 @@ describe('createCaseInteractor', () => {
           address2: 'Culpa numquam saepe ',
           address3: 'Eaque voluptates com',
           city: 'Dignissimos voluptat',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           name: 'Bob Prince',
           phone: '+1 (215) 128-6587',
           postalCode: '69580',
@@ -184,7 +191,7 @@ describe('createCaseInteractor', () => {
         filingType: 'Myself and my spouse',
         hasIrsNotice: true,
         isSpouseDeceased: 'No',
-        partyType: ContactFactory.PARTY_TYPES.petitionerSpouse,
+        partyType: PARTY_TYPES.petitionerSpouse,
         petitionFile: new File([], 'test.pdf'),
         petitionFileSize: 1,
         preferredTrialCity: 'Fresno, California',

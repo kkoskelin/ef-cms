@@ -20,7 +20,11 @@ export const uploadExternalDocumentsAction = async ({
   const { caseId, docketNumber } = get(state.caseDetail);
   const form = get(state.form);
 
-  const documentMetadata = { ...form, caseId, docketNumber };
+  const documentMetadata = {
+    ...form,
+    caseId,
+    docketNumber,
+  };
 
   const documentFiles = {
     primary: form.primaryDocumentFile,
@@ -78,7 +82,8 @@ export const uploadExternalDocumentsAction = async ({
 
   return path.success({
     caseDetail,
-    caseId: docketNumber,
+    caseId,
+    docketNumber,
     documentsFiled: documentMetadata,
   });
 };

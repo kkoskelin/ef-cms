@@ -13,12 +13,8 @@ resource "aws_cognito_user_pool" "pool" {
 
   sms_authentication_message = "{####}"
 
-  lifecycle {
-    prevent_destroy = true
-  }
-
   lambda_config {
-    post_confirmation = "${aws_lambda_function.cognito_post_confirmation_lambda.arn}"
+    post_confirmation = aws_lambda_function.cognito_post_confirmation_lambda.arn
   }
 
   admin_create_user_config {
@@ -93,12 +89,12 @@ resource "aws_cognito_user_pool_client" "client" {
   allowed_oauth_scopes         = ["email", "openid", "profile", "phone", "aws.cognito.signin.user.admin"]
   supported_identity_providers = ["COGNITO"]
 
-  user_pool_id = "${aws_cognito_user_pool.pool.id}"
+  user_pool_id = aws_cognito_user_pool.pool.id
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
   domain       = "auth-${var.environment}-${var.cognito_suffix}"
-  user_pool_id = "${aws_cognito_user_pool.pool.id}"
+  user_pool_id = aws_cognito_user_pool.pool.id
 }
 
 resource "aws_cognito_user_pool" "irs_pool" {
@@ -108,11 +104,6 @@ resource "aws_cognito_user_pool" "irs_pool" {
 
   software_token_mfa_configuration {
     enabled = true
-  }
-
-  device_configuration {
-    challenge_required_on_new_device = true
-    device_only_remembered_on_user_prompt = false
   }
 
   auto_verified_attributes = ["email"]
@@ -127,12 +118,8 @@ resource "aws_cognito_user_pool" "irs_pool" {
 
   sms_authentication_message = "{####}"
 
-  lifecycle {
-    prevent_destroy = true
-  }
-
   lambda_config {
-    post_confirmation = "${aws_lambda_function.cognito_post_confirmation_lambda.arn}"
+    post_confirmation = aws_lambda_function.cognito_post_confirmation_lambda.arn
   }
 
   admin_create_user_config {
@@ -207,10 +194,10 @@ resource "aws_cognito_user_pool_client" "irs_client" {
   allowed_oauth_scopes         = ["email", "openid", "profile", "phone", "aws.cognito.signin.user.admin"]
   supported_identity_providers = ["COGNITO"]
 
-  user_pool_id = "${aws_cognito_user_pool.irs_pool.id}"
+  user_pool_id = aws_cognito_user_pool.irs_pool.id
 }
 
 resource "aws_cognito_user_pool_domain" "irs" {
   domain       = "auth-irs-${var.environment}-${var.cognito_suffix}"
-  user_pool_id = "${aws_cognito_user_pool.irs_pool.id}"
+  user_pool_id = aws_cognito_user_pool.irs_pool.id
 }

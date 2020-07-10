@@ -1,13 +1,11 @@
-const { Case } = require('../../entities/cases/Case');
-const { Message } = require('../../entities/Message');
-const { WorkItem } = require('../../entities/WorkItem');
-
 const {
   isAuthorized,
   ROLE_PERMISSIONS,
 } = require('../../../authorization/authorizationClientService');
-
+const { Case } = require('../../entities/cases/Case');
+const { Message } = require('../../entities/Message');
 const { UnauthorizedError } = require('../../../errors/errors');
+const { WorkItem } = require('../../entities/WorkItem');
 
 /**
  * createWorkItemInteractor
@@ -76,7 +74,7 @@ exports.createWorkItemInteractor = async ({
       caseStatus: theCase.status,
       caseTitle: Case.getCaseTitle(Case.getCaseCaption(caseEntity)),
       docketNumber: theCase.docketNumber,
-      docketNumberSuffix: theCase.docketNumberSuffix,
+      docketNumberWithSuffix: theCase.docketNumberWithSuffix,
       document: {
         createdAt: document.createdAt,
         documentId: document.documentId,

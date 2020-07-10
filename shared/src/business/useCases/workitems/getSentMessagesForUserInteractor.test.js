@@ -4,8 +4,8 @@ const {
 const {
   getSentMessagesForUserInteractor,
 } = require('./getSentMessagesForUserInteractor');
+const { ROLES } = require('../../entities/EntityConstants');
 const { UnauthorizedError } = require('../../../errors/errors');
-const { User } = require('../../entities/User');
 
 describe('getSentMessagesForUserInteractor', () => {
   let user;
@@ -14,7 +14,7 @@ describe('getSentMessagesForUserInteractor', () => {
     {
       caseId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
       docketNumber: '101-18',
-      docketNumberSuffix: 'S',
+      docketNumberWithSuffix: '101-18S',
       document: { sentBy: 'petitioner' },
       isQC: false,
       messages: [],
@@ -24,18 +24,18 @@ describe('getSentMessagesForUserInteractor', () => {
     {
       caseId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
       docketNumber: '101-18',
-      docketNumberSuffix: 'S',
+      docketNumberWithSuffix: '101-18S',
       document: { sentBy: 'petitioner' },
       isQC: false,
       messages: [],
-      section: 'irsBatchSection',
+      section: 'docket',
       sentBy: 'docketclerk',
     },
   ];
 
   beforeEach(() => {
     user = {
-      role: User.ROLES.petitionsClerk,
+      role: ROLES.petitionsClerk,
       userId: 'petitionsclerk',
     };
     applicationContext.getCurrentUser.mockReturnValue(user);
@@ -43,7 +43,7 @@ describe('getSentMessagesForUserInteractor', () => {
 
   it('throws an error if the user does not have access to the work item', async () => {
     user = {
-      role: User.ROLES.petitioner,
+      role: ROLES.petitioner,
       userId: 'petitioner',
     };
     applicationContext.getCurrentUser.mockReturnValue(user);

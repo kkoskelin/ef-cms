@@ -22,8 +22,101 @@
       "name": "Bill Burr",
       "state": "PA",
       "countryType": "domestic",
-      "email": "petitioner"
+      "email": "petitioner@example.com"
     },
+    "otherPetitioners": [
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Rachael Ray",
+        "additionalName": "Rachael Ray",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Guy Fieri",
+        "additionalName": "Guy Fieri",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Bobby Flay",
+        "additionalName": "Bobby Flay",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Kid Rock",
+        "additionalName": "Kid Rock",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Bill Burr",
+        "additionalName": "Bill Burr",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Bill Burr",
+        "additionalName": "Bill Burr",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      },
+      {
+        "city": "Philadelphia",
+        "phone": "1234567890",
+        "serviceIndicator": "None",
+        "address1": "453 Electric Ave",
+        "postalCode": "99999",
+        "name": "Bill Burr",
+        "additionalName": "Bill Burr",
+        "state": "PA",
+        "countryType": "domestic",
+        "email": "mayor@flavortown.gov",
+        "title": "Petitioner"
+      }
+    ],
     "createdAt": "2020-01-02T16:05:45.978Z",
     "noticeOfAttachments": false,
     "trialTime": "10:00",
@@ -36,7 +129,6 @@
     "initialDocketNumberSuffix": "S",
     "trialSessionId": "959c4338-0fac-42eb-b0eb-d53b8d0195cc",
     "docketNumberSuffix": "S",
-    "orderToChangeDesignatedPlaceOfTrial": false,
     "trialDate": "2020-11-27T05:00:00.000Z",
     "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "orderForAmendedPetition": false,
@@ -46,6 +138,7 @@
     "orderForAmendedPetitionAndFilingFee": false,
     "pk": "case|0bc59d5b-c2b9-41f7-92a7-03b8cadffcc0",
     "docketNumber": "101-20",
+    "docketNumberWithSuffix": "101-20S",
     "status": "Calendared"
   },
   {
@@ -64,6 +157,7 @@
     "eventCode": "P",
     "index": 1,
     "documentId": "cb323daf-c541-4645-bb44-232255d03d40",
+    "numberOfPages": 1,
     "filingDate": "2020-01-02T16:05:45.979Z",
     "filedBy": "Petr. Bill Burr"
   },
@@ -94,6 +188,7 @@
     "sk": "document|0048b9e5-15e8-4315-8b9c-8a2e181205e4",
     "partySecondary": false,
     "documentId": "0048b9e5-15e8-4315-8b9c-8a2e181205e4",
+    "numberOfPages": 1,
     "pk": "case|0bc59d5b-c2b9-41f7-92a7-03b8cadffcc0"
   },
   {
@@ -119,6 +214,7 @@
           "pending": false,
           "partySecondary": false,
           "documentId": "cb323daf-c541-4645-bb44-232255d03d40",
+          "numberOfPages": 1,
           "receivedAt": "2020-01-02T16:05:45.979Z",
           "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
         },
@@ -128,7 +224,8 @@
         "isInitializeCase": true,
         "assigneeId": null,
         "isQC": true,
-        "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+        "sentBy": "Test Petitioner",
+        "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
         "createdAt": "2020-01-02T16:05:45.979Z",
         "assigneeName": null,
         "caseId": "0bc59d5b-c2b9-41f7-92a7-03b8cadffcc0",
@@ -155,6 +252,7 @@
     "caseId": "0bc59d5b-c2b9-41f7-92a7-03b8cadffcc0",
     "sk": "document|cb323daf-c541-4645-bb44-232255d03d40",
     "partySecondary": false,
+    "numberOfPages": 1,
     "documentId": "cb323daf-c541-4645-bb44-232255d03d40",
     "pk": "case|0bc59d5b-c2b9-41f7-92a7-03b8cadffcc0"
   }

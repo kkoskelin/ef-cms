@@ -1,3 +1,4 @@
+import { formatStatistic } from './statisticsHelper';
 import { state } from 'cerebral';
 
 export const reviewSavedPetitionHelper = (get, applicationContext) => {
@@ -13,6 +14,7 @@ export const reviewSavedPetitionHelper = (get, applicationContext) => {
     petitionPaymentWaivedDate,
     preferredTrialCity,
     receivedAt,
+    statistics,
     ...caseDetail
   } = get(state.form);
 
@@ -45,7 +47,7 @@ export const reviewSavedPetitionHelper = (get, applicationContext) => {
         .formatDateString(petitionPaymentWaivedDate, 'MMDDYY')}`;
       break;
     default:
-      petitionPaymentStatusFormatted = 'Not paid';
+      petitionPaymentStatusFormatted = PAYMENT_STATUS.UNPAID;
   }
 
   const preferredTrialCityFormatted = preferredTrialCity
@@ -87,8 +89,15 @@ export const reviewSavedPetitionHelper = (get, applicationContext) => {
       INITIAL_DOCUMENT_TYPES.applicationForWaiverOfFilingFee.documentType
     ];
 
+  const showStatistics = statistics && statistics.length > 0;
+
+  const formattedStatistics = (statistics || []).map(statistic =>
+    formatStatistic({ applicationContext, statistic }),
+  );
+
   return {
     applicationForWaiverOfFilingFeeFile,
+    formattedStatistics,
     hasIrsNoticeFormatted,
     hasOrders,
     irsNoticeDateFormatted,
@@ -99,6 +108,7 @@ export const reviewSavedPetitionHelper = (get, applicationContext) => {
     receivedAtFormatted,
     requestForPlaceOfTrialFile,
     shouldShowIrsNoticeDate,
+    showStatistics,
     stinFile,
   };
 };

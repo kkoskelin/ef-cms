@@ -1,13 +1,16 @@
 const {
+  ORDER_EVENT_CODES,
+  ROLES,
+} = require('../../business/entities/EntityConstants');
+const {
   orderAdvancedSearchInteractor,
 } = require('./orderAdvancedSearchInteractor');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { Document } = require('../../business/entities/Document');
 
 describe('orderAdvancedSearchInteractor', () => {
   beforeEach(() => {
     applicationContext.getCurrentUser.mockReturnValue({
-      role: 'petitionsclerk',
+      role: ROLES.petitionsClerk,
     });
 
     applicationContext
@@ -39,7 +42,7 @@ describe('orderAdvancedSearchInteractor', () => {
 
   it('returns an unauthorized error on petitioner user role', async () => {
     applicationContext.getCurrentUser.mockReturnValue({
-      role: 'petitioner',
+      role: ROLES.petitioner,
     });
 
     await expect(
@@ -92,7 +95,7 @@ describe('orderAdvancedSearchInteractor', () => {
       applicationContext.getPersistenceGateway().advancedDocumentSearch.mock
         .calls[0][0],
     ).toMatchObject({
-      documentEventCodes: Document.ORDER_DOCUMENT_TYPES,
+      documentEventCodes: ORDER_EVENT_CODES,
     });
   });
 });

@@ -9,6 +9,7 @@ exports.getNextFriendForMinorContact = ContactFactory.createContactFactory({
     secondaryName: 'Enter name of next friend',
   },
   additionalValidation: {
-    secondaryName: joi.string().required(),
+    secondaryName: joi.string().max(500).required(),
   },
+  contactName: 'NextFriendForMinorContact',
 });

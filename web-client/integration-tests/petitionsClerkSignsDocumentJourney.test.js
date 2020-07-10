@@ -6,6 +6,7 @@ import { petitionerViewsDashboard } from './journey/petitionerViewsDashboard';
 import { petitionsClerkAddsOrderToCase } from './journey/petitionsClerkAddsOrderToCase';
 import { petitionsClerkAppliesSignatureToDraftDocument } from './journey/petitionsClerkAppliesSignatureToDraftDocument';
 import { petitionsClerkClearsSignatureFromDraftDocument } from './journey/petitionsClerkClearsSignatureFromDraftDocument';
+import { petitionsClerkNavigatesBackAfterViewSignDraftDocument } from './journey/petitionsClerkNavigatesBackAfterViewSignDraftDocument';
 import { petitionsClerkRemovesSignatureFromDraftDocument } from './journey/petitionsClerkRemovesSignatureFromDraftDocument';
 import { petitionsClerkSavesSignatureForDraftDocument } from './journey/petitionsClerkSavesSignatureForDraftDocument';
 import { petitionsClerkViewsCaseDetail } from './journey/petitionsClerkViewsCaseDetail';
@@ -28,13 +29,13 @@ describe('Petitions Clerk Create Order Journey', () => {
     };
   });
 
-  loginAs(test, 'petitioner');
+  loginAs(test, 'petitioner@example.com');
   petitionerChoosesProcedureType(test);
   petitionerChoosesCaseType(test);
   petitionerCreatesNewCase(test, fakeFile);
   petitionerViewsDashboard(test);
 
-  loginAs(test, 'petitionsclerk');
+  loginAs(test, 'petitionsclerk@example.com');
   petitionsClerkViewsCaseDetail(test);
   petitionsClerkViewsDraftDocuments(test);
   petitionsClerkAddsOrderToCase(test);
@@ -45,7 +46,11 @@ describe('Petitions Clerk Create Order Journey', () => {
   petitionsClerkAppliesSignatureToDraftDocument(test);
   petitionsClerkClearsSignatureFromDraftDocument(test);
   petitionsClerkAppliesSignatureToDraftDocument(test);
-  petitionsClerkSavesSignatureForDraftDocument(test);
+  petitionsClerkSavesSignatureForDraftDocument(
+    test,
+    'Order of Dismissal and Decision updated.',
+  );
   petitionsClerkViewsDocumentDetail(test);
+  petitionsClerkNavigatesBackAfterViewSignDraftDocument(test);
   petitionsClerkRemovesSignatureFromDraftDocument(test);
 });

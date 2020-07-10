@@ -16,15 +16,6 @@ describe('getPdfUrlAction', () => {
     };
   });
 
-  it('throws error if htmlString is empty', async () => {
-    await expect(
-      runAction(getPdfUrlAction, {
-        props: { htmlString: '' },
-        state: {},
-      }),
-    ).rejects.toThrow();
-  });
-
   it('gets the pdf file url for a court issued document', async () => {
     const mockPdf = { url: 'www.example.com' };
     applicationContextForClient
@@ -35,17 +26,34 @@ describe('getPdfUrlAction', () => {
       modules: {
         presenter,
       },
-      props: { htmlString: '<p>hi</p>' },
-      state: {},
+      props: {
+        contentHtml: '<p>hi</p>',
+        documentTitle: 'Test Title',
+        signatureText: 'Test Signature',
+      },
+      state: {
+        caseDetail: {
+          caseId: '123',
+        },
+      },
     });
 
     expect(
       applicationContextForClient.getUseCases()
         .createCourtIssuedOrderPdfFromHtmlInteractor,
     ).toBeCalled();
-    expect(
-      applicationContextForClient.getUtilities().formatDocketNumberWithSuffix,
-    ).toBeCalled();
     expect(result.output.pdfUrl).toBe(mockPdf.url);
+
+    const args = applicationContextForClient.getUseCases()
+      .createCourtIssuedOrderPdfFromHtmlInteractor.mock.calls[0][0];
+
+    expect(args).toEqual(
+      expect.objectContaining({
+        caseId: '123',
+        contentHtml: '<p>hi</p>',
+        documentTitle: 'Test Title',
+        signatureText: 'Test Signature',
+      }),
+    );
   });
 });

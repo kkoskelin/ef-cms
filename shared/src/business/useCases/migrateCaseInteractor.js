@@ -36,12 +36,55 @@ exports.migrateCaseInteractor = async ({
     },
   );
 
-  caseToAdd.caseCaption = Case.getCaseCaption(caseToAdd);
+  for (const privatePractitioner of caseToAdd.privatePractitioners) {
+    const practitioner = await applicationContext
+      .getPersistenceGateway()
+      .getPractitionerByBarNumber({
+        applicationContext,
+        barNumber: privatePractitioner.barNumber,
+      });
+
+    privatePractitioner.userId = practitioner
+      ? practitioner.userId
+      : applicationContext.getUniqueId();
+  }
+
+  for (const irsPractitioner of caseToAdd.irsPractitioners) {
+    const practitioner = await applicationContext
+      .getPersistenceGateway()
+      .getPractitionerByBarNumber({
+        applicationContext,
+        barNumber: irsPractitioner.barNumber,
+      });
+
+    irsPractitioner.userId = practitioner
+      ? practitioner.userId
+      : applicationContext.getUniqueId();
+  }
+
+  const caseValidatedRaw = caseToAdd.validate().toRawObject();
 
   await applicationContext.getPersistenceGateway().createCase({
     applicationContext,
-    caseToCreate: caseToAdd.validate().toRawObject(),
+    caseToCreate: caseValidatedRaw,
   });
 
-  return new Case(caseToAdd, { applicationContext }).toRawObject();
+  for (const correspondenceEntity of caseToAdd.correspondence) {
+    await applicationContext.getPersistenceGateway().fileCaseCorrespondence({
+      applicationContext,
+      caseId: caseToAdd.caseId,
+      correspondence: correspondenceEntity.validate().toRawObject(),
+    });
+  }
+
+  // when part of a consolidated case, run the update use case
+  // which will link the cases together in DynamoDB
+  if (caseToAdd.leadCaseId) {
+    await applicationContext.getPersistenceGateway().updateCase({
+      applicationContext,
+      caseToUpdate: caseValidatedRaw,
+    });
+  }
+
+  return caseValidatedRaw;
 };

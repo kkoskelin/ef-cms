@@ -1,4 +1,4 @@
-import { Case } from '../../../shared/src/business/entities/cases/Case';
+import { CASE_STATUS_TYPES } from '../../../shared/src/business/entities/EntityConstants';
 import { refreshElasticsearchIndex } from '../helpers';
 
 export const petitionsClerkBlocksCase = (test, trialLocation) => {
@@ -42,10 +42,10 @@ export const petitionsClerkBlocksCase = (test, trialLocation) => {
           blocked: true,
           blockedReason: 'just because',
           caseCaption:
-            'Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons, Deceased, Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons, Surviving Spouse, Petitioner',
+            'Daenerys Stormborn, Deceased, Daenerys Stormborn, Surviving Spouse, Petitioner',
           docketNumber: test.docketNumber,
           docketNumberSuffix: 'S',
-          status: Case.STATUS_TYPES.generalDocketReadyForTrial,
+          status: CASE_STATUS_TYPES.generalDocketReadyForTrial,
         }),
       ]),
     );

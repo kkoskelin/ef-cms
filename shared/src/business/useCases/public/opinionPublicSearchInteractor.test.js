@@ -2,9 +2,13 @@ const {
   applicationContext,
 } = require('../../test/createTestApplicationContext');
 const {
+  COUNTRY_TYPES,
+  OPINION_EVENT_CODES,
+  SERVICE_INDICATOR_TYPES,
+} = require('../../entities/EntityConstants');
+const {
   opinionPublicSearchInteractor,
 } = require('./opinionPublicSearchInteractor');
-const { Document } = require('../../entities/Document');
 
 describe('opinionPublicSearchInteractor', () => {
   const mockOpinionSearchResult = [
@@ -16,12 +20,12 @@ describe('opinionPublicSearchInteractor', () => {
         address2: 'Ut culpa cum sint ',
         address3: 'In laboris hic volup',
         city: 'Omnis dignissimos at',
-        countryType: 'domestic',
+        countryType: COUNTRY_TYPES.DOMESTIC,
         email: 'petitioner',
         name: 'Reuben Blair',
         phone: '+1 (338) 996-7072',
         postalCode: '92017',
-        serviceIndicator: 'Electronic',
+        serviceIndicator: SERVICE_INDICATOR_TYPES.SI_ELECTRONIC,
         state: 'DC',
       },
       contactSecondary: {},
@@ -54,7 +58,7 @@ describe('opinionPublicSearchInteractor', () => {
       applicationContext.getPersistenceGateway().advancedDocumentSearch.mock
         .calls[0][0],
     ).toMatchObject({
-      documentEventCodes: Document.OPINION_DOCUMENT_TYPES,
+      documentEventCodes: OPINION_EVENT_CODES,
     });
   });
 

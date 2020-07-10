@@ -38,8 +38,9 @@ export const DocketRecord = connect(
               <th>Date</th>
               <th className="center-column">Event</th>
               <th aria-hidden="true" className="icon-column" />
-              <th>Filings and proceedings</th>
-              <th>Filed by</th>
+              <th>Filings and Proceedings</th>
+              <th>Pages</th>
+              <th>Filed By</th>
               <th>Action</th>
               <th>Served</th>
               <th className="center-column">Parties</th>
@@ -52,8 +53,8 @@ export const DocketRecord = connect(
                 return (
                   <tr
                     className={classNames(
-                      entry.showInProgress && 'in-progress',
-                      entry.showQcUntouched && 'qc-untouched',
+                      entry.isInProgress && 'in-progress',
+                      entry.qcWorkItemsUntouched && 'qc-untouched',
                     )}
                     key={entry.index}
                   >
@@ -61,7 +62,12 @@ export const DocketRecord = connect(
                       {entry.index}
                     </td>
                     <td>
-                      <span className="no-wrap">
+                      <span
+                        className={classNames(
+                          entry.isStricken && 'stricken-docket-record',
+                          'no-wrap',
+                        )}
+                      >
                         {entry.createdAtFormatted}
                       </span>
                     </td>
@@ -73,21 +79,31 @@ export const DocketRecord = connect(
                       className="filing-type-icon hide-on-mobile"
                     >
                       {entry.isPaper && (
-                        <FontAwesomeIcon icon={['fas', 'file-alt']} />
+                        <FontAwesomeIcon
+                          icon={['fas', 'file-alt']}
+                          title="is paper"
+                        />
                       )}
 
-                      {entry.showInProgress && (
-                        <FontAwesomeIcon icon={['fas', 'thumbtack']} />
+                      {entry.isInProgress && (
+                        <FontAwesomeIcon
+                          icon={['fas', 'thumbtack']}
+                          title="in progress"
+                        />
                       )}
 
-                      {entry.showQcUntouched && (
-                        <FontAwesomeIcon icon={['fa', 'star']} />
+                      {entry.qcWorkItemsUntouched && (
+                        <FontAwesomeIcon
+                          icon={['fa', 'star']}
+                          title="is untouched"
+                        />
                       )}
 
                       {entry.showLoadingIcon && (
                         <FontAwesomeIcon
                           className="fa-spin spinner"
                           icon="spinner"
+                          title="is loading"
                         />
                       )}
                     </td>
@@ -96,6 +112,9 @@ export const DocketRecord = connect(
                         arrayIndex={arrayIndex}
                         entry={entry}
                       />
+                    </td>
+                    <td className="hide-on-mobile number-of-pages">
+                      {entry.numberOfPages}
                     </td>
                     <td className="hide-on-mobile">{entry.filedBy}</td>
                     <td className="hide-on-mobile">{entry.action}</td>

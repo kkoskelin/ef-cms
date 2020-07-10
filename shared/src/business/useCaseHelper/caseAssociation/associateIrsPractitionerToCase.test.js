@@ -4,12 +4,15 @@ const {
 const {
   associateIrsPractitionerToCase,
 } = require('./associateIrsPractitionerToCase');
+
 const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
   SERVICE_INDICATOR_TYPES,
-} = require('../../entities/cases/CaseConstants');
+} = require('../../entities/EntityConstants');
 const { MOCK_CASE } = require('../../../test/mockCase.js');
 const { MOCK_USERS } = require('../../../test/mockUsers');
-const { User } = require('../../entities/User');
 
 describe('associateIrsPractitionerToCase', () => {
   let caseRecord = {
@@ -19,7 +22,7 @@ describe('associateIrsPractitionerToCase', () => {
     contactPrimary: {
       address1: '123 Main St',
       city: 'Somewhere',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'fieri@example.com',
       name: 'Guy Fieri',
       phone: '1234567890',
@@ -38,7 +41,7 @@ describe('associateIrsPractitionerToCase', () => {
     ],
     documents: MOCK_CASE.documents,
     filingType: 'Myself',
-    partyType: 'Petitioner',
+    partyType: PARTY_TYPES.petitioner,
     preferredTrialCity: 'Fresno, California',
     procedureType: 'Regular',
     status: 'New',
@@ -55,8 +58,8 @@ describe('associateIrsPractitionerToCase', () => {
 
   it('should not add mapping if already there', async () => {
     const user = {
-      name: 'Olivia Jade',
-      role: User.ROLES.irsPractitioner,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.irsPractitioner,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     };
 
@@ -85,8 +88,8 @@ describe('associateIrsPractitionerToCase', () => {
       .verifyCaseForUser.mockReturnValue(false);
 
     const user = {
-      name: 'Olivia Jade',
-      role: User.ROLES.irsPractitioner,
+      name: 'Emmett Lathrop "Doc" Brown, Ph.D.',
+      role: ROLES.irsPractitioner,
       userId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
     };
 

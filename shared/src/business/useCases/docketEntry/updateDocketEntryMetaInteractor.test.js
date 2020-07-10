@@ -4,31 +4,39 @@ const {
 } = require('../../test/createTestApplicationContext');
 const { MOCK_CASE } = require('../../../test/mockCase');
 const { NotFoundError } = require('../../../errors/errors');
+const { ROLES } = require('../../entities/EntityConstants');
 const { UnauthorizedError } = require('../../../errors/errors');
-const { User } = require('../../entities/User');
 
 describe('updateDocketEntryMetaInteractor', () => {
   let docketRecord;
   let documents;
 
+  const mockUserId = applicationContext.getUniqueId();
+
   beforeEach(() => {
     documents = [
       {
         documentId: '000ba5a9-b37b-479d-9201-067ec6e33000',
-        documentType: 'Order',
+        documentType: 'Petition',
+        eventCode: 'P',
+        filedBy: 'Test Petitioner',
         filingDate: '2019-01-01T00:01:00.000Z',
         freeText: 'some free text',
         servedAt: '2019-01-01T00:01:00.000Z',
         servedParties: [{ name: 'Some Party' }],
-        userId: 'abcba5a9-b37b-479d-9201-067ec6e33abc',
+        userId: mockUserId,
       },
       {
         documentId: '111ba5a9-b37b-479d-9201-067ec6e33111',
         documentType: 'Order',
+        eventCode: 'O',
         filingDate: '2019-01-01T00:01:00.000Z',
         servedAt: '2019-01-02T00:01:00.000Z',
         servedParties: [{ name: 'Some Other Party' }],
-        userId: 'abcba5a9-b37b-479d-9201-067ec6e33abc',
+        signedAt: '2019-03-01T21:40:46.415Z',
+        signedByUserId: mockUserId,
+        signedJudgeName: 'Dredd',
+        userId: mockUserId,
       },
     ];
 
@@ -70,7 +78,7 @@ describe('updateDocketEntryMetaInteractor', () => {
     };
 
     applicationContext.getCurrentUser.mockReturnValue({
-      role: User.ROLES.docketClerk,
+      role: ROLES.docketClerk,
       userId: 'abcba5a9-b37b-479d-9201-067ec6e33abc',
     });
 

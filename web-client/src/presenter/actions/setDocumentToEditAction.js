@@ -11,28 +11,39 @@ import { state } from 'cerebral';
  */
 export const setDocumentToEditAction = ({
   applicationContext,
+  get,
   props,
   store,
 }) => {
   const { caseDetail, documentIdToEdit } = props;
+  const parentMessageId = get(state.parentMessageId);
 
   if (documentIdToEdit) {
     const documentToEdit = caseDetail.documents.find(
       document => document.documentId === documentIdToEdit,
     );
 
+    // TODO - refactor for clarity
     const draftState = documentToEdit.draftState || {};
     draftState.documentIdToEdit = documentIdToEdit;
+    draftState.documentType = documentToEdit.documentType;
+    draftState.documentTitle = documentToEdit.documentTitle;
 
     store.set(state.documentToEdit, documentToEdit);
     store.set(state.form, draftState);
 
+    let editUrl = getDocumentEditUrl({
+      applicationContext,
+      caseDetail,
+      document: documentToEdit,
+    });
+
+    if (parentMessageId) {
+      editUrl += `/${parentMessageId}`;
+    }
+
     return {
-      path: getDocumentEditUrl({
-        applicationContext,
-        caseDetail,
-        document: documentToEdit,
-      }),
+      path: editUrl,
     };
   }
 };

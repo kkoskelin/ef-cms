@@ -3,17 +3,21 @@ import { CaseDetailHeader } from './CaseDetailHeader';
 import { CaseDetailPendingReportList } from './CaseDetailPendingReportList';
 import { CaseDetailSubnavTabs } from './CaseDetailSubnavTabs';
 import { CaseInformationInternal } from './CaseInformationInternal';
+import { CaseMessagesCompleted } from './CaseMessagesCompleted';
+import { CaseMessagesInProgress } from './CaseMessagesInProgress';
 import { CaseNotes } from './CaseNotes';
+import { Correspondence } from '../Correspondence/Correspondence';
 import { DocketRecord } from '../DocketRecord/DocketRecord';
+import { DocumentViewer } from '../DocketRecord/DocumentViewer';
 import { DraftDocuments } from '../DraftDocuments/DraftDocuments';
 import { EditPetitionDetails } from './EditPetitionDetails';
 import { ErrorNotification } from '../ErrorNotification';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MessagesInProgress } from './MessagesInProgress';
+import { OtherFilerInformation } from './OtherFilerInformation';
 import { PaperServiceConfirmModal } from './PaperServiceConfirmModal';
 import { PetitionerInformation } from './PetitionerInformation';
 import { RespondentInformation } from './RespondentInformation';
 import { SealCaseModal } from './SealCaseModal';
+import { Statistics } from './Statistics';
 import { SuccessNotification } from '../SuccessNotification';
 import { Tab, Tabs } from '../../ustc-ui/Tabs/Tabs';
 import { connect } from '@cerebral/react';
@@ -22,22 +26,15 @@ import React from 'react';
 
 export const CaseDetailInternal = connect(
   {
-    baseUrl: state.baseUrl,
-    caseDetail: state.caseDetail,
-    formattedCaseDetail: state.formattedCaseDetail,
-    primaryTab: state.currentViewMetadata.caseDetail.primaryTab,
+    caseDetailInternalTabs:
+      state.currentViewMetadata.caseDetail.caseDetailInternalTabs,
     showEditPetition: state.currentViewMetadata.caseDetail.showEditPetition,
     showModal: state.modal.showModal,
-    token: state.token,
   },
   function CaseDetailInternal({
-    baseUrl,
-    caseDetail,
-    formattedCaseDetail,
-    primaryTab,
+    caseDetailInternalTabs,
     showEditPetition,
     showModal,
-    token,
   }) {
     return (
       <>
@@ -50,36 +47,35 @@ export const CaseDetailInternal = connect(
         >
           <SuccessNotification />
           <ErrorNotification />
-          {primaryTab === 'docketRecord' && (
-            <>
-              <div className="title">
-                <h1>Docket Record</h1>
-              </div>
-              <DocketRecord />
-            </>
-          )}
-          {primaryTab === 'deadlines' && (
-            <>
-              <div className="title">
-                <h1>Deadlines</h1>
-              </div>
-              <CaseDeadlinesInternal />
-            </>
-          )}
-          {primaryTab === 'inProgress' && (
+
+          {caseDetailInternalTabs.docketRecord && (
             <Tabs
-              bind="currentViewMetadata.caseDetail.inProgressTab"
+              bind="currentViewMetadata.caseDetail.docketRecordTab"
               className="classic-horizontal-header3 tab-border"
             >
               <Tab
-                id="tab-draft-documents"
-                tabName="draftDocuments"
-                title="Draft Documents"
+                id="tab-docket-sub-record"
+                tabName="docketRecord"
+                title="Docket Record"
               >
-                <DraftDocuments />
+                <DocketRecord />
               </Tab>
-              <Tab id="tab-messages" tabName="messages" title="Messages">
-                <MessagesInProgress />
+              <Tab
+                id="tab-document-view"
+                tabName="documentView"
+                title="Document View"
+              >
+                <DocumentViewer />
+              </Tab>
+            </Tabs>
+          )}
+          {caseDetailInternalTabs.trackedItems && (
+            <Tabs
+              bind="currentViewMetadata.caseDetail.trackedItemsTab"
+              className="classic-horizontal-header3 tab-border"
+            >
+              <Tab id="tab-deadlines" tabName="deadlines" title="Deadlines">
+                <CaseDeadlinesInternal />
               </Tab>
               <Tab
                 id="tab-pending-report"
@@ -90,10 +86,44 @@ export const CaseDetailInternal = connect(
               </Tab>
             </Tabs>
           )}
-          {primaryTab === 'caseInformation' && showEditPetition && (
+          {caseDetailInternalTabs.drafts && (
+            <>
+              <div className="title">
+                <h1>Drafts</h1>
+              </div>
+              <DraftDocuments />
+            </>
+          )}
+          {caseDetailInternalTabs.messages && (
+            <Tabs
+              bind="currentViewMetadata.caseDetail.messagesTab"
+              className="classic-horizontal-header3 tab-border"
+            >
+              <Tab
+                id="tab-messages-in-progress"
+                tabName="messagesInProgress"
+                title="In Progress"
+              >
+                <CaseMessagesInProgress />
+              </Tab>
+              <Tab
+                id="tab-messages-completed"
+                tabName="messagesCompleted"
+                title="Completed"
+              >
+                <CaseMessagesCompleted />
+              </Tab>
+            </Tabs>
+          )}
+          {caseDetailInternalTabs.correspondence && (
+            <>
+              <Correspondence />
+            </>
+          )}
+          {caseDetailInternalTabs.caseInformation && showEditPetition && (
             <EditPetitionDetails />
           )}
-          {primaryTab === 'caseInformation' && !showEditPetition && (
+          {caseDetailInternalTabs.caseInformation && !showEditPetition && (
             <Tabs
               bind="currentViewMetadata.caseDetail.caseInformationTab"
               className="classic-horizontal-header3 tab-border"
@@ -101,15 +131,21 @@ export const CaseDetailInternal = connect(
               <Tab id="tab-overview" tabName="overview" title="Overview">
                 <CaseInformationInternal />
               </Tab>
+              <Tab id="tab-statistics" tabName="statistics" title="Statistics">
+                <Statistics />
+              </Tab>
               <Tab id="tab-petitioner" tabName="petitioner" title="Petitioner">
                 <PetitionerInformation />
               </Tab>
               <Tab id="tab-respondent" tabName="respondent" title="Respondent">
                 <RespondentInformation />
               </Tab>
+              <Tab id="tab-other-filer" tabName="otherFiler" title="Other">
+                <OtherFilerInformation />
+              </Tab>
             </Tabs>
           )}
-          {primaryTab === 'notes' && (
+          {caseDetailInternalTabs.notes && (
             <>
               <div className="title">
                 <h1>Notes</h1>
@@ -123,29 +159,6 @@ export const CaseDetailInternal = connect(
           <PaperServiceConfirmModal />
         )}
         {showModal === 'SealCaseModal' && <SealCaseModal />}
-
-        {/* This section below will be removed in a future story */}
-        <section className="usa-section grid-container">
-          {formattedCaseDetail.status === 'General Docket - Not at Issue' && (
-            <>
-              {formattedCaseDetail.contactPrimary && (
-                <a
-                  aria-label="View PDF"
-                  className="usa-button usa-button--unstyled margin-right-1"
-                  href={`${baseUrl}/case-documents/${caseDetail.caseId}/${
-                    formattedCaseDetail.docketNumber
-                  }_${formattedCaseDetail.contactPrimary.name.replace(
-                    /\s/g,
-                    '_',
-                  )}.zip/document-download-url?token=${token}`}
-                >
-                  <FontAwesomeIcon icon={['far', 'file-pdf']} />
-                  Batch Zip Download
-                </a>
-              )}
-            </>
-          )}
-        </section>
       </>
     );
   },

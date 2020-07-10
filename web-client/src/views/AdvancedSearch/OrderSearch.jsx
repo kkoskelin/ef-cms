@@ -8,17 +8,14 @@ import React from 'react';
 
 export const OrderSearch = connect(
   {
-    advancedSearchForm: state.advancedSearchForm,
     clearAdvancedSearchFormSequence: sequences.clearAdvancedSearchFormSequence,
     judges: state.judges,
     updateAdvancedOrderSearchFormValueSequence:
       sequences.updateAdvancedOrderSearchFormValueSequence,
     validateOrderSearchSequence: sequences.validateOrderSearchSequence,
-    validateStartDateSequence: sequences.validateStartDateSequence,
     validationErrors: state.validationErrors,
   },
   function OrderSearch({
-    advancedSearchForm,
     clearAdvancedSearchFormSequence,
     judges,
     submitAdvancedSearchSequence,
@@ -69,7 +66,6 @@ export const OrderSearch = connect(
               </NonMobile>
             </div>
             <AdvancedDocumentSearch
-              formName={advancedSearchForm.orderSearch}
               formType="orderSearch"
               judges={judges}
               updateSequence={updateAdvancedOrderSearchFormValueSequence}

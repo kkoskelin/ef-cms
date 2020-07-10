@@ -1,13 +1,25 @@
 const joi = require('@hapi/joi');
 const {
+  CASE_STATUS_TYPES,
+  DOCKET_NUMBER_MATCHER,
+  DOCKET_NUMBER_SUFFIXES,
+} = require('./EntityConstants');
+const {
+  CHAMBERS_SECTIONS,
+  IRS_SYSTEM_SECTION,
+  SECTIONS,
+} = require('./EntityConstants');
+const {
+  JoiValidationConstants,
+} = require('../../utilities/JoiValidationConstants');
+const {
   joiValidationDecorator,
 } = require('../../utilities/JoiValidationDecorator');
-const { CHIEF_JUDGE } = require('./cases/CaseConstants');
+const { CHIEF_JUDGE, ROLES } = require('./EntityConstants');
 const { createISODateString } = require('../utilities/DateHandler');
-const { getTimestampSchema } = require('../../utilities/dateSchema');
 const { Message } = require('./Message');
 const { omit, orderBy } = require('lodash');
-const joiStrictTimestamp = getTimestampSchema();
+
 /**
  * constructor
  *
@@ -18,11 +30,9 @@ function WorkItem(rawWorkItem, { applicationContext }) {
   if (!applicationContext) {
     throw new TypeError('applicationContext must be defined');
   }
-  this.entityName = 'WorkItem';
-
-  this.associatedJudge = rawWorkItem.associatedJudge || CHIEF_JUDGE;
   this.assigneeId = rawWorkItem.assigneeId;
   this.assigneeName = rawWorkItem.assigneeName;
+  this.associatedJudge = rawWorkItem.associatedJudge || CHIEF_JUDGE;
   this.caseId = rawWorkItem.caseId;
   this.caseIsInProgress = rawWorkItem.caseIsInProgress;
   this.caseStatus = rawWorkItem.caseStatus;
@@ -33,8 +43,9 @@ function WorkItem(rawWorkItem, { applicationContext }) {
   this.completedMessage = rawWorkItem.completedMessage;
   this.createdAt = rawWorkItem.createdAt || createISODateString();
   this.docketNumber = rawWorkItem.docketNumber;
-  this.docketNumberSuffix = rawWorkItem.docketNumberSuffix;
+  this.docketNumberWithSuffix = rawWorkItem.docketNumberWithSuffix;
   this.document = omit(rawWorkItem.document, 'workItems');
+  this.entityName = 'WorkItem';
   this.hideFromPendingMessages = rawWorkItem.hideFromPendingMessages;
   this.highPriority = rawWorkItem.highPriority;
   this.inProgress = rawWorkItem.inProgress;
@@ -48,6 +59,7 @@ function WorkItem(rawWorkItem, { applicationContext }) {
   this.trialDate = rawWorkItem.trialDate;
   this.updatedAt = rawWorkItem.updatedAt || createISODateString();
   this.workItemId = rawWorkItem.workItemId || applicationContext.getUniqueId();
+
   this.messages = (rawWorkItem.messages || []).map(
     message => new Message(message, { applicationContext }),
   );
@@ -58,31 +70,31 @@ WorkItem.validationName = 'WorkItem';
 joiValidationDecorator(
   WorkItem,
   joi.object().keys({
-    assigneeId: joi.string().allow(null).optional(),
-    assigneeName: joi.string().allow(null).optional(), // should be a Message entity at some point
-    associatedJudge: joi.string().required(),
-    caseId: joi
-      .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
-      .required(),
+    assigneeId: JoiValidationConstants.UUID.allow(null).optional(),
+    assigneeName: joi.string().max(100).allow(null).optional(), // should be a Message entity at some point
+    associatedJudge: joi.string().max(100).required(),
+    caseId: JoiValidationConstants.UUID.required(),
     caseIsInProgress: joi.boolean().optional(),
-    caseStatus: joi.string().optional(),
-    caseTitle: joi.string().optional(),
-    completedAt: joiStrictTimestamp.optional(),
-    completedBy: joi.string().optional().allow(null),
-    completedByUserId: joi
+    caseStatus: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
-      .optional()
-      .allow(null),
-    completedMessage: joi.string().optional().allow(null),
-    createdAt: joiStrictTimestamp.optional(),
-    docketNumber: joi.string().required(),
-    docketNumberSuffix: joi.string().allow(null).optional(),
+      .valid(...Object.values(CASE_STATUS_TYPES))
+      .optional(),
+    caseTitle: joi.string().max(500).optional(),
+    completedAt: JoiValidationConstants.ISO_DATE.optional(),
+    completedBy: joi.string().max(100).optional().allow(null),
+    completedByUserId: JoiValidationConstants.UUID.optional().allow(null),
+    completedMessage: joi.string().max(100).optional().allow(null),
+    createdAt: JoiValidationConstants.ISO_DATE.optional(),
+    docketNumber: joi
+      .string()
+      .regex(DOCKET_NUMBER_MATCHER)
+      .required()
+      .description('Unique case identifier in XXXXX-YY format.'),
+    docketNumberSuffix: joi
+      .string()
+      .valid(...Object.values(DOCKET_NUMBER_SUFFIXES))
+      .allow(null)
+      .optional(),
     document: joi.object().required(),
     entityName: joi.string().valid('WorkItem').required(),
     hideFromPendingMessages: joi.boolean().optional(),
@@ -91,24 +103,29 @@ joiValidationDecorator(
     isInitializeCase: joi.boolean().optional(),
     isQC: joi.boolean().required(),
     isRead: joi.boolean().optional(),
-    messages: joi.array().items(joi.object()).required(),
-    section: joi.string().required(),
-    sentBy: joi.string().required(),
-    sentBySection: joi.string().optional(),
-    sentByUserId: joi
+    messages: joi.array().items(joi.object().instance(Message)).required(),
+    section: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
-      .optional(),
-    trialDate: joiStrictTimestamp.optional().allow(null),
-    updatedAt: joiStrictTimestamp.required(),
-    workItemId: joi
-      .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
+      .valid(
+        ...SECTIONS,
+        ...CHAMBERS_SECTIONS,
+        ...Object.values(ROLES),
+        IRS_SYSTEM_SECTION,
+      )
       .required(),
+    sentBy: joi
+      .string()
+      .max(100)
+      .required()
+      .description('The name of the user that sent the WorkItem'),
+    sentBySection: joi
+      .string()
+      .valid(...SECTIONS, ...CHAMBERS_SECTIONS, ...Object.values(ROLES))
+      .optional(),
+    sentByUserId: JoiValidationConstants.UUID.optional(),
+    trialDate: JoiValidationConstants.ISO_DATE.optional().allow(null),
+    updatedAt: JoiValidationConstants.ISO_DATE.required(),
+    workItemId: JoiValidationConstants.UUID.required(),
   }),
 );
 

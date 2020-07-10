@@ -33,6 +33,15 @@ module.exports = {
         'promise/catch-or-return': 'off',
       },
     },
+    {
+      files: [
+        'web-client/integration-tests/**/*.js',
+        'web-client/integration-tests-public/**/*.js',
+      ],
+      rules: {
+        'jest/expect-expect': 'off',
+      },
+    },
   ],
   parser: 'babel-eslint',
   parserOptions: {
@@ -58,8 +67,9 @@ module.exports = {
   ],
   rules: {
     'arrow-parens': ['error', 'as-needed'],
-    complexity: ['warn', { max: 80 }], // todo: plugin default is 20, try to lower this
+    complexity: ['error', { max: 40 }], // todo: plugin default is 20, try to lower this
     'import/named': 'warn',
+    'import/no-default-export': 'error',
     'import/no-named-as-default': 'off',
     'jest/expect-expect': 'warn',
     'jest/no-export': 'off',
@@ -179,6 +189,7 @@ module.exports = {
         skipIfMatch: ['https?://[^\\s]{10,}', '^[^\\s]{35,}$'],
         skipWords: [
           'anthony',
+          'apigateway',
           'args',
           'armen',
           'armens',
@@ -217,6 +228,7 @@ module.exports = {
           'dynamsoft',
           'efcms',
           'elasticsearch',
+          'enum',
           'eslint',
           'falsy',
           'fieldset',
@@ -307,6 +319,7 @@ module.exports = {
           'scss',
           'semibold',
           'seriatim',
+          'serverless',
           'servoss',
           'sisqo',
           'skipnav',
@@ -323,6 +336,7 @@ module.exports = {
           'textarea',
           'thorton',
           'thortons',
+          'todays',
           'touchmove',
           'transferee',
           'truthy',
@@ -367,7 +381,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', '.json'],
       },
     },
     react: {

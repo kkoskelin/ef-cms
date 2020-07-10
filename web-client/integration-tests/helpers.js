@@ -1,6 +1,8 @@
 /* eslint-disable jest/no-export */
-import { CerebralTest } from 'cerebral/test';
+import { CerebralTest, runCompute } from 'cerebral/test';
+import { DynamoDB } from 'aws-sdk';
 import { JSDOM } from 'jsdom';
+import { PARTY_TYPES } from '../../shared/src/business/entities/EntityConstants';
 import { applicationContext } from '../src/applicationContext';
 import {
   back,
@@ -10,9 +12,7 @@ import {
   revokeObjectURL,
   router,
 } from '../src/router';
-
-import { DynamoDB } from 'aws-sdk';
-import { elasticsearchIndexes } from '../../web-api/elasticsearch/elasticsearch-indexes';
+import { formattedCaseMessages as formattedCaseMessagesComputed } from '../src/presenter/computeds/formattedCaseMessages';
 import { formattedWorkQueue as formattedWorkQueueComputed } from '../src/presenter/computeds/formattedWorkQueue';
 import { getScannerInterface } from '../../shared/src/persistence/dynamsoft/getScannerMockInterface';
 import {
@@ -21,22 +21,19 @@ import {
 } from '../../shared/src/business/useCases/scannerMockFiles';
 import { isFunction, mapValues } from 'lodash';
 import { presenter } from '../src/presenter/presenter';
-import { runCompute } from 'cerebral/test';
 import { socketProvider } from '../src/providers/socket';
 import { socketRouter } from '../src/providers/socketRouter';
 import { userMap } from '../../shared/src/test/mockUserTokenMap';
-import jwt from 'jsonwebtoken';
-
 import { withAppContextDecorator } from '../src/withAppContext';
-import axios from 'axios';
-
 import { workQueueHelper as workQueueHelperComputed } from '../src/presenter/computeds/workQueueHelper';
 import FormData from 'form-data';
-const {
-  ContactFactory,
-} = require('../../shared/src/business/entities/contacts/ContactFactory');
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 const formattedWorkQueue = withAppContextDecorator(formattedWorkQueueComputed);
+const formattedCaseMessages = withAppContextDecorator(
+  formattedCaseMessagesComputed,
+);
 const workQueueHelper = withAppContextDecorator(workQueueHelperComputed);
 
 Object.assign(applicationContext, {
@@ -70,6 +67,16 @@ export const getFormattedDocumentQCMyInbox = async test => {
     workQueueIsInternal: false,
   });
   return runCompute(formattedWorkQueue, {
+    state: test.getState(),
+  });
+};
+
+export const getMySentFormattedCaseMessages = async test => {
+  await test.runSequence('gotoCaseMessagesSequence', {
+    box: 'outbox',
+    queue: 'my',
+  });
+  return runCompute(formattedCaseMessages, {
     state: test.getState(),
   });
 };
@@ -297,7 +304,6 @@ export const uploadExternalDecisionDocument = async test => {
     primaryDocumentFileSize: 115022,
     scenario: 'Standard',
     searchError: false,
-    secondaryDocument: {},
     serviceDate: null,
     supportingDocument: null,
     supportingDocumentFile: null,
@@ -324,7 +330,6 @@ export const uploadProposedStipulatedDecision = async test => {
     privatePractitioners: [],
     scenario: 'Standard',
     searchError: false,
-    secondaryDocument: { certificateOfServiceDate: null },
     serviceDate: null,
   });
   await test.runSequence('submitExternalDocumentSequence');
@@ -361,12 +366,17 @@ export const forwardWorkItem = async (test, to, workItemId, message) => {
 export const uploadPetition = async (
   test,
   overrides = {},
-  loginUsername = 'petitioner',
+  loginUsername = 'petitioner@example.com',
 ) => {
+  if (!userMap[loginUsername]) {
+    throw new Error(`Unable to log into test as ${loginUsername}`);
+  }
   const user = {
     ...userMap[loginUsername],
     sub: userMap[loginUsername].userId,
   };
+
+  const { COUNTRY_TYPES } = applicationContext.getConstants();
 
   const petitionMetadata = {
     caseType: overrides.caseType || 'CDP (Lien/Levy)',
@@ -375,7 +385,7 @@ export const uploadPetition = async (
       address2: 'Cum aut velit volupt',
       address3: 'Et sunt veritatis ei',
       city: 'Et id aut est velit',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: user.email,
       name: 'Mona Schultz',
       phone: '+1 (884) 358-9729',
@@ -385,7 +395,7 @@ export const uploadPetition = async (
     contactSecondary: overrides.contactSecondary || {},
     filingType: 'Myself',
     hasIrsNotice: false,
-    partyType: overrides.partyType || ContactFactory.PARTY_TYPES.petitioner,
+    partyType: overrides.partyType || PARTY_TYPES.petitioner,
     preferredTrialCity: overrides.preferredTrialCity || 'Seattle, Washington',
     procedureType: overrides.procedureType || 'Regular',
   };
@@ -397,7 +407,7 @@ export const uploadPetition = async (
   const userToken = jwt.sign(user, 'secret');
 
   const response = await axios.post(
-    'http://localhost:3002/',
+    'http://localhost:4000/cases',
     {
       petitionFileId,
       petitionMetadata,
@@ -456,7 +466,7 @@ export const setupTest = ({ useCases = {} } = {}) => {
     return value;
   });
 
-  presenter.state.baseUrl = process.env.API_URL || 'http://localhost:3000';
+  presenter.state.baseUrl = process.env.API_URL || 'http://localhost:4000';
 
   presenter.providers.applicationContext = applicationContext;
 
@@ -563,6 +573,7 @@ export const setupTest = ({ useCases = {} } = {}) => {
 
 export const gotoRoute = (routes, routeToGoTo) => {
   for (let route of routes) {
+    // eslint-disable-next-line security/detect-non-literal-regexp
     const regex = new RegExp(
       route.route.replace(/\*/g, '([a-z\\-A-Z0-9]+)').replace(/\.\./g, '(.*)') +
         '$',
@@ -607,11 +618,9 @@ export const wait = time => {
 };
 
 export const refreshElasticsearchIndex = async () => {
-  await Promise.all(
-    elasticsearchIndexes.map(async index => {
-      await axios.post(`http://localhost:9200/${index}/_refresh`);
-    }),
-  );
+  // refresh all ES indices:
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html#refresh-api-all-ex
+  await axios.post('http://localhost:9200/_refresh');
   return await wait(1500);
 };
 

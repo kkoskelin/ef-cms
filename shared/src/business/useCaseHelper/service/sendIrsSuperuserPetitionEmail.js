@@ -19,7 +19,13 @@ exports.sendIrsSuperuserPetitionEmail = async ({
     privatePractitioners,
   } = applicationContext.getUtilities().setServiceIndicatorsForCase(caseEntity);
 
-  const { documentId, documentType, eventCode, servedAt } = documentEntity;
+  const {
+    documentId,
+    documentType,
+    eventCode,
+    filingDate,
+    servedAt,
+  } = documentEntity;
 
   const docketEntry = caseEntity.docketRecord.find(
     entry => entry.documentId === documentId,
@@ -44,13 +50,21 @@ exports.sendIrsSuperuserPetitionEmail = async ({
     .getUtilities()
     .formatNow('MMMM D, YYYY');
 
+  const filingDateFormatted = applicationContext
+    .getUtilities()
+    .formatDateString(filingDate, 'MM/DD/YY');
+
+  const docketNumberWithSuffix = `${docketNumber}${docketNumberSuffix || ''}`;
+  const formattedMailingDate =
+    mailingDate || `Electronically Filed ${filingDateFormatted}`;
+
   const templateHtml = reactTemplateGenerator({
     componentName: 'PetitionService',
     data: {
       caseDetail: {
         caseTitle: Case.getCaseTitle(caseCaption),
-        docketNumber: `${docketNumber}${docketNumberSuffix || ''}`,
-        trialLocation: preferredTrialCity,
+        docketNumber: docketNumberWithSuffix,
+        trialLocation: preferredTrialCity || 'No requested place of trial',
       },
       contactPrimary,
       contactSecondary,
@@ -60,7 +74,8 @@ exports.sendIrsSuperuserPetitionEmail = async ({
         documentId,
         documentTitle: documentType,
         eventCode,
-        mailingDate,
+        filingDate: filingDateFormatted,
+        formattedMailingDate,
         servedAtFormatted: applicationContext
           .getUtilities()
           .formatDateString(servedAt, 'DATE_TIME_TZ'),
@@ -73,6 +88,7 @@ exports.sendIrsSuperuserPetitionEmail = async ({
   const destination = {
     email: applicationContext.getIrsSuperuserEmail(),
     templateData: {
+      docketNumber: docketNumberWithSuffix,
       emailContent: templateHtml,
     },
   };
@@ -80,6 +96,7 @@ exports.sendIrsSuperuserPetitionEmail = async ({
   await applicationContext.getDispatchers().sendBulkTemplatedEmail({
     applicationContext,
     defaultTemplateData: {
+      docketNumber: '',
       emailContent: 'A petition has been served.',
     },
     destinations: [destination],

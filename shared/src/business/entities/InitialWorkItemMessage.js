@@ -1,7 +1,11 @@
 const joi = require('@hapi/joi');
 const {
+  JoiValidationConstants,
+} = require('../../utilities/JoiValidationConstants');
+const {
   joiValidationDecorator,
 } = require('../../utilities/JoiValidationDecorator');
+const { CHAMBERS_SECTIONS, SECTIONS } = require('./EntityConstants');
 
 InitialWorkItemMessage.VALIDATION_ERROR_MESSAGES = {
   assigneeId: 'Select a recipient',
@@ -23,14 +27,12 @@ function InitialWorkItemMessage(rawMessage) {
 joiValidationDecorator(
   InitialWorkItemMessage,
   joi.object().keys({
-    assigneeId: joi
+    assigneeId: JoiValidationConstants.UUID.required(),
+    message: joi.string().max(500).required(),
+    section: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
+      .valid(...SECTIONS, ...CHAMBERS_SECTIONS)
       .required(),
-    message: joi.string().required(),
-    section: joi.string().required(),
   }),
   InitialWorkItemMessage.VALIDATION_ERROR_MESSAGES,
 );

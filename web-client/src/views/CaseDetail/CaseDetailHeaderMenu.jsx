@@ -3,6 +3,7 @@ import { AddToTrialModal } from './AddToTrialModal';
 import { BlockFromTrialModal } from './BlockFromTrialModal';
 import { Button } from '../../ustc-ui/Button/Button';
 import { CreateCaseDeadlineModalDialog } from './CreateCaseDeadlineModalDialog';
+import { CreateCaseMessageModalDialog } from '../Messages/CreateCaseMessageModalDialog';
 import { CreateOrderChooseTypeModal } from '../CreateOrder/CreateOrderChooseTypeModal';
 import { DeleteCaseDeadlineModalDialog } from './DeleteCaseDeadlineModalDialog';
 import { EditCaseDeadlineModalDialog } from './EditCaseDeadlineModalDialog';
@@ -26,6 +27,8 @@ export const CaseDetailHeaderMenu = connect(
       sequences.openAddEditCaseNoteModalSequence,
     openCreateCaseDeadlineModalSequence:
       sequences.openCreateCaseDeadlineModalSequence,
+    openCreateCaseMessageModalSequence:
+      sequences.openCreateCaseMessageModalSequence,
     openCreateOrderChooseTypeModalSequence:
       sequences.openCreateOrderChooseTypeModalSequence,
     openUpdateCaseModalSequence: sequences.openUpdateCaseModalSequence,
@@ -39,6 +42,7 @@ export const CaseDetailHeaderMenu = connect(
     isCaseDetailMenuOpen,
     openAddEditCaseNoteModalSequence,
     openCreateCaseDeadlineModalSequence,
+    openCreateCaseMessageModalSequence,
     openCreateOrderChooseTypeModalSequence,
     openUpdateCaseModalSequence,
     resetCaseMenuSequence,
@@ -103,6 +107,19 @@ export const CaseDetailHeaderMenu = connect(
               <ul className="usa-nav__submenu position-right-0">
                 <li className="usa-nav__submenu-item">
                   <Button
+                    icon="envelope"
+                    id="menu-button-add-new-message"
+                    onClick={() => {
+                      resetCaseMenuSequence();
+                      openCreateCaseMessageModalSequence();
+                    }}
+                  >
+                    Create New Message
+                  </Button>
+                </li>
+
+                <li className="usa-nav__submenu-item">
+                  <Button
                     icon="calendar-alt"
                     id="menu-button-add-deadline"
                     onClick={() => {
@@ -150,6 +167,20 @@ export const CaseDetailHeaderMenu = connect(
                       id="menu-button-upload-pdf"
                     >
                       Upload PDF
+                    </Button>
+                  </li>
+                )}
+                {caseDetailHeaderHelper.showAddCorrespondenceButton && (
+                  <li className="usa-nav__submenu-item">
+                    <Button
+                      link
+                      className="fa-icon-blue"
+                      href={`/case-detail/${caseDetail.docketNumber}/upload-correspondence`}
+                      icon="envelope-open"
+                      iconColor="blue"
+                      id="menu-button-upload-pdf"
+                    >
+                      Add Correspondence
                     </Button>
                   </li>
                 )}
@@ -206,7 +237,10 @@ export const CaseDetailHeaderMenu = connect(
         {showModal === 'CreateOrderChooseTypeModal' && (
           <CreateOrderChooseTypeModal />
         )}
-        {showModal == 'UpdateCaseModalDialog' && <UpdateCaseModalDialog />}
+        {showModal === 'UpdateCaseModalDialog' && <UpdateCaseModalDialog />}
+        {showModal === 'CreateCaseMessageModal' && (
+          <CreateCaseMessageModalDialog />
+        )}
       </div>
     );
   },

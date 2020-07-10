@@ -2,11 +2,14 @@ const {
   applicationContext,
 } = require('../../test/createTestApplicationContext');
 const {
+  COUNTRY_TYPES,
+  PARTY_TYPES,
+  ROLES,
+} = require('../../entities/EntityConstants');
+const {
   fileExternalDocumentForConsolidatedInteractor,
 } = require('./fileExternalDocumentForConsolidatedInteractor');
-const { ContactFactory } = require('../../entities/contacts/ContactFactory');
 const { MOCK_CASE } = require('../../../test/mockCase.js');
-const { User } = require('../../entities/User');
 
 describe('fileExternalDocumentForConsolidatedInteractor', () => {
   let caseRecords;
@@ -28,7 +31,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         contactPrimary: {
           address1: '123 Main St',
           city: 'Somewhere',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'fieri@example.com',
           name: 'Guy Fieri',
           phone: '1234567890',
@@ -41,10 +44,10 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documents: MOCK_CASE.documents,
         filingType: 'Myself',
         leadCaseId: caseId0,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Regular',
-        role: User.ROLES.petitioner,
+        role: ROLES.petitioner,
         userId: 'petitioner',
       },
       {
@@ -54,7 +57,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         contactPrimary: {
           address1: '123 Main St',
           city: 'Somewhere',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'ferrari@example.com',
           name: 'Enzo Ferrari',
           phone: '1234567890',
@@ -67,10 +70,10 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documents: MOCK_CASE.documents,
         filingType: 'Myself',
         leadCaseId: caseId0,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Regular',
-        role: User.ROLES.petitioner,
+        role: ROLES.petitioner,
         userId: 'petitioner',
       },
       {
@@ -80,7 +83,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         contactPrimary: {
           address1: '123 Main St',
           city: 'Somewhere',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'foreman@example.com',
           name: 'George Foreman',
           phone: '1234567890',
@@ -93,23 +96,23 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documents: MOCK_CASE.documents,
         filingType: 'Myself',
         leadCaseId: caseId0,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         preferredTrialCity: 'Fresno, California',
         procedureType: 'Regular',
-        role: User.ROLES.petitioner,
+        role: ROLES.petitioner,
         userId: 'petitioner',
       },
     ];
 
     applicationContext.getCurrentUser.mockReturnValue({
       name: 'Guy Fieri',
-      role: 'admin',
+      role: ROLES.admin,
       userId: 'a7d90c05-f6cd-442c-a168-202db587f16f',
     });
 
     applicationContext.getPersistenceGateway().getUserById.mockReturnValue({
       name: 'Guy Fieri',
-      role: 'admin',
+      role: ROLES.admin,
       userId: 'a7d90c05-f6cd-442c-a168-202db587f16f',
     });
 
@@ -129,6 +132,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
           documentTitle: 'Memorandum in Support',
           documentType: 'Memorandum in Support',
           eventCode: 'MISP',
+          filedBy: 'Test Petitioner',
         },
       }),
     ).rejects.toThrow('Unauthorized');
@@ -147,6 +151,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
       },
       leadCaseId: caseId0,
     });
@@ -168,6 +173,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
       },
       leadCaseId: caseId0,
     });
@@ -177,8 +183,8 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
     expect(result[2].docketRecord[3].documentId).toEqual(documentId0);
   });
 
+  // skipping this test until we have better acceptance criteria about consolidated cases
   it.skip('should aggregate the filing parties for the docket record entry', async () => {
-    // skipping until we finalize how this will be handled
     await fileExternalDocumentForConsolidatedInteractor({
       applicationContext,
       documentIds: [documentId0],
@@ -186,6 +192,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
       },
       filingPartyNames: ['Guy Fieri', 'Enzo Ferrari'],
       leadCaseId: caseId0,
@@ -201,6 +208,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
       },
       leadCaseId: caseId0,
     });
@@ -229,10 +237,12 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
         secondaryDocument: {
           documentTitle: 'Redacted',
           documentType: 'Redacted',
           eventCode: 'REDC',
+          filedBy: 'Test Petitioner',
         },
       },
       leadCaseId: caseId0,
@@ -254,16 +264,19 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
         documentTitle: 'Memorandum in Support',
         documentType: 'Memorandum in Support',
         eventCode: 'MISP',
+        filedBy: 'Test Petitioner',
         secondaryDocument: {
           documentTitle: 'Redacted',
           documentType: 'Redacted',
           eventCode: 'REDC',
+          filedBy: 'Test Petitioner',
         },
         secondarySupportingDocuments: [
           {
             documentTitle: 'Redacted',
             documentType: 'Redacted',
             eventCode: 'REDC',
+            filedBy: 'Test Petitioner',
           },
         ],
         supportingDocuments: [
@@ -271,6 +284,7 @@ describe('fileExternalDocumentForConsolidatedInteractor', () => {
             documentTitle: 'Redacted',
             documentType: 'Redacted',
             eventCode: 'REDC',
+            filedBy: 'Test Petitioner',
           },
         ],
       },

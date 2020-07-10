@@ -11,7 +11,7 @@ export const unauthedUserSearchesByDocketNumber = (test, params) => {
       key: 'docketNumber',
       value: '123-xx',
     });
-    await test.runSequence('submitCaseDocketNumberSearchSequence', {});
+    await test.runSequence('submitPublicCaseDocketNumberSearchSequence', {});
     searchResults = test.getState('searchResults');
     expect(searchResults).toEqual([]);
     expect(test.currentRouteUrl.indexOf('/case-detail')).toEqual(-1);
@@ -29,9 +29,10 @@ export const unauthedUserSearchesByDocketNumber = (test, params) => {
       key: 'docketNumber',
       value: queryParams.docketNumber,
     });
-    await test.runSequence('submitCaseDocketNumberSearchSequence', {});
+    await test.runSequence('submitPublicCaseDocketNumberSearchSequence', {});
     searchResults = test.getState('searchResults');
-    expect(test.getState('caseId')).toEqual(params.docketNumber);
-    expect(test.currentRouteUrl.indexOf('/case-detail')).toEqual(0);
+    expect(
+      test.currentRouteUrl.indexOf(`/case-detail/${params.docketNumber}`),
+    ).toEqual(0);
   });
 };

@@ -9,6 +9,7 @@ exports.advancedDocumentSearch = async ({
   judge,
   judgeType,
   keyword,
+  opinionType,
   startDate,
 }) => {
   const sourceFields = [
@@ -17,12 +18,14 @@ exports.advancedDocumentSearch = async ({
     'contactPrimary',
     'contactSecondary',
     'docketNumber',
+    'docketNumberWithSuffix',
     'docketNumberSuffix',
     'documentContents',
     'numberOfPages',
     'documentId',
     'documentTitle',
     'documentType',
+    'eventCode',
     'filingDate',
     'irsPractitioners',
     'isSealed',
@@ -79,23 +82,41 @@ exports.advancedDocumentSearch = async ({
     });
   }
 
-  if (docketNumber) {
+  if (opinionType) {
     queryParams.push({
       match: {
-        'docketNumber.S': {
+        'documentType.S': {
           operator: 'and',
-          query: docketNumber,
+          query: opinionType,
         },
       },
     });
   }
 
-  if (startDate && endDate) {
+  if (docketNumber) {
+    queryParams.push({
+      match: {
+        'docketNumber.S': { operator: 'and', query: docketNumber },
+      },
+    });
+  }
+
+  if (startDate) {
     queryParams.push({
       range: {
         'filingDate.S': {
           format: 'strict_date_time', // ISO-8601 time stamp
           gte: startDate,
+        },
+      },
+    });
+  }
+
+  if (endDate && startDate) {
+    queryParams.push({
+      range: {
+        'filingDate.S': {
+          format: 'strict_date_time', // ISO-8601 time stamp
           lte: endDate,
         },
       },

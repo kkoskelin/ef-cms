@@ -1,6 +1,6 @@
 import { setBatchPages } from './helpers';
 
-exports.addBatchesForScanning = (
+export const addBatchesForScanning = (
   test,
   { scannerSourceIndex, scannerSourceName },
 ) => {
@@ -22,8 +22,7 @@ exports.addBatchesForScanning = (
     ]);
   });
 };
-
-exports.createPDFFromScannedBatches = test => {
+export const createPDFFromScannedBatches = test => {
   return it('Creates a PDF from added batches', async () => {
     const selectedDocumentType = test.getState(
       'currentViewMetadata.documentSelectedForScan',
@@ -43,14 +42,16 @@ exports.createPDFFromScannedBatches = test => {
   });
 };
 
-exports.selectScannerSource = (
+export const selectScannerSource = (
   test,
   { scannerSourceIndex, scannerSourceName },
 ) => {
   return it('Selects a scanner', async () => {
     await test.runSequence('openChangeScannerSourceModalSequence');
 
-    expect(test.getState('modal.showModal')).toEqual('SelectScannerSourceModal');
+    expect(test.getState('modal.showModal')).toEqual(
+      'SelectScannerSourceModal',
+    );
 
     await test.runSequence('updateModalValueSequence', {
       key: 'scanner',

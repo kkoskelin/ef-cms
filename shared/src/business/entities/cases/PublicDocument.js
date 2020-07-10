@@ -1,10 +1,15 @@
 const joi = require('@hapi/joi');
 const {
+  ALL_DOCUMENT_TYPES,
+  ALL_EVENT_CODES,
+  DOCUMENT_PROCESSING_STATUS_OPTIONS,
+} = require('../EntityConstants');
+const {
+  JoiValidationConstants,
+} = require('../../../utilities/JoiValidationConstants');
+const {
   joiValidationDecorator,
 } = require('../../../utilities/JoiValidationDecorator');
-const { getTimestampSchema } = require('../../../utilities/dateSchema');
-
-const joiStrictTimestamp = getTimestampSchema();
 
 /**
  * PublicDocument
@@ -32,30 +37,29 @@ function PublicDocument(rawDocument) {
 joiValidationDecorator(
   PublicDocument,
   joi.object().keys({
-    additionalInfo: joi.string().optional(),
-    additionalInfo2: joi.string().optional(),
-    caseId: joi
+    additionalInfo: joi.string().max(500).optional(),
+    additionalInfo2: joi.string().max(500).optional(),
+    caseId: JoiValidationConstants.UUID.optional(),
+    createdAt: JoiValidationConstants.ISO_DATE.optional(),
+    documentId: JoiValidationConstants.UUID.optional(),
+    documentTitle: joi.string().max(500).optional(),
+    documentType: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
+      .valid(...ALL_DOCUMENT_TYPES)
       .optional(),
-    createdAt: joiStrictTimestamp.optional(),
-    documentId: joi
+    eventCode: joi
       .string()
-      .uuid({
-        version: ['uuidv4'],
-      })
+      .valid(...ALL_EVENT_CODES)
       .optional(),
-    documentTitle: joi.string().optional(),
-    documentType: joi.string().optional(),
-    eventCode: joi.string().optional(),
-    filedBy: joi.string().optional(),
+    filedBy: joi.string().max(500).optional(),
     isPaper: joi.boolean().optional(),
-    processingStatus: joi.string().optional(),
-    receivedAt: joiStrictTimestamp.optional(),
-    servedAt: joiStrictTimestamp.optional(),
-    servedParties: joi.array().optional(),
+    processingStatus: joi
+      .string()
+      .valid(...DOCUMENT_PROCESSING_STATUS_OPTIONS)
+      .optional(),
+    receivedAt: JoiValidationConstants.ISO_DATE.optional(),
+    servedAt: JoiValidationConstants.ISO_DATE.optional(),
+    servedParties: joi.array().optional(), // TODO: object definition
   }),
   {},
 );

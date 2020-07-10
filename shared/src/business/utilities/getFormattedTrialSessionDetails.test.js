@@ -1,13 +1,11 @@
 import { MOCK_CASE } from '../../../../shared/src/test/mockCase';
-import { TrialSession } from '../entities/trialSessions/TrialSession';
-const { SESSION_STATUS_GROUPS } = TrialSession;
+import { SESSION_STATUS_GROUPS } from '../entities/EntityConstants';
+import { applicationContext } from '../../../../web-client/src/applicationContext';
 import {
   formattedTrialSessionDetails,
   getTrialSessionStatus,
 } from './getFormattedTrialSessionDetails';
 import { omit } from 'lodash';
-
-import { applicationContext } from '../../../../web-client/src/applicationContext';
 
 describe('formattedTrialSessionDetails', () => {
   const TRIAL_SESSION = {
@@ -166,8 +164,7 @@ describe('formattedTrialSessionDetails', () => {
           MOCK_CASE,
           {
             ...MOCK_CASE,
-            caseCaption:
-              'Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons & Someone Else, Petitioners',
+            caseCaption: 'Daenerys Stormborn & Someone Else, Petitioners',
             docketNumberSuffix: 'W',
           },
           {
@@ -189,7 +186,7 @@ describe('formattedTrialSessionDetails', () => {
       '101-18W',
     );
     expect(result.formattedEligibleCases[1].caseTitle).toEqual(
-      'Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons & Someone Else',
+      'Daenerys Stormborn & Someone Else',
     );
     expect(result.formattedEligibleCases[2].docketNumberWithSuffix).toEqual(
       '103-19',
@@ -206,8 +203,7 @@ describe('formattedTrialSessionDetails', () => {
           MOCK_CASE,
           {
             ...MOCK_CASE,
-            caseCaption:
-              'Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons & Someone Else, Petitioners',
+            caseCaption: 'Daenerys Stormborn & Someone Else, Petitioners',
             docketNumber: '102-17',
             docketNumberSuffix: 'W',
           },
@@ -228,7 +224,7 @@ describe('formattedTrialSessionDetails', () => {
     expect(result.allCases[0].caseTitle).toEqual('Someone Else');
     expect(result.allCases[1].docketNumberWithSuffix).toEqual('102-17W');
     expect(result.allCases[1].caseTitle).toEqual(
-      'Daenerys Stormborn of the House Targaryen, First of Her Name, the Unburnt, Queen of the Andals and the First Men, Khaleesi of the Great Grass Sea, Breaker of Chains, and Mother of Dragons & Someone Else',
+      'Daenerys Stormborn & Someone Else',
     );
     expect(result.allCases[2].docketNumberWithSuffix).toEqual('101-18');
     expect(result.allCases[2].caseTitle).toEqual('Test Petitioner');

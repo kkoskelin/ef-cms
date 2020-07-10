@@ -2,7 +2,7 @@ const {
   applicationContext,
 } = require('../../test/createTestApplicationContext');
 const { completeWorkItemInteractor } = require('./completeWorkItemInteractor');
-const { User } = require('../../entities/User');
+const { PARTY_TYPES, ROLES } = require('../../entities/EntityConstants');
 
 describe('completeWorkItemInteractor', () => {
   let mockWorkItem = {
@@ -21,8 +21,8 @@ describe('completeWorkItemInteractor', () => {
   };
 
   const mockPetitionerUser = {
-    name: 'Petitioner',
-    role: User.ROLES.petitioner,
+    name: PARTY_TYPES.petitioner,
+    role: ROLES.petitioner,
     userId: 'petitioner',
   };
 

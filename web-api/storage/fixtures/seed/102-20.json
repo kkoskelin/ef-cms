@@ -1,6 +1,6 @@
 [
   {
-    "docketNumberSuffix": "S",
+    "docketNumberWithSuffix": "102-20S",
     "caseStatus": "New",
     "caseIsInProgress": false,
     "gsi1pk": "work-item|77d8449a-ffe1-48e5-b056-a6112a819a4b",
@@ -15,6 +15,7 @@
       "pending": false,
       "partySecondary": false,
       "documentId": "d854a954-7332-4e92-93bd-dc28c9fea0a5",
+      "numberOfPages": 1,
       "receivedAt": "2020-01-21T16:41:39.481Z",
       "filingDate": "2020-01-21T16:41:39.481Z",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
@@ -25,7 +26,8 @@
     "isInitializeCase": true,
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-21T16:41:39.482Z",
     "assigneeName": null,
     "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
@@ -45,7 +47,15 @@
   },
   {
     "sk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
-    "pk": "user|ad07b846-8933-4778-9fe2-b5d8ac8ad728"
+    "gsi1pk": "user-case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "pk": "user|ad07b846-8933-4778-9fe2-b5d8ac8ad728",
+    "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "createdAt": "2020-01-21T16:41:39.474Z",
+    "caseCaption": "Eve Brewer, Petitioner",
+    "docketNumber": "102-20",
+    "docketNumberWithSuffix": "102-20S",
+    "status": "New",
+    "entityName": "UserCase"
   },
   {
     "sk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
@@ -58,10 +68,18 @@
   },
   {
     "sk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
-    "pk": "user|5805d1ab-18d0-43ec-bafb-654e83405416"
+    "gsi1pk": "user-case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "pk": "user|5805d1ab-18d0-43ec-bafb-654e83405416",
+    "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "createdAt": "2020-01-21T16:41:39.474Z",
+    "caseCaption": "Eve Brewer, Petitioner",
+    "docketNumber": "102-20",
+    "docketNumberWithSuffix": "102-20S",
+    "status": "New",
+    "entityName": "UserCase"
   },
   {
-    "docketNumberSuffix": "S",
+    "docketNumberWithSuffix": "102-20S",
     "caseStatus": "New",
     "caseIsInProgress": false,
     "gsi1pk": "work-item|77d8449a-ffe1-48e5-b056-a6112a819a4b",
@@ -76,6 +94,7 @@
       "pending": false,
       "partySecondary": false,
       "documentId": "d854a954-7332-4e92-93bd-dc28c9fea0a5",
+      "numberOfPages": 1,
       "receivedAt": "2020-01-21T16:41:39.481Z",
       "filingDate": "2020-01-21T16:41:39.481Z",
       "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
@@ -86,7 +105,8 @@
     "isInitializeCase": true,
     "assigneeId": null,
     "isQC": true,
-    "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+    "sentBy": "Test Petitioner",
+    "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "createdAt": "2020-01-21T16:41:39.482Z",
     "assigneeName": null,
     "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
@@ -129,7 +149,7 @@
       "name": "Eve Brewer",
       "state": "TN",
       "countryType": "domestic",
-      "email": "petitioner"
+      "email": "petitioner@example.com"
     },
     "noticeOfAttachments": false,
     "caseCaption": "Eve Brewer, Petitioner",
@@ -140,7 +160,6 @@
     "orderForRatification": false,
     "initialDocketNumberSuffix": "S",
     "docketNumberSuffix": "S",
-    "orderToChangeDesignatedPlaceOfTrial": false,
     "noticeOfTrialDate": "2020-01-21T16:41:39.474Z",
     "userId": "7805d1ab-18d0-43ec-bafb-654e83405416",
     "orderForAmendedPetition": false,
@@ -150,6 +169,7 @@
     "orderForAmendedPetitionAndFilingFee": false,
     "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
     "docketNumber": "102-20",
+    "docketNumberWithSuffix": "102-20S",
     "status": "New"
   },
   {
@@ -157,6 +177,7 @@
     "description": "Petition",
     "index": 1,
     "documentId": "d854a954-7332-4e92-93bd-dc28c9fea0a5",
+    "numberOfPages": 1,
     "filingDate": "2020-01-21T16:41:39.481Z",
     "filedBy": "Petr. Eve Brewer",
     "docketRecordId": "48f4a2be-6395-4fc0-9439-f99e365c38ff",
@@ -173,12 +194,20 @@
     "sk": "docket-record|f15a6532-9805-479b-ae45-e8f112153d2a"
   },
   {
-    "sk": "case|77d8449a-ffe1-48e5-b056-a6112a819a4b",
-    "pk": "work-item|c862926c-119f-49d5-8cc3-6e93ab703fa3"
+    "sk": "work-item|77d8449a-ffe1-48e5-b056-a6112a819a4b",
+    "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3"
   },
   {
-    "sk": "work-item|c862926c-119f-49d5-8cc3-6e93ab703fa3",
-    "pk": "case|7805d1ab-18d0-43ec-bafb-654e83405416"
+    "sk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "gsi1pk": "user-case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "pk": "user|7805d1ab-18d0-43ec-bafb-654e83405416",
+    "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
+    "createdAt": "2020-01-21T16:41:39.474Z",
+    "caseCaption": "Eve Brewer, Petitioner",
+    "docketNumber": "102-20",
+    "docketNumberWithSuffix": "102-20S",
+    "status": "New",
+    "entityName": "UserCase"
   },
   {
     "role": "irsPractitioner",
@@ -199,7 +228,7 @@
     "section": "irsPractitioner",
     "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
     "userId": "5805d1ab-18d0-43ec-bafb-654e83405416",
-    "email": "irsPractitioner"
+    "email": "irsPractitioner@example.com"
   },
   {
     "role": "privatePractitioner",
@@ -221,7 +250,7 @@
     "representingPrimary": true,
     "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3",
     "userId": "ad07b846-8933-4778-9fe2-b5d8ac8ad728",
-    "email": "privatePractitioner1"
+    "email": "privatePractitioner1@example.com"
   },
   {
     "documentType": "Statement of Taxpayer Identification",
@@ -241,6 +270,7 @@
     "sk": "document|3afdcbdd-2ee9-41dd-83ff-8b0ffb7d7d6a",
     "partySecondary": false,
     "documentId": "3afdcbdd-2ee9-41dd-83ff-8b0ffb7d7d6a",
+    "numberOfPages": 1,
     "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3"
   },
   {
@@ -266,6 +296,7 @@
           "pending": false,
           "partySecondary": false,
           "documentId": "d854a954-7332-4e92-93bd-dc28c9fea0a5",
+          "numberOfPages": 1,
           "receivedAt": "2020-01-21T16:41:39.481Z",
           "userId": "7805d1ab-18d0-43ec-bafb-654e83405416"
         },
@@ -275,7 +306,8 @@
         "isInitializeCase": true,
         "assigneeId": null,
         "isQC": true,
-        "sentBy": "7805d1ab-18d0-43ec-bafb-654e83405416",
+        "sentBy": "Test Petitioner",
+        "sentByUserId": "7805d1ab-18d0-43ec-bafb-654e83405416",
         "createdAt": "2020-01-21T16:41:39.482Z",
         "assigneeName": null,
         "caseId": "c862926c-119f-49d5-8cc3-6e93ab703fa3",
@@ -303,6 +335,7 @@
     "sk": "document|d854a954-7332-4e92-93bd-dc28c9fea0a5",
     "partySecondary": false,
     "documentId": "d854a954-7332-4e92-93bd-dc28c9fea0a5",
+    "numberOfPages": 1,
     "pk": "case|c862926c-119f-49d5-8cc3-6e93ab703fa3"
   }
 ]

@@ -1,11 +1,14 @@
 const {
+  CASE_STATUS_TYPES,
+  COUNTRY_TYPES,
+} = require('../entities/EntityConstants');
+const {
   getDocumentQCInboxForSectionInteractor,
 } = require('../useCases/workitems/getDocumentQCInboxForSectionInteractor');
 const { applicationContext } = require('../test/createTestApplicationContext');
-const { Case } = require('../entities/cases/Case');
-const { ContactFactory } = require('../entities/contacts/ContactFactory');
 const { createCaseInteractor } = require('../useCases/createCaseInteractor');
 const { getCaseInteractor } = require('../useCases/getCaseInteractor');
+const { PARTY_TYPES, ROLES } = require('../entities/EntityConstants');
 const { User } = require('../entities/User');
 
 describe('createCase integration test', () => {
@@ -16,7 +19,7 @@ describe('createCase integration test', () => {
   });
 
   it('should create the expected case into the database', async () => {
-    const { caseId } = await createCaseInteractor({
+    const { docketNumber } = await createCaseInteractor({
       applicationContext,
       petitionFileId: '92eac064-9ca5-4c56-80a0-c5852c752277',
       petitionMetadata: {
@@ -26,17 +29,17 @@ describe('createCase integration test', () => {
           address2: 'Ad cumque quidem lau',
           address3: 'Anim est dolor animi',
           city: 'Rerum eaque cupidata',
-          countryType: 'domestic',
+          countryType: COUNTRY_TYPES.DOMESTIC,
           email: 'petitioner@example.com',
           name: 'Rick Petitioner',
           phone: '+1 (599) 681-5435',
           postalCode: '89614',
-          state: 'AP',
+          state: 'AL',
         },
         contactSecondary: {},
         filingType: 'Myself',
         hasIrsNotice: false,
-        partyType: ContactFactory.PARTY_TYPES.petitioner,
+        partyType: PARTY_TYPES.petitioner,
         preferredTrialCity: 'Aberdeen, South Dakota',
         procedureType: 'Small',
       },
@@ -45,13 +48,13 @@ describe('createCase integration test', () => {
 
     const createdCase = await getCaseInteractor({
       applicationContext,
-      caseId,
+      docketNumber,
     });
 
     expect(createdCase).toMatchObject({
       caseCaption: 'Rick Petitioner, Petitioner',
       docketNumber: '101-19',
-      docketNumberSuffix: 'S',
+      docketNumberWithSuffix: '101-19S',
       docketRecord: [
         {
           description: 'Petition',
@@ -71,9 +74,9 @@ describe('createCase integration test', () => {
             {
               assigneeId: null,
               assigneeName: null,
-              caseStatus: Case.STATUS_TYPES.new,
+              caseStatus: CASE_STATUS_TYPES.new,
               docketNumber: '101-19',
-              docketNumberSuffix: 'S',
+              docketNumberWithSuffix: '101-19S',
               document: {
                 documentType: 'Petition',
                 filedBy: 'Petr. Rick Petitioner',
@@ -88,7 +91,8 @@ describe('createCase integration test', () => {
                 },
               ],
               section: 'petitions',
-              sentBy: 'a805d1ab-18d0-43ec-bafb-654e83405416',
+              sentBy: 'Alex Petitionsclerk',
+              sentByUserId: 'a805d1ab-18d0-43ec-bafb-654e83405416',
             },
           ],
         },
@@ -105,18 +109,18 @@ describe('createCase integration test', () => {
       noticeOfAttachments: false,
       orderForAmendedPetition: false,
       orderForAmendedPetitionAndFilingFee: false,
-      orderForFilingFee: false,
+      orderForFilingFee: true,
       orderForOds: false,
       orderForRatification: false,
       orderToShowCause: false,
-      status: Case.STATUS_TYPES.new,
+      status: CASE_STATUS_TYPES.new,
       userId: 'a805d1ab-18d0-43ec-bafb-654e83405416',
     });
 
     applicationContext.getCurrentUser.mockReturnValue(
       new User({
         name: 'richard',
-        role: User.ROLES.petitionsClerk,
+        role: ROLES.petitionsClerk,
         userId: '3805d1ab-18d0-43ec-bafb-654e83405416',
       }),
     );
@@ -129,9 +133,9 @@ describe('createCase integration test', () => {
     expect(docketsSectionInbox).toMatchObject([
       {
         assigneeName: null,
-        caseStatus: Case.STATUS_TYPES.new,
+        caseStatus: CASE_STATUS_TYPES.new,
         docketNumber: '101-19',
-        docketNumberSuffix: 'S',
+        docketNumberWithSuffix: '101-19S',
         document: {
           documentType: 'Petition',
           eventCode: 'P',
@@ -147,7 +151,8 @@ describe('createCase integration test', () => {
           },
         ],
         section: 'petitions',
-        sentBy: 'a805d1ab-18d0-43ec-bafb-654e83405416',
+        sentBy: 'Alex Petitionsclerk',
+        sentByUserId: 'a805d1ab-18d0-43ec-bafb-654e83405416',
       },
     ]);
   });

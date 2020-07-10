@@ -7,7 +7,7 @@ const {
 } = require('../../../authorization/authorizationClientService');
 const { capitalize, pick } = require('lodash');
 const { Case } = require('../../entities/cases/Case');
-const { DOCKET_SECTION } = require('../../entities/WorkQueue');
+const { DOCKET_SECTION } = require('../../entities/EntityConstants');
 const { DocketRecord } = require('../../entities/DocketRecord');
 const { Document } = require('../../entities/Document');
 const { Message } = require('../../entities/Message');
@@ -81,12 +81,10 @@ exports.fileExternalDocumentForConsolidatedInteractor = async ({
 
   if (secondaryDocument) {
     secondaryDocument.lodged = true;
-    secondaryDocument.eventCode = 'MISL';
   }
   if (secondarySupportingDocuments) {
     secondarySupportingDocuments.forEach(item => {
       item.lodged = true;
-      item.eventCode = 'MISL';
     });
   }
 
@@ -177,14 +175,15 @@ exports.fileExternalDocumentForConsolidatedInteractor = async ({
                 caseStatus: caseEntity.status,
                 caseTitle: Case.getCaseTitle(Case.getCaseCaption(caseEntity)),
                 docketNumber: caseEntity.docketNumber,
-                docketNumberSuffix: caseEntity.docketNumberSuffix,
+                docketNumberWithSuffix: caseEntity.docketNumberWithSuffix,
                 document: {
                   ...documentEntity.toRawObject(),
                   createdAt: documentEntity.createdAt,
                 },
                 isQC: true,
                 section: DOCKET_SECTION,
-                sentBy: user.userId,
+                sentBy: user.name,
+                sentByUserId: user.userId,
               },
               { applicationContext },
             );

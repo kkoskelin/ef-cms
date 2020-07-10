@@ -46,7 +46,7 @@ exports.generatePrintableFilingReceiptInteractor = async ({
 
   if (documentsFiled.hasSupportingDocuments) {
     filingReceiptDocumentParams.supportingDocuments = documentsFiled.supportingDocuments.map(
-      supportingDocument => getDocumentInfo(supportingDocument),
+      getDocumentInfo,
     );
   }
 
@@ -58,8 +58,7 @@ exports.generatePrintableFilingReceiptInteractor = async ({
 
   if (documentsFiled.hasSecondarySupportingDocuments) {
     filingReceiptDocumentParams.secondarySupportingDocuments = documentsFiled.secondarySupportingDocuments.map(
-      secondarySupportingDocument =>
-        getDocumentInfo(secondarySupportingDocument),
+      getDocumentInfo,
     );
   }
 
@@ -70,9 +69,7 @@ exports.generatePrintableFilingReceiptInteractor = async ({
     data: {
       caseCaptionExtension,
       caseTitle,
-      docketNumberWithSuffix: `${caseEntity.docketNumber}${
-        caseEntity.docketNumberSuffix || ''
-      }`,
+      docketNumberWithSuffix: caseEntity.docketNumberWithSuffix,
       filedAt: applicationContext
         .getUtilities()
         .formatDateString(primaryDocument.receivedAt, 'DATE_TIME_TZ'),

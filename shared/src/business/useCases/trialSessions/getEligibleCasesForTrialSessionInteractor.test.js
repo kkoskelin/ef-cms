@@ -4,9 +4,9 @@ const {
 const {
   getEligibleCasesForTrialSessionInteractor,
 } = require('./getEligibleCasesForTrialSessionInteractor');
-const { User } = require('../../entities/User');
-
 const { MOCK_CASE } = require('../../../test/mockCase');
+const { ROLES } = require('../../entities/EntityConstants');
+const { User } = require('../../entities/User');
 
 const MOCK_TRIAL = {
   maxCases: 100,
@@ -43,7 +43,7 @@ describe('getEligibleCasesForTrialSessionInteractor', () => {
       () =>
         new User({
           name: 'Docket Clerk',
-          role: User.ROLES.docketClerk,
+          role: ROLES.docketClerk,
           userId: '6805d1ab-18d0-43ec-bafb-654e83405416',
         }),
     );
@@ -73,7 +73,7 @@ describe('getEligibleCasesForTrialSessionInteractor', () => {
       () =>
         new User({
           name: 'Docket Clerk',
-          role: User.ROLES.docketClerk,
+          role: ROLES.docketClerk,
           userId: '6805d1ab-18d0-43ec-bafb-654e83405416',
         }),
     );

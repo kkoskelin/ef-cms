@@ -2,6 +2,7 @@ const {
   validatePrimaryContactInteractor,
 } = require('./validatePrimaryContactInteractor');
 const { ContactFactory } = require('../entities/contacts/ContactFactory');
+const { COUNTRY_TYPES, PARTY_TYPES } = require('../entities/EntityConstants');
 
 describe('validatePrimaryContactInteractor', () => {
   it('runs validation on a contact with no invalid properties', async () => {
@@ -10,7 +11,7 @@ describe('validatePrimaryContactInteractor', () => {
       address2: 'Grand View Apartments',
       address3: 'Apt. #104',
       city: 'Jordan',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'night@theroxbury.com',
       name: 'Wilbur Rayou',
       phone: '1111111111',
@@ -18,7 +19,7 @@ describe('validatePrimaryContactInteractor', () => {
       state: 'MN',
     };
 
-    const partyType = ContactFactory.PARTY_TYPES.petitioner;
+    const partyType = PARTY_TYPES.petitioner;
 
     const errors = validatePrimaryContactInteractor({
       contactInfo: contactPrimary,
@@ -34,7 +35,7 @@ describe('validatePrimaryContactInteractor', () => {
       address2: 'Grand View Apartments',
       address3: 'Apt. #104',
       city: 'Jordan',
-      countryType: 'domestic',
+      countryType: COUNTRY_TYPES.DOMESTIC,
       email: 'night@theroxbury.com',
       name: 'Wilbur Rayou',
       phone: '1111111111',
@@ -42,7 +43,7 @@ describe('validatePrimaryContactInteractor', () => {
       state: 'MN',
     };
 
-    const partyType = ContactFactory.PARTY_TYPES.petitioner;
+    const partyType = PARTY_TYPES.petitioner;
 
     const errors = validatePrimaryContactInteractor({
       contactInfo: contactPrimary,
