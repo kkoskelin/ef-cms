@@ -1,9 +1,10 @@
+const { CASE_TYPES_MAP } = require('../entities/EntityConstants');
 const { getDocketNumberSuffix } = require('./getDocketNumberSuffix');
 
 describe('getDocketNumberSuffix', () => {
   it('returns W for Whistleblower caseType', () => {
     const suffix = getDocketNumberSuffix({
-      caseType: 'Whistleblower',
+      caseType: CASE_TYPES_MAP.whistleblower,
       docketNumber: '101-18',
       procedureType: 'Small',
     });
@@ -23,7 +24,7 @@ describe('getDocketNumberSuffix', () => {
 
   it('returns X for "Exempt Organization" caseType', () => {
     const suffix = getDocketNumberSuffix({
-      caseType: 'Declaratory Judgment (Exempt Organization)',
+      caseType: CASE_TYPES_MAP.djExemptOrg,
       docketNumber: '101-18',
       procedureType: 'Small',
     });
@@ -33,7 +34,7 @@ describe('getDocketNumberSuffix', () => {
 
   it('returns R for "Retirement Plan" caseType', () => {
     const suffix = getDocketNumberSuffix({
-      caseType: 'Declaratory Judgment (Retirement Plan)',
+      caseType: CASE_TYPES_MAP.djRetirementPlan,
       docketNumber: '101-18',
       procedureType: 'Small',
     });
@@ -43,7 +44,7 @@ describe('getDocketNumberSuffix', () => {
 
   it('returns SL for "Lien/Levy" caseType and "small" for procedureType', () => {
     const suffix = getDocketNumberSuffix({
-      caseType: 'CDP (Lien/Levy)',
+      caseType: CASE_TYPES_MAP.cdp,
       docketNumber: '101-18',
       procedureType: 'Small',
     });
@@ -53,7 +54,7 @@ describe('getDocketNumberSuffix', () => {
 
   it('returns L for "Lien/Levy" caseType and "regular" for procedureType', () => {
     const suffix = getDocketNumberSuffix({
-      caseType: 'CDP (Lien/Levy)',
+      caseType: CASE_TYPES_MAP.cdp,
       docketNumber: '101-18',
       procedureType: 'Regular',
     });

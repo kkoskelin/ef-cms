@@ -2,11 +2,12 @@ const {
   applicationContext,
 } = require('../../test/createTestApplicationContext');
 const {
+  AUTOMATIC_BLOCKED_REASONS,
+  CASE_TYPES_MAP,
   COUNTRY_TYPES,
   PARTY_TYPES,
   ROLES,
 } = require('../../entities/EntityConstants');
-const { AUTOMATIC_BLOCKED_REASONS } = require('../../entities/EntityConstants');
 const { fileDocketEntryInteractor } = require('./fileDocketEntryInteractor');
 
 describe('fileDocketEntryInteractor', () => {
@@ -22,7 +23,7 @@ describe('fileDocketEntryInteractor', () => {
     caseRecord = {
       caseCaption: 'Caption',
       caseId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
-      caseType: 'Deficiency',
+      caseType: CASE_TYPES_MAP.deficiency,
       contactPrimary: {
         address1: '123 Main St',
         city: 'Somewhere',
@@ -121,53 +122,6 @@ describe('fileDocketEntryInteractor', () => {
       applicationContext.getPersistenceGateway().saveWorkItemForNonPaper,
     ).not.toBeCalled();
     expect(applicationContext.getPersistenceGateway().updateCase).toBeCalled();
-  });
-
-  it('sets lodged to true on any secondaryDocument', async () => {
-    await fileDocketEntryInteractor({
-      applicationContext,
-      documentMetadata: {
-        caseId: caseRecord.caseId,
-        documentTitle: 'Memorandum in Support',
-        documentType: 'Memorandum in Support',
-        eventCode: 'MISP',
-        filedBy: 'Test Petitioner',
-        isFileAttached: true,
-        lodged: true,
-        secondaryDocument: {
-          documentTitle: 'Memorandum in Support',
-          documentType: 'Memorandum in Support',
-          eventCode: 'MISP',
-          filedBy: 'Test Petitioner',
-          isFileAttached: true,
-        },
-        secondarySupportingDocumentMetadata: {
-          documentTitle: 'Memorandum in Support',
-          documentType: 'Memorandum in Support',
-          eventCode: 'MISP',
-          filedBy: 'Test Petitioner',
-          isFileAttached: true,
-        },
-      },
-      primaryDocumentFileId: 'c54ba5a9-b37b-479d-9201-067ec6e335bb',
-      secondaryDocumentFileId: 'd54ba5a9-b37b-479d-9201-067ec6e335bb',
-      secondarySupportingDocumentFileId: 'e54ba5a9-b37b-479d-9201-067ec6e335bb',
-    });
-
-    expect(
-      applicationContext.getPersistenceGateway().updateCase.mock.calls[0][0]
-        .caseToUpdate.documents[4],
-    ).toMatchObject({
-      eventCode: 'MISP',
-      lodged: true,
-    });
-    expect(
-      applicationContext.getPersistenceGateway().updateCase.mock.calls[0][0]
-        .caseToUpdate.documents[5],
-    ).toMatchObject({
-      eventCode: 'MISP',
-      lodged: true,
-    });
   });
 
   it('sets the case as blocked if the document filed is a tracked document type', async () => {

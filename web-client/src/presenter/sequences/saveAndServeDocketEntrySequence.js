@@ -17,6 +17,7 @@ import { saveDocketEntryAction } from '../actions/DocketEntry/saveDocketEntryAct
 import { setAlertErrorAction } from '../actions/setAlertErrorAction';
 import { setAlertSuccessAction } from '../actions/setAlertSuccessAction';
 import { setCaseAction } from '../actions/setCaseAction';
+import { setDocumentIdAction } from '../actions/setDocumentIdAction';
 import { setDocumentIsRequiredAction } from '../actions/DocketEntry/setDocumentIsRequiredAction';
 import { setPdfPreviewUrlAction } from '../actions/CourtIssuedOrder/setPdfPreviewUrlAction';
 import { setSaveAlertsForNavigationAction } from '../actions/setSaveAlertsForNavigationAction';
@@ -26,6 +27,7 @@ import { setValidationErrorsAction } from '../actions/setValidationErrorsAction'
 import { showProgressSequenceDecorator } from '../utilities/sequenceHelpers';
 import { startShowValidationAction } from '../actions/startShowValidationAction';
 import { stopShowValidationAction } from '../actions/stopShowValidationAction';
+import { suggestSaveForLaterValidationAction } from '../actions/DocketEntry/suggestSaveForLaterValidationAction';
 import { uploadDocketEntryFileAction } from '../actions/DocketEntry/uploadDocketEntryFileAction';
 import { validateDocketEntryAction } from '../actions/DocketEntry/validateDocketEntryAction';
 
@@ -41,6 +43,7 @@ const afterEntryCreated = showProgressSequenceDecorator([
       navigateToCaseDetailAction,
     ],
     isPaper: [
+      setDocumentIdAction,
       completeDocketEntryQCAction,
       setPdfPreviewUrlAction,
       gotoPrintPaperServiceSequence,
@@ -63,6 +66,7 @@ export const saveAndServeDocketEntrySequence = [
       validateDocketEntryAction,
       {
         error: [
+          suggestSaveForLaterValidationAction,
           setAlertErrorAction,
           setValidationErrorsAction,
           setValidationAlertErrorsAction,
