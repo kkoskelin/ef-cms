@@ -23,13 +23,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
     - name: Cache Node.js modules
-      uses: actions/cache@v1
+      id: cache-modules
+      uses: actions/cache@v2
       with:
-        path: ./node_modules
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.OS }}-node-
@@ -57,17 +59,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache Node.js modules
-      uses: actions/cache@v1
+    - uses: actions/cache@v2
+      id: cache-modules
       with:
-        path: ./node_modules
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-        
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
+
     - name: Web API - Test
       run: npm run test:api:ci
 
@@ -84,17 +90,20 @@ jobs:
         node-version: [12.x]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache Node.js modules
-      uses: actions/cache@v1
+    - uses: actions/cache@v2
+      id: cache-modules
       with:
-        path: ./node_modules
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-        
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Shared - Test
       run: npm run test:shared:ci
 
@@ -112,17 +121,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache Node.js modules
-      uses: actions/cache@v1
+    - uses: actions/cache@v2
+      id: cache-modules
       with:
-        path: ./node_modules
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-        
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Web Client - Unit Test
       run: npm run test:client:unit:ci
 
@@ -140,17 +152,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache Node.js modules
-      uses: actions/cache@v1
+    - uses: actions/cache@v2
+      id: cache-modules
       with:
-        path: ./node_modules
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-        
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
