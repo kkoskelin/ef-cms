@@ -2,6 +2,8 @@ const {
   CASE_STATUS_TYPES,
   CASE_TYPES_MAP,
   COUNTRY_TYPES,
+  DOCKET_NUMBER_SUFFIXES,
+  INITIAL_DOCUMENT_TYPES,
 } = require('../entities/EntityConstants');
 const {
   getDocumentQCInboxForSectionInteractor,
@@ -98,15 +100,15 @@ describe('createCase integration test', () => {
           ],
         },
         {
-          documentType: 'Statement of Taxpayer Identification',
-          eventCode: 'STIN',
+          documentType: INITIAL_DOCUMENT_TYPES.stin.documentType,
+          eventCode: INITIAL_DOCUMENT_TYPES.stin.eventCode,
           filedBy: 'Petr. Rick Petitioner',
           userId: 'a805d1ab-18d0-43ec-bafb-654e83405416',
           workItems: [],
         },
       ],
       initialCaption: 'Rick Petitioner, Petitioner',
-      initialDocketNumberSuffix: 'S',
+      initialDocketNumberSuffix: DOCKET_NUMBER_SUFFIXES.SMALL,
       noticeOfAttachments: false,
       orderForAmendedPetition: false,
       orderForAmendedPetitionAndFilingFee: false,

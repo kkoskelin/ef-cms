@@ -1,28 +1,102 @@
-name: Node.js CI
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Linting and Tests
 
 on:
-  push:
-    branches: [ develop, experimental1, master ]
+  # push:
+  #   branches: [ develop, experimental, master ]
   pull_request:
-    branches: [ develop, experimental1, master ]
+    branches: [ develop, experimental, master ]
 
 jobs:
-  linting:
+  bundle:
+    name: Build and bundle
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
     strategy:
       matrix:
         node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
     - name: NPM Install
-      run: npm ci --no-optional && npm rebuild node-sass
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Lint
       run: npm run lint
     - name: Shellcheck
       run: ./run-shellcheck.sh
+    - name: Web API - Test
+      run: npm run test:api:ci
+    - name: Shared - Test
+      run: npm run test:shared:ci
+    - name: Web Client - Unit Test
+      run: npm run test:client:unit:ci
+    - name: Setup DynamoDB Local
+      uses: rrainn/dynamodb-action@v2.0.0
+      with:
+        dbPath: ./
+        optimizeDbBeforeStartup: true
+        sharedDb: true
+        port: 8000
+        cors: '*'
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Start elasticsearch
+      uses: getong/elasticsearch-action@v1.2
+      with:
+        elasticsearch version: '7.5.2'
+        host port: 9200
+        container port: 9200
+        host node port: 9300
+        node port: 9300
+        discovery type: 'single-node'
+    - name: Run Pa11y
+      env:
+        SKIP_CACHE_INVALIDATION: "true"
+        SLS_DEBUG: "*"
+        AWS_ACCESS_KEY_ID: "noop"
+        AWS_SECRET_ACCESS_KEY: "noop"
+      run: |
+        npm run clean
+        npm run build:assets
+        mkdir -p web-api/dist
+        USTC_ENV=prod parcel build --no-source-maps web-client/src/index.pug
+        npm run start:api:ci &
+        sleep 15
+        ./wait-until.sh http://localhost:4000/api/swagger
+        ./wait-until-services.sh
+        npx run-p start:client:ci start:public:ci &
+        ./wait-until.sh http://localhost:1234/
+        ./wait-until.sh http://localhost:5678/
+        echo "Internal and public are now listening"
+        sleep 15
+        npm run test:pa11y:1 --node-flags --max-old-space-size=1024
+        npm run test:pa11y:2 --node-flags --max-old-space-size=1024
+        npm run test:pa11y:3 --node-flags --max-old-space-size=1024
+        npm run test:pa11y:public --node-flags --max-old-space-size=1024
+    - name: Archive production artifacts  
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist
+        path: dist

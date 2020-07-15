@@ -4,15 +4,17 @@ import { runCompute } from 'cerebral/test';
 import { withAppContextDecorator } from '../../withAppContext';
 
 describe('formattedPendingItems', () => {
+  const {
+    CHIEF_JUDGE,
+    DOCKET_NUMBER_SUFFIXES,
+    DOCUMENT_PROCESSING_STATUS_OPTIONS,
+    DOCUMENT_RELATIONSHIPS,
+    STATUS_TYPES,
+  } = applicationContext.getConstants();
+
   const formattedPendingItems = withAppContextDecorator(
     formattedPendingItemsComputed,
   );
-
-  const {
-    CHIEF_JUDGE,
-    DOCUMENT_PROCESSING_STATUS_OPTIONS,
-    STATUS_TYPES,
-  } = applicationContext.getConstants();
 
   const mockPendingItems = [
     {
@@ -24,7 +26,7 @@ describe('formattedPendingItems', () => {
       certificateOfServiceDate: null,
       createdAt: '2019-01-10',
       docketNumber: '101-19',
-      docketNumberSuffix: 'W',
+      docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
       documentId: '33ddbf4f-90f8-417c-8967-57851b0b9069',
       documentType: 'Administrative Record',
       eventCode: 'ADMR',
@@ -37,7 +39,7 @@ describe('formattedPendingItems', () => {
       privatePractitioners: [],
       processingStatus: DOCUMENT_PROCESSING_STATUS_OPTIONS.COMPLETE,
       receivedAt: '2019-01-10',
-      relationship: 'primaryDocument',
+      relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
       scenario: 'Standard',
       userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
       workItems: [
@@ -52,7 +54,7 @@ describe('formattedPendingItems', () => {
           completedMessage: 'completed',
           createdAt: '2019-11-13T00:38:59.048Z',
           docketNumber: '101-19',
-          docketNumberSuffix: 'W',
+          docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
           document: {
             caseId: '2fa6da8d-4328-4a20-a5d7-b76637e1dc02',
             category: 'Miscellaneous',
@@ -72,7 +74,7 @@ describe('formattedPendingItems', () => {
             privatePractitioners: [],
             processingStatus: 'pending',
             receivedAt: '2019-01-10',
-            relationship: 'primaryDocument',
+            relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
             scenario: 'Standard',
             userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
           },
@@ -106,7 +108,7 @@ describe('formattedPendingItems', () => {
       certificateOfServiceDate: null,
       createdAt: '2018-01-20',
       docketNumber: '101-19',
-      docketNumberSuffix: 'W',
+      docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
       documentId: 'dd956ab1-5cde-4e78-bae0-ac7faee40426',
       documentTitle: 'Affidavit of Bob in Support of Petition',
       documentType: 'Affidavit in Support',
@@ -122,7 +124,7 @@ describe('formattedPendingItems', () => {
       privatePractitioners: [],
       processingStatus: DOCUMENT_PROCESSING_STATUS_OPTIONS.COMPLETE,
       receivedAt: '2018-01-20',
-      relationship: 'primaryDocument',
+      relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
       scenario: 'Nonstandard C',
       userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
       workItems: [
@@ -137,7 +139,7 @@ describe('formattedPendingItems', () => {
           completedMessage: 'completed',
           createdAt: '2019-11-13T02:26:51.448Z',
           docketNumber: '101-19',
-          docketNumberSuffix: 'W',
+          docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
           document: {
             caseId: '2fa6da8d-4328-4a20-a5d7-b76637e1dc02',
             category: 'Supporting Document',
@@ -159,7 +161,7 @@ describe('formattedPendingItems', () => {
             privatePractitioners: [],
             processingStatus: 'pending',
             receivedAt: '2019-01-20',
-            relationship: 'primaryDocument',
+            relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
             scenario: 'Nonstandard C',
             userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
           },
@@ -193,7 +195,7 @@ describe('formattedPendingItems', () => {
       certificateOfServiceDate: null,
       createdAt: '2018-01-20',
       docketNumber: '103-19',
-      docketNumberSuffix: 'W',
+      docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
       documentId: 'dd956ab1-5cde-4e78-bae0-ac7faee40426',
       documentTitle: 'Affidavit of Bob in Support of Petition',
       documentType: 'Affidavit in Support',
@@ -209,7 +211,7 @@ describe('formattedPendingItems', () => {
       privatePractitioners: [],
       processingStatus: DOCUMENT_PROCESSING_STATUS_OPTIONS.COMPLETE,
       receivedAt: '2018-01-20',
-      relationship: 'primaryDocument',
+      relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
       scenario: 'Nonstandard C',
       userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
       workItems: [
@@ -224,7 +226,7 @@ describe('formattedPendingItems', () => {
           completedMessage: 'completed',
           createdAt: '2019-11-13T02:26:51.448Z',
           docketNumber: '101-19',
-          docketNumberSuffix: 'W',
+          docketNumberSuffix: DOCKET_NUMBER_SUFFIXES.WHISTLEBLOWER,
           document: {
             caseId: '421872dc-e87d-4214-8ad0-c861d9b76c88',
             category: 'Supporting Document',
@@ -246,7 +248,7 @@ describe('formattedPendingItems', () => {
             privatePractitioners: [],
             processingStatus: 'pending',
             receivedAt: '2019-01-20',
-            relationship: 'primaryDocument',
+            relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
             scenario: 'Nonstandard C',
             userId: '1805d1ab-18d0-43ec-bafb-654e83405416',
           },

@@ -24,7 +24,15 @@ const DOCUMENT_PROCESSING_STATUS_OPTIONS = {
 
 const CHIEF_JUDGE = 'Chief Judge';
 
-const DOCKET_NUMBER_SUFFIXES = ['W', 'P', 'X', 'R', 'SL', 'L', 'S'];
+const DOCKET_NUMBER_SUFFIXES = {
+  DECLARATORY_JUDGEMENTS_FOR_EXEMPT_ORGS: 'X',
+  DECLARATORY_JUDGEMENTS_FOR_RETIREMENT_PLAN_REVOCATION: 'R',
+  LIEN_LEVY: 'L',
+  PASSPORT: 'P',
+  SMALL: 'S',
+  SMALL_LIEN_LEVY: 'SL',
+  WHISTLEBLOWER: 'W',
+};
 
 const CASE_STATUS_TYPES = {
   assignedCase: 'Assigned - Case', // Case has been assigned to a judge
@@ -41,13 +49,13 @@ const CASE_STATUS_TYPES = {
   submitted: 'Submitted', // Submitted to the judge for decision
 };
 
-const DOCUMENT_RELATIONSHIPS = [
-  'primaryDocument',
-  'primarySupportingDocument',
-  'secondaryDocument',
-  'secondarySupportingDocument',
-  'supportingDocument',
-];
+const DOCUMENT_RELATIONSHIPS = {
+  PRIMARY: 'primaryDocument',
+  PRIMARY_SUPPORTING: 'primarySupportingDocument',
+  SECONDARY: 'secondaryDocument',
+  SECONDARY_SUPPORTING: 'secondarySupportingDocument',
+  SUPPORTING: 'supportingDocument',
+};
 
 // This docket entry type isn't defined anywhere else
 const STIN_DOCKET_ENTRY_TYPE = {
