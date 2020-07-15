@@ -160,6 +160,7 @@ jobs:
         echo "Internal and public are now listening"
         sleep 15
     - name: Run Pa11y
+      run: |    
         npm run test:pa11y:1 --node-flags --max-old-space-size=1024
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
