@@ -78,15 +78,13 @@ jobs:
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npm run build:assets
-        npm run build:_api -- web-api/src/*Handlers.js
+        npm run build:all
         mkdir -p web-api/dist
-        cp web-api/src/*Handlers.js web-api/dist/
         USTC_ENV=prod parcel build --no-source-maps web-client/src/index.pug
         npm run build:jsdoc
         npm run start:api:ci &
         sleep 15
-        ./wait-until.sh http://localhost:3000/api/swagger
+        ./wait-until.sh http://localhost:4000/api/swagger
         ./wait-until-services.sh
         npx run-p start:client:ci start:public:ci &
         ./wait-until.sh http://localhost:1234/
