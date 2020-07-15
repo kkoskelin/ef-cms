@@ -4,8 +4,8 @@
 name: Linting and Unit Tests
 
 on:
-  # push:
-  #   branches: [ develop, experimental, master ]
+  push:
+    branches: [ develop, experimental, master ]
   pull_request:
     branches: [ develop, experimental, master ]
 
