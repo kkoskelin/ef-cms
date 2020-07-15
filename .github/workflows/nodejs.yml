@@ -78,7 +78,8 @@ jobs:
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npm run build:all
+        npm run clean
+        npm run build:assets
         mkdir -p web-api/dist
         USTC_ENV=prod parcel build --no-source-maps web-client/src/index.pug
         npm run build:jsdoc
