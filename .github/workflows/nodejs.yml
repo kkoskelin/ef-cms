@@ -56,6 +56,22 @@ jobs:
         node-version: [12.x]
 
     steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
+    - name: NPM Install
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass      
     - name: Web API - Test
       run: npm run test:api:ci
 
@@ -71,6 +87,22 @@ jobs:
       matrix:
         node-version: [12.x]
     steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
+    - name: NPM Install
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass      
     - name: Shared - Test
       run: npm run test:shared:ci
 
@@ -87,11 +119,27 @@ jobs:
         node-version: [12.x]
 
     steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
+    - name: NPM Install
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass      
     - name: Web Client - Unit Test
       run: npm run test:client:unit:ci
 
-  dynamo_elasticsearch_setup:
-    name: Set up DynamoDB and Elasticsearch
+  pa11y_test:
+    name: Web Client - Pa11y tests
     needs: bundle
     runs-on: ubuntu-latest
     defaults:
@@ -103,6 +151,22 @@ jobs:
         node-version: [12.x]
 
     steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache Node.js modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-        
+    - name: NPM Install
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass      
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
@@ -126,19 +190,6 @@ jobs:
         host node port: 9300
         node port: 9300
         discovery type: 'single-node'
-
-  pa11y_test:
-    name: Web Client - Pa11y Tests
-    needs: [bundle, dynamo_elasticsearch_setup]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    strategy:
-      matrix:
-        node-version: [12.x]
-    steps:
     - name: Build application
       env:
         SKIP_CACHE_INVALIDATION: "true"
