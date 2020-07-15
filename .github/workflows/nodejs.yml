@@ -43,11 +43,11 @@ jobs:
     - name: Shellcheck
       run: ./run-shellcheck.sh
     - name: Web API - Test
-      run: npm run test:api
+      run: npm run test:api:ci
     - name: Shared - Test
-      run: npm run test:shared
+      run: npm run test:shared:ci
     - name: Web Client - Unit Test
-      run: npm run test:client:unit
+      run: npm run test:client:unit:ci
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
@@ -82,7 +82,6 @@ jobs:
         npm run build:assets
         mkdir -p web-api/dist
         USTC_ENV=prod parcel build --no-source-maps web-client/src/index.pug
-        npm run build:jsdoc
         npm run start:api:ci &
         sleep 15
         ./wait-until.sh http://localhost:4000/api/swagger
