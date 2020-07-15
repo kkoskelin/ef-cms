@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Linting and Unit Tests
+name: Linting and Tests
 
 on:
   # push:
@@ -38,16 +38,16 @@ jobs:
       run: |
         npm ci --no-optional
         npm rebuild node-sass
-    # - name: Lint
-    #   run: npm run lint
-    # - name: Shellcheck
-    #   run: ./run-shellcheck.sh
-    # - name: Web API - Test
-    #   run: npm run test:api
-    # - name: Shared - Test
-    #   run: npm run test:shared
-    # - name: Web Client - Unit Test
-    #   run: npm run test:client:unit
+    - name: Lint
+      run: npm run lint
+    - name: Shellcheck
+      run: ./run-shellcheck.sh
+    - name: Web API - Test
+      run: npm run test:api
+    - name: Shared - Test
+      run: npm run test:shared
+    - name: Web Client - Unit Test
+      run: npm run test:client:unit
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
@@ -101,8 +101,3 @@ jobs:
       with:
         name: dist
         path: dist
-    - name: Archive npm logs
-      uses: actions/upload-artifact@v1
-      with:
-        name: npm-logs
-        path: /home/runner/.npm/_logs
