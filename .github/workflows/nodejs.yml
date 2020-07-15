@@ -129,7 +129,7 @@ jobs:
 
   pa11y_test:
     name: Web Client - Pa11y Tests
-    needs: bundle, dynamo_elasticsearch_setup
+    needs: [bundle, dynamo_elasticsearch_setup]
     runs-on: ubuntu-latest
     defaults:
       run:
