@@ -11,7 +11,7 @@ on:
 
 jobs:
   bundle:
-    name: Build and bundle
+    name: NPM Install, Lint, Shellcheck
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,13 +23,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
     - name: Cache Node.js modules
-      uses: actions/cache@v1
+      id: cache-modules
+      uses: actions/cache@v2
       with:
-        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: |
+          **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.OS }}-node-
@@ -42,12 +44,128 @@ jobs:
       run: npm run lint
     - name: Shellcheck
       run: ./run-shellcheck.sh
+
+  api_test:
+    name: Web API Test
+    needs: bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cache-modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
+
     - name: Web API - Test
       run: npm run test:api:ci
+
+  shared_test:
+    name: Shared Test
+    needs: bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cache-modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Shared - Test
       run: npm run test:shared:ci
+
+  unit_test:
+    name: Web Client - Unit Test
+    needs: bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cache-modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Web Client - Unit Test
       run: npm run test:client:unit:ci
+
+  pa11y_test:
+    name: Web Client - Pa11y tests
+    needs: bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cache-modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci --no-optional
+        npm rebuild node-sass
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
@@ -71,32 +189,32 @@ jobs:
         host node port: 9300
         node port: 9300
         discovery type: 'single-node'
-    - name: Run Pa11y
+    - name: Build application
+      run: |
+        npm run build:assets
+        mkdir -p web-api/dist
+        npm run build:client
+    - name: Start API
       env:
         SKIP_CACHE_INVALIDATION: "true"
-        SLS_DEBUG: "*"
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npm run clean
-        npm run build:assets
-        mkdir -p web-api/dist
-        USTC_ENV=prod parcel build --no-source-maps web-client/src/index.pug
         npm run start:api:ci &
-        sleep 15
         ./wait-until.sh http://localhost:4000/api/swagger
         ./wait-until-services.sh
+    - name: Start Clients
+      env:
+        SKIP_CACHE_INVALIDATION: "true"
+        AWS_ACCESS_KEY_ID: "noop"
+        AWS_SECRET_ACCESS_KEY: "noop"
+      run: |
         npx run-p start:client:ci start:public:ci &
         ./wait-until.sh http://localhost:1234/
         ./wait-until.sh http://localhost:5678/
-        echo "Internal and public are now listening"
-        sleep 15
+    - name: Run Pa11y
+      run: |    
         npm run test:pa11y:1 --node-flags --max-old-space-size=1024
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
-    - name: Archive production artifacts  
-      uses: actions/upload-artifact@v1
-      with:
-        name: dist
-        path: dist
