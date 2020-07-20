@@ -1,23 +1,38 @@
+import { getShowNotServedForDocument } from './getShowNotServedForDocument';
 import { state } from 'cerebral';
 
 export const messageDocumentHelper = (get, applicationContext) => {
-  const { EVENT_CODES_REQUIRING_SIGNATURE } = applicationContext.getConstants();
+  const {
+    COURT_ISSUED_DOCUMENT_TYPES,
+    EVENT_CODES_REQUIRING_SIGNATURE,
+    INITIAL_DOCUMENT_TYPES,
+    UNSERVABLE_EVENT_CODES,
+  } = applicationContext.getConstants();
   const user = applicationContext.getCurrentUser();
   const permissions = get(state.permissions);
   const viewerDocumentToDisplay = get(state.viewerDocumentToDisplay);
   const caseDetail = get(state.caseDetail);
 
-  const caseDocument =
-    viewerDocumentToDisplay &&
-    caseDetail.documents.find(
-      d => d.documentId === viewerDocumentToDisplay.documentId,
-    );
+  const { correspondence, documents } = caseDetail;
 
-  const documentRequiresSignature =
-    caseDocument &&
-    EVENT_CODES_REQUIRING_SIGNATURE.includes(caseDocument.eventCode);
+  const caseDocument =
+    (viewerDocumentToDisplay &&
+      [...correspondence, ...documents].find(
+        d => d.documentId === viewerDocumentToDisplay.documentId,
+      )) ||
+    {};
+
+  const isCorrespondence = !caseDocument.entityName; // TODO: Sure this up a little
+
+  const documentRequiresSignature = EVENT_CODES_REQUIRING_SIGNATURE.includes(
+    caseDocument.eventCode,
+  );
 
   const documentIsSigned = viewerDocumentToDisplay && !!caseDocument.signedAt;
+
+  const { draftDocuments } = applicationContext
+    .getUtilities()
+    .formatCase(applicationContext, caseDetail);
 
   const isDocumentOnDocketRecord =
     viewerDocumentToDisplay &&
@@ -25,6 +40,10 @@ export const messageDocumentHelper = (get, applicationContext) => {
       docketEntry =>
         docketEntry.documentId === viewerDocumentToDisplay.documentId,
     );
+
+  const isPetitionDocument =
+    caseDocument &&
+    caseDocument.eventCode === INITIAL_DOCUMENT_TYPES.petition.eventCode;
 
   const isInternalUser = applicationContext
     .getUtilities()
@@ -37,16 +56,42 @@ export const messageDocumentHelper = (get, applicationContext) => {
   const showApplyEditSignatureButtonForRole = isInternalUser;
 
   const showAddDocketEntryButtonForDocument =
+    !isCorrespondence &&
     !isDocumentOnDocketRecord &&
     (documentIsSigned || !documentRequiresSignature);
   const showApplySignatureButtonForDocument =
-    !documentIsSigned && !isDocumentOnDocketRecord;
+    !isCorrespondence && !documentIsSigned && !isDocumentOnDocketRecord;
   const showEditSignatureButtonForDocument =
     documentIsSigned && !isDocumentOnDocketRecord;
-  const showEditButtonForDocument = !isDocumentOnDocketRecord;
+  const showEditButtonForDocument =
+    !isDocumentOnDocketRecord && !isCorrespondence;
+  const showEditButtonForCorrespondenceDocument = isCorrespondence;
 
   const showDocumentNotSignedAlert =
     documentRequiresSignature && !documentIsSigned;
+
+  const showNotServed = getShowNotServedForDocument({
+    UNSERVABLE_EVENT_CODES,
+    caseDetail,
+    documentId: caseDocument.documentId,
+    draftDocuments,
+  });
+
+  const isCourtIssuedDocument = COURT_ISSUED_DOCUMENT_TYPES.includes(
+    caseDocument.documentType,
+  );
+
+  const showServeCourtIssuedDocumentButton =
+    showNotServed && isCourtIssuedDocument && permissions.SERVE_DOCUMENT;
+
+  const showServePaperFiledDocumentButton =
+    showNotServed &&
+    !isCourtIssuedDocument &&
+    !isPetitionDocument &&
+    permissions.SERVE_DOCUMENT;
+
+  const showServePetitionButton =
+    showNotServed && isPetitionDocument && permissions.SERVE_PETITION;
 
   return {
     showAddDocketEntryButton:
@@ -59,7 +104,13 @@ export const messageDocumentHelper = (get, applicationContext) => {
       showEditButtonForRole && showEditButtonForDocument && !documentIsSigned,
     showEditButtonSigned:
       showEditButtonForRole && showEditButtonForDocument && documentIsSigned,
+    showEditCorrespondenceButton:
+      showEditButtonForRole && showEditButtonForCorrespondenceDocument,
     showEditSignatureButton:
       showApplyEditSignatureButtonForRole && showEditSignatureButtonForDocument,
+    showNotServed,
+    showServeCourtIssuedDocumentButton,
+    showServePaperFiledDocumentButton,
+    showServePetitionButton,
   };
 };

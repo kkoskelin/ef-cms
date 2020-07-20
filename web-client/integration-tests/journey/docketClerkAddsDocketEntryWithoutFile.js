@@ -12,8 +12,9 @@ export const docketClerkAddsDocketEntryWithoutFile = test => {
       docketNumber: test.docketNumber,
     });
 
-    await test.runSequence('saveForLaterDocketEntrySequence', {
+    await test.runSequence('fileDocketEntrySequence', {
       docketNumber: test.docketNumber,
+      isSavingForLater: true,
     });
 
     expect(test.getState('validationErrors')).toEqual({
@@ -56,5 +57,31 @@ export const docketClerkAddsDocketEntryWithoutFile = test => {
       key: 'objections',
       value: 'No',
     });
+
+    await test.runSequence('updateDocketEntryFormValueSequence', {
+      key: 'hasOtherFilingParty',
+      value: true,
+    });
+
+    await test.runSequence('fileDocketEntrySequence', {
+      docketNumber: test.docketNumber,
+      isSavingForLater: true,
+    });
+
+    expect(test.getState('validationErrors')).toEqual({
+      otherFilingParty: VALIDATION_ERROR_MESSAGES.otherFilingParty,
+    });
+
+    await test.runSequence('updateDocketEntryFormValueSequence', {
+      key: 'otherFilingParty',
+      value: 'Brianna Noble',
+    });
+
+    await test.runSequence('fileDocketEntrySequence', {
+      docketNumber: test.docketNumber,
+      isSavingForLater: true,
+    });
+
+    expect(test.getState('validationErrors')).toEqual({});
   });
 };

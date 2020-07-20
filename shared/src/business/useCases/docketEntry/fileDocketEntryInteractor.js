@@ -101,6 +101,7 @@ exports.fileDocketEntryInteractor = async ({
             ...documentEntity.toRawObject(),
             createdAt: documentEntity.createdAt,
           },
+          inProgress: isSavingForLater,
           isQC: true,
           isRead: user.role !== ROLES.privatePractitioner,
           section: DOCKET_SECTION,
@@ -127,7 +128,7 @@ exports.fileDocketEntryInteractor = async ({
       if (metadata.isFileAttached && !isSavingForLater) {
         const servedParties = aggregatePartiesForService(caseEntity);
         documentEntity.setAsServed(servedParties.all);
-      } else if (isSavingForLater) {
+      } else if (metadata.isFileAttached && isSavingForLater) {
         documentEntity.numberOfPages = await applicationContext
           .getUseCaseHelpers()
           .countPagesInDocument({
@@ -141,6 +142,14 @@ exports.fileDocketEntryInteractor = async ({
           workItem.setAsCompleted({
             message: 'completed',
             user,
+          });
+
+          const servedParties = aggregatePartiesForService(caseEntity);
+          await applicationContext.getUseCaseHelpers().sendServedPartiesEmails({
+            applicationContext,
+            caseEntity,
+            documentEntity,
+            servedParties,
           });
         }
 
@@ -191,7 +200,7 @@ exports.fileDocketEntryInteractor = async ({
   for (let workItem of workItems) {
     if (workItem.document.isPaper) {
       workItemsSaved.push(
-        workItem.document.isFileAttached
+        workItem.document.isFileAttached && !isSavingForLater
           ? applicationContext
               .getPersistenceGateway()
               .saveWorkItemForDocketClerkFilingExternalDocument({
@@ -200,7 +209,7 @@ exports.fileDocketEntryInteractor = async ({
               })
           : applicationContext
               .getPersistenceGateway()
-              .saveWorkItemForDocketEntryWithoutFile({
+              .saveWorkItemForDocketEntryInProgress({
                 applicationContext,
                 workItem: workItem.validate().toRawObject(),
               }),
