@@ -1,5 +1,4 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# https://docs.github.com/en/actions/migrating-to-github-actions/migrating-from-circleci-to-github-actions#persisting-data-between-jobs
 
 name: Linting and Tests
 
@@ -10,7 +9,7 @@ on:
     branches: [ develop, experimental, master ]
 
 jobs:
-  bundle:
+  install-lint:
     name: NPM Install, Lint, Shellcheck
     runs-on: ubuntu-latest
     defaults:
@@ -20,24 +19,25 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
-
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache Node.js modules
-      id: cache-modules
+    - name: Cache modules and .git
+      id: caching
       uses: actions/cache@v2
       with:
         path: |
           **/node_modules
+          .git
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.OS }}-node-
           ${{ runner.OS }}-        
     - name: NPM Install
       run: |
+        npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass
     - name: Lint
@@ -45,9 +45,9 @@ jobs:
     - name: Shellcheck
       run: ./run-shellcheck.sh
 
-  api_test:
-    name: Web API Test
-    needs: bundle
+  build-api:
+    name: Web API - Test
+    needs: install-lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -63,23 +63,36 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: actions/cache@v2
-      id: cache-modules
+      id: cacheing
       with:
         path: |
           **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
     - name: NPM Install
-      if: steps.cache-modules.outputs.cache-hit != 'true'
+      if: steps.cacheing.outputs.cache-hit != 'true'
       run: |
+        npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass
-
     - name: Web API - Test
       run: npm run test:api:ci
+    - name: Normalize Coverage for SonarQube
+      run: npx istanbul-combine -d web-api/coverage web-api/coverage/coverage-final.json
+    - name: Web API - SonarQube
+      run: |
+        export SONAR_SCANNER_OPTS="-Xmx2048m"
+        /home/app/sonar_home/bin/sonar-scanner \
+        -Dsonar.projectKey="${API_SONAR_KEY}" \
+        -Dsonar.branch.name="${CIRCLE_BRANCH}" \
+        -Dsonar.organization="${SONAR_ORG}" \
+        -Dsonar.projectBaseDir="web-api" \
+        -Dproject.settings="web-api/sonar-project.properties" \
+        -Dsonar.login="${API_SONAR_TOKEN}" \
+        -Dsonar.host.url="https://sonarcloud.io"
 
   shared_test:
     name: Shared Test
-    needs: bundle
+    needs: install-lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -94,22 +107,24 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: actions/cache@v2
-      id: cache-modules
+      id: cacheing
       with:
         path: |
+          .git
           **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
     - name: NPM Install
-      if: steps.cache-modules.outputs.cache-hit != 'true'
+      if: steps.cacheing.outputs.cache-hit != 'true'
       run: |
+        npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass
     - name: Shared - Test
       run: npm run test:shared:ci
 
-  unit_test:
-    name: Web Client - Unit Test
-    needs: bundle
+  build-client-unit:
+    name: Client Unit Test
+    needs: install-lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -118,29 +133,33 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
-
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2-beta
       with:
         node-version: ${{ matrix.node-version }}
     - uses: actions/cache@v2
-      id: cache-modules
+      id: cacheing
       with:
         path: |
+          project/web-client/coverage-unit
+          .git
           **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
     - name: NPM Install
-      if: steps.cache-modules.outputs.cache-hit != 'true'
+      if: steps.cacheing.outputs.cache-hit != 'true'
       run: |
+        npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass
-    - name: Web Client - Unit Test
-      run: npm run test:client:unit:ci
+    - name: Shared - Test
+      run: |
+        npm run build:assets
+        CI=false npm run test:client:unit:ci
 
-  pa11y_test:
-    name: Web Client - Pa11y tests
-    needs: bundle
+  build-client-integration:
+    name: Web Client - Integration Tests
+    needs: install-lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -156,14 +175,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: actions/cache@v2
-      id: cache-modules
+      id: cacheing
       with:
         path: |
+          project/web-client
+          project/web-client/coverage-integration
           **/node_modules
         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
     - name: NPM Install
-      if: steps.cache-modules.outputs.cache-hit != 'true'
+      if: steps.cacheing.outputs.cache-hit != 'true'
       run: |
+        npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass
     - name: Setup DynamoDB Local
@@ -189,9 +211,144 @@ jobs:
         host node port: 9300
         node port: 9300
         discovery type: 'single-node'
+    - name: Web Client - Integration Test
+      env: 
+        CI: true
+        NO_SCANNER: true
+        SKIP_VIRUS_SCAN: true
+        AWS_ACCESS_KEY_ID: noop
+        AWS_SECRET_ACCESS_KEY: noop
+        TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
+        DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
+        S3_ENDPOINT: http://localhost:9000
+        SKIP_CACHE_INVALIDATION: true
+      run: |
+        npm run start:api:ci > /tmp/web-client/server-output.txt &
+        ./wait-until.sh http://localhost:4000/api/swagger
+        npx jest --coverageDirectory=./coverage-integration --runInBand \
+          --config web-client/jest-integration.config.js \
+          "web-client/integration-tests/*.test.js" "web-client/integration-tests-public/*.test.js"
+
+  build-client-coverage:
+    name: Combine Coverage
+    needs: [install-lint, build-api, build-shared, build-client-unit, build-client-integration]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cacheing
+      with:
+        path: |
+          project/web-client
+          project/web-client/coverage-integration
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cacheing.outputs.cache-hit != 'true'
+      run: |
+        npm set progress=false
+        npm ci --no-optional
+        npm rebuild node-sass
+    - name: Combine Coverage
+      env: 
+        CI: true
+        NO_SCANNER: true
+        SKIP_VIRUS_SCAN: true
+        AWS_ACCESS_KEY_ID: noop
+        AWS_SECRET_ACCESS_KEY: noop
+        TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
+        DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
+        S3_ENDPOINT: http://localhost:9000
+        SKIP_CACHE_INVALIDATION: true
+      run: |
+        npx istanbul-combine -d combined-coverage -p both -r lcov \
+          ./web-client/coverage-integration/coverage-final.json \
+          ./web-client/coverage-unit/coverage-final.json
+    - name: Check Coverage
+      run: |
+        npx istanbul check-coverage \
+          --include=combined-coverage/coverage-final.json \
+          --statements 95 --functions 95 --branches 95 --lines 95
+    # - name: Web Client - SonarQube
+    #   run: |
+    #     export SONAR_SCANNER_OPTS="-Xmx2048m"
+    #     /home/app/sonar_home/bin/sonar-scanner \
+    #     -Dsonar.projectKey="${UI_SONAR_KEY}" \
+    #     -Dsonar.branch.name="${CIRCLE_BRANCH}" \
+    #     -Dsonar.organization="${SONAR_ORG}" \
+    #     -Dsonar.projectBaseDir="web-client" \
+    #     -Dproject.settings="web-client/sonar-project.properties" \
+    #     -Dsonar.login="${UI_SONAR_TOKEN}" \
+    #     -Dsonar.host.url="https://sonarcloud.io"             
+
+  e2e-pa11y:
+    name: Web Client - Pa11y tests
+    needs: install-lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cacheing
+      with:
+        path: |
+          project/web-client
+          project/web-client/coverage-integration
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cacheing.outputs.cache-hit != 'true'
+      run: |
+        npm set progress=false
+        npm ci --no-optional
+        npm rebuild node-sass        
+    - name: Setup DynamoDB Local
+      uses: rrainn/dynamodb-action@v2.0.0
+      with:
+        dbPath: ./
+        optimizeDbBeforeStartup: true
+        sharedDb: true
+        port: 8000
+        cors: '*'
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Start elasticsearch
+      uses: getong/elasticsearch-action@v1.2
+      with:
+        elasticsearch version: '7.5.2'
+        host port: 9200
+        container port: 9200
+        host node port: 9300
+        node port: 9300
+        discovery type: 'single-node'
     - name: Build application
       run: |
-        npm run build:assets
+        npm run build:all
         mkdir -p web-api/dist
         npm run build:client
     - name: Start API
@@ -200,7 +357,7 @@ jobs:
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npm run start:api:ci &
+        npm run start:api:ci >> pa11y-server.txt &
         ./wait-until.sh http://localhost:4000/api/swagger
         ./wait-until-services.sh
     - name: Start Clients
@@ -209,7 +366,7 @@ jobs:
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
-        npx run-p start:client:ci start:public:ci &
+        npx run-p start:client:ci start:public:ci >> pa11y-server.txt &
         ./wait-until.sh http://localhost:1234/
         ./wait-until.sh http://localhost:5678/
     - name: Run Pa11y
@@ -218,3 +375,188 @@ jobs:
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
+
+  e2e-cypress:
+    name: Web Client - Pa11y tests
+    needs: install-lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cacheing
+      with:
+        path: |
+          project/web-client
+          project/web-client/coverage-integration
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cacheing.outputs.cache-hit != 'true'
+      run: |
+        npm set progress=false
+        npm ci --no-optional
+        npm rebuild node-sass        
+    - name: Cache Cypress binary
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/Cypress
+        key: ${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-cypress-
+    - name: install Cypress
+      run: |
+        npm ci
+        npx cypress verify        
+    - name: Setup DynamoDB Local
+      uses: rrainn/dynamodb-action@v2.0.0
+      with:
+        dbPath: ./
+        optimizeDbBeforeStartup: true
+        sharedDb: true
+        port: 8000
+        cors: '*'
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Start elasticsearch
+      uses: getong/elasticsearch-action@v1.2
+      with:
+        elasticsearch version: '7.5.2'
+        host port: 9200
+        container port: 9200
+        host node port: 9300
+        node port: 9300
+        discovery type: 'single-node'
+    - name: Build application
+      run: |
+        npm run build:all
+        mkdir -p web-api/dist
+        npm run build:client
+    - name: Start API
+      env:
+        AWS_ACCESS_KEY_ID: "noop"
+        AWS_SECRET_ACCESS_KEY: "noop"
+        DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
+        MASTER_DYNAMODB_ENDPOINT: http://localhost:8000 
+        S3_ENDPOINT: http://localhost:9000 
+        SKIP_CACHE_INVALIDATION: "true"
+        SLS_DEPLOYMENT_BUCKET: noop
+        TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
+      run: |
+        npm run start:api:ci >> pa11y-server.txt &
+        ./wait-until.sh http://localhost:4000/api/swagger
+        ./wait-until-services.sh
+    - name: Start Clients
+      run: |
+        npx run-p start:client:ci start:public:ci >> pa11y-server.txt &
+        ./wait-until.sh http://localhost:1234/
+        ./wait-until.sh http://localhost:5678/
+    - name: Cypress Run
+      run: npm run cypress
+
+  e2e-cypress-public:
+    name: Web Client - Pa11y tests
+    needs: install-lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v2
+      id: cacheing
+      with:
+        path: |
+          project/web-client
+          project/web-client/coverage-integration
+          **/node_modules
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: NPM Install
+      if: steps.cacheing.outputs.cache-hit != 'true'
+      run: |
+        npm set progress=false
+        npm ci --no-optional
+        npm rebuild node-sass        
+    - name: Cache Cypress binary
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/Cypress
+        key: ${{ runner.os }}-cypress-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-cypress-
+    - name: install Cypress
+      run: |
+        npm ci
+        npx cypress verify        
+    - name: Setup DynamoDB Local
+      uses: rrainn/dynamodb-action@v2.0.0
+      with:
+        dbPath: ./
+        optimizeDbBeforeStartup: true
+        sharedDb: true
+        port: 8000
+        cors: '*'
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Start elasticsearch
+      uses: getong/elasticsearch-action@v1.2
+      with:
+        elasticsearch version: '7.5.2'
+        host port: 9200
+        container port: 9200
+        host node port: 9300
+        node port: 9300
+        discovery type: 'single-node'
+    - name: Build application
+      run: |
+        npm run build:all
+        mkdir -p web-api/dist
+        npm run build:client
+    - name: Start API
+      env:
+        AWS_ACCESS_KEY_ID: "noop"
+        AWS_SECRET_ACCESS_KEY: "noop"
+        DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
+        MASTER_DYNAMODB_ENDPOINT: http://localhost:8000 
+        S3_ENDPOINT: http://localhost:9000 
+        SKIP_CACHE_INVALIDATION: "true"
+        SLS_DEPLOYMENT_BUCKET: noop
+        TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
+      run: |
+        npm run start:api:ci >> pa11y-server.txt &
+        ./wait-until.sh http://localhost:4000/api/swagger
+        ./wait-until-services.sh
+    - name: Start Clients
+      run: |
+        npx run-p start:client:ci start:public:ci >> pa11y-server.txt &
+        ./wait-until.sh http://localhost:1234/
+        ./wait-until.sh http://localhost:5678/
+    - name: Cypress Run
+      run: npm run cypress:public
+
