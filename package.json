@@ -148,6 +148,14 @@
     "*.{css,scss}": [
       "stylelint"
     ],
+    "**/business/entities/**/*.{js}": [
+      "npm run build:entity:docs",
+      "git add"
+    ],
+    "*.{md}": [
+      "prettier --write",
+      "git add"
+    ],
     "swagger.json": [
       "swagger-cli validate"
     ]
