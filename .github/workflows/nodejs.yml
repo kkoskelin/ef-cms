@@ -222,7 +222,7 @@ jobs:
         DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
         S3_ENDPOINT: http://localhost:9000
       run: |
-        npm run start:api:ci > ./server-output.txt &
+        npm run start:api:ci > server-output.txt *
         ./wait-until.sh http://localhost:4000/api/swagger
         npx jest --coverageDirectory=./coverage-integration --runInBand \
           --config web-client/jest-integration.config.js \
