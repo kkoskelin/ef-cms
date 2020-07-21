@@ -78,17 +78,17 @@ jobs:
       run: npm run test:api:ci
     - name: Normalize Coverage for SonarQube
       run: npx istanbul-combine -d web-api/coverage web-api/coverage/coverage-final.json
-    - name: Web API - SonarQube
-      run: |
-        export SONAR_SCANNER_OPTS="-Xmx2048m"
-        /home/app/sonar_home/bin/sonar-scanner \
-        -Dsonar.projectKey="${API_SONAR_KEY}" \
-        -Dsonar.branch.name="${CIRCLE_BRANCH}" \
-        -Dsonar.organization="${SONAR_ORG}" \
-        -Dsonar.projectBaseDir="web-api" \
-        -Dproject.settings="web-api/sonar-project.properties" \
-        -Dsonar.login="${API_SONAR_TOKEN}" \
-        -Dsonar.host.url="https://sonarcloud.io"
+    # - name: Web API - SonarQube
+    #   run: |
+    #     export SONAR_SCANNER_OPTS="-Xmx2048m"
+    #     /home/app/sonar_home/bin/sonar-scanner \
+    #     -Dsonar.projectKey="${API_SONAR_KEY}" \
+    #     -Dsonar.branch.name="${CIRCLE_BRANCH}" \
+    #     -Dsonar.organization="${SONAR_ORG}" \
+    #     -Dsonar.projectBaseDir="web-api" \
+    #     -Dproject.settings="web-api/sonar-project.properties" \
+    #     -Dsonar.login="${API_SONAR_TOKEN}" \
+    #     -Dsonar.host.url="https://sonarcloud.io"
 
   build-shared:
     name: Shared Test
@@ -373,7 +373,7 @@ jobs:
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
 
   e2e-cypress:
-    name: Web Client - Pa11y tests
+    name: Web Client - Cypress tests
     needs: install-lint
     runs-on: ubuntu-latest
     defaults:
@@ -464,7 +464,7 @@ jobs:
       run: npm run cypress
 
   e2e-cypress-public:
-    name: Web Client - Pa11y tests
+    name: Web Client - Public Cypress tests
     needs: install-lint
     runs-on: ubuntu-latest
     defaults:
