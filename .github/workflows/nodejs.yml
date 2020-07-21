@@ -90,7 +90,7 @@ jobs:
         -Dsonar.login="${API_SONAR_TOKEN}" \
         -Dsonar.host.url="https://sonarcloud.io"
 
-  shared_test:
+  build-shared:
     name: Shared Test
     needs: install-lint
     runs-on: ubuntu-latest
@@ -221,7 +221,6 @@ jobs:
         TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
         DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
         S3_ENDPOINT: http://localhost:9000
-        SKIP_CACHE_INVALIDATION: true
       run: |
         npm run start:api:ci > /tmp/web-client/server-output.txt &
         ./wait-until.sh http://localhost:4000/api/swagger
@@ -270,7 +269,6 @@ jobs:
         TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
         DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
         S3_ENDPOINT: http://localhost:9000
-        SKIP_CACHE_INVALIDATION: true
       run: |
         npx istanbul-combine -d combined-coverage -p both -r lcov \
           ./web-client/coverage-integration/coverage-final.json \
@@ -353,7 +351,6 @@ jobs:
         npm run build:client
     - name: Start API
       env:
-        SKIP_CACHE_INVALIDATION: "true"
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
@@ -362,7 +359,6 @@ jobs:
         ./wait-until-services.sh
     - name: Start Clients
       env:
-        SKIP_CACHE_INVALIDATION: "true"
         AWS_ACCESS_KEY_ID: "noop"
         AWS_SECRET_ACCESS_KEY: "noop"
       run: |
@@ -448,12 +444,11 @@ jobs:
         npm run build:client
     - name: Start API
       env:
-        AWS_ACCESS_KEY_ID: "noop"
-        AWS_SECRET_ACCESS_KEY: "noop"
+        AWS_ACCESS_KEY_ID: "S3RVER"
+        AWS_SECRET_ACCESS_KEY: "S3RVER"
         DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
         MASTER_DYNAMODB_ENDPOINT: http://localhost:8000 
         S3_ENDPOINT: http://localhost:9000 
-        SKIP_CACHE_INVALIDATION: "true"
         SLS_DEPLOYMENT_BUCKET: noop
         TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
       run: |
@@ -540,12 +535,11 @@ jobs:
         npm run build:client
     - name: Start API
       env:
-        AWS_ACCESS_KEY_ID: "noop"
-        AWS_SECRET_ACCESS_KEY: "noop"
+        AWS_ACCESS_KEY_ID: "S3RVER"
+        AWS_SECRET_ACCESS_KEY: "S3RVER"
         DOCUMENTS_BUCKET_NAME: noop-documents-local-us-east-1
         MASTER_DYNAMODB_ENDPOINT: http://localhost:8000 
         S3_ENDPOINT: http://localhost:9000 
-        SKIP_CACHE_INVALIDATION: "true"
         SLS_DEPLOYMENT_BUCKET: noop
         TEMP_DOCUMENTS_BUCKET_NAME: noop-temp-documents-local-us-east-1
       run: |
