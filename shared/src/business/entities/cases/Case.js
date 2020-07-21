@@ -139,6 +139,7 @@ function Case(rawCase, { applicationContext, filtered = false }) {
     throw new TypeError('applicationContext must be defined');
   }
   this.entityName = 'Case';
+  this.foo = 'Bar';
 
   if (
     !filtered ||
