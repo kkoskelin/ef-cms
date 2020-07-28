@@ -42,10 +42,9 @@ export const saveDocketEntryAction = async ({
 
   documentMetadata = {
     ...documentMetadata,
-    caseId,
     createdAt: documentMetadata.dateReceived,
     docketNumber,
-    isFileAttached: !!isFileAttached || generateCoversheet,
+    isFileAttached: !!isFileAttached,
     isPaper: true,
     isUpdating,
     receivedAt: documentMetadata.dateReceived,
@@ -86,7 +85,7 @@ export const saveDocketEntryAction = async ({
   if (generateCoversheet) {
     await applicationContext.getUseCases().addCoversheetInteractor({
       applicationContext,
-      caseId: caseDetail.caseId,
+      docketNumber: caseDetail.docketNumber,
       documentId,
     });
   }

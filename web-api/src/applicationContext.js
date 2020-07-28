@@ -368,8 +368,8 @@ const {
   getCaseByDocketNumber,
 } = require('../../shared/src/persistence/dynamo/cases/getCaseByDocketNumber');
 const {
-  getCaseDeadlinesByCaseId,
-} = require('../../shared/src/persistence/dynamo/caseDeadlines/getCaseDeadlinesByCaseId');
+  getCaseDeadlinesByDocketNumber,
+} = require('../../shared/src/persistence/dynamo/caseDeadlines/getCaseDeadlinesByDocketNumber');
 const {
   getCaseDeadlinesForCaseInteractor,
 } = require('../../shared/src/business/useCases/caseDeadline/getCaseDeadlinesForCaseInteractor');
@@ -386,11 +386,8 @@ const {
   getCaseInventoryReportInteractor,
 } = require('../../shared/src/business/useCases/caseInventoryReport/getCaseInventoryReportInteractor');
 const {
-  getCaseMessage,
-} = require('../../shared/src/persistence/dynamo/messages/getCaseMessage');
-const {
-  getCaseMessagesByCaseId,
-} = require('../../shared/src/persistence/dynamo/messages/getCaseMessagesByCaseId');
+  getCaseMessagesByDocketNumber,
+} = require('../../shared/src/persistence/dynamo/messages/getCaseMessagesByDocketNumber');
 const {
   getCaseMessagesForCaseInteractor,
 } = require('../../shared/src/business/useCases/messages/getCaseMessagesForCaseInteractor');
@@ -401,11 +398,11 @@ const {
   getCaseMessageThreadInteractor,
 } = require('../../shared/src/business/useCases/messages/getCaseMessageThreadInteractor');
 const {
-  getCasesByCaseIds,
-} = require('../../shared/src/persistence/dynamo/cases/getCasesByCaseIds');
+  getCasesByDocketNumbers,
+} = require('../../shared/src/persistence/dynamo/cases/getCasesByDocketNumbers');
 const {
-  getCasesByLeadCaseId,
-} = require('../../shared/src/persistence/dynamo/cases/getCasesByLeadCaseId');
+  getCasesByLeadDocketNumber,
+} = require('../../shared/src/persistence/dynamo/cases/getCasesByLeadDocketNumber');
 const {
   getCasesByUser,
 } = require('../../shared/src/persistence/dynamo/cases/getCasesByUser');
@@ -687,9 +684,6 @@ const {
   isFileExists,
 } = require('../../shared/src/persistence/s3/isFileExists');
 const {
-  markCaseMessageRepliedTo,
-} = require('../../shared/src/persistence/dynamo/messages/markCaseMessageRepliedTo');
-const {
   markCaseMessageThreadRepliedTo,
 } = require('../../shared/src/persistence/dynamo/messages/markCaseMessageThreadRepliedTo');
 const {
@@ -749,6 +743,9 @@ const {
 const {
   removeConsolidatedCasesInteractor,
 } = require('../../shared/src/business/useCases/caseConsolidation/removeConsolidatedCasesInteractor');
+const {
+  removeSignatureFromDocumentInteractor,
+} = require('../../shared/src/business/useCases/removeSignatureFromDocumentInteractor');
 const {
   replyToCaseMessageInteractor,
 } = require('../../shared/src/business/useCases/messages/replyToCaseMessageInteractor');
@@ -1249,13 +1246,12 @@ module.exports = appContextUser => {
         getCalendaredCasesForTrialSession,
         getCaseByCaseId,
         getCaseByDocketNumber,
-        getCaseDeadlinesByCaseId,
+        getCaseDeadlinesByDocketNumber,
         getCaseInventoryReport,
-        getCaseMessage,
         getCaseMessageThreadByParentId,
-        getCaseMessagesByCaseId,
-        getCasesByCaseIds,
-        getCasesByLeadCaseId,
+        getCaseMessagesByDocketNumber,
+        getCasesByDocketNumbers,
+        getCasesByLeadDocketNumber,
         getCasesByUser,
         getClosedCasesByUser,
         getCompletedSectionInboxMessages,
@@ -1302,7 +1298,6 @@ module.exports = appContextUser => {
         incrementCounter,
         indexRecord,
         isFileExists,
-        markCaseMessageRepliedTo,
         markCaseMessageThreadRepliedTo,
         persistUser,
         putWorkItemInOutbox,
@@ -1523,6 +1518,7 @@ module.exports = appContextUser => {
         removeCaseFromTrialInteractor,
         removeCasePendingItemInteractor,
         removeConsolidatedCasesInteractor,
+        removeSignatureFromDocumentInteractor,
         replyToCaseMessageInteractor,
         reprocessFailedRecordsInteractor,
         runTrialSessionPlanningReportInteractor,

@@ -9,6 +9,10 @@ const isNewUserCaseMappingRecord = item =>
   !!item.gsi1pk && item.gsi1pk.startsWith('user-case|');
 const isDocumentRecord = item =>
   item.pk.startsWith('case|') && item.sk.startsWith('document|');
+const isCaseDeadlineRecord = item =>
+  item.pk.startsWith('case-deadline|') && item.sk.startsWith('case-deadline|');
+const isUserCaseNoteRecord = item =>
+  item.pk.startsWith('user-case-note|') && item.sk.startsWith('user|');
 
 const forAllRecords = async (documentClient, tableName, cb) => {
   let hasMoreResults = true;
@@ -55,11 +59,13 @@ const upGenerator = mutateFunction => async (
 
 module.exports = {
   forAllRecords,
+  isCaseDeadlineRecord,
   isCaseMessageRecord,
   isCaseRecord,
   isDocumentRecord,
   isNewUserCaseMappingRecord,
   isTrialSessionRecord,
   isUserCaseMappingRecord,
+  isUserCaseNoteRecord,
   upGenerator,
 };

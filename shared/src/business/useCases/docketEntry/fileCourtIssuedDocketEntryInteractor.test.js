@@ -26,7 +26,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
 
     applicationContext
       .getPersistenceGateway()
-      .getCaseByCaseId.mockReturnValue(caseRecord);
+      .getCaseByDocketNumber.mockReturnValue(caseRecord);
 
     caseRecord = {
       caseCaption: 'Caption',
@@ -128,7 +128,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
       fileCourtIssuedDocketEntryInteractor({
         applicationContext,
         documentMeta: {
-          caseId: caseRecord.caseId,
+          docketNumber: caseRecord.docketNumber,
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bc',
           documentType: 'Memorandum in Support',
         },
@@ -147,7 +147,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
       fileCourtIssuedDocketEntryInteractor({
         applicationContext,
         documentMeta: {
-          caseId: caseRecord.caseId,
+          docketNumber: caseRecord.docketNumber,
           documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bd',
           documentType: 'Order',
         },
@@ -166,7 +166,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
     await fileCourtIssuedDocketEntryInteractor({
       applicationContext,
       documentMeta: {
-        caseId: caseRecord.caseId,
+        docketNumber: caseRecord.docketNumber,
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335ba',
         documentTitle: 'Order',
         documentType: 'Order',
@@ -197,7 +197,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
     await fileCourtIssuedDocketEntryInteractor({
       applicationContext,
       documentMeta: {
-        caseId: caseRecord.caseId,
+        docketNumber: caseRecord.docketNumber,
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bc',
         documentTitle: 'Order to Show Cause',
         documentType: 'Order to Show Cause',
@@ -226,7 +226,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
   it('should call updateCase and set the case as automatic blocked with deadlines if the document is a tracked document and the case has deadlines', async () => {
     applicationContext
       .getPersistenceGateway()
-      .getCaseDeadlinesByCaseId.mockReturnValue([
+      .getCaseDeadlinesByDocketNumber.mockReturnValue([
         {
           deadlineDate: 'sometime',
         },
@@ -241,7 +241,7 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
     await fileCourtIssuedDocketEntryInteractor({
       applicationContext,
       documentMeta: {
-        caseId: caseRecord.caseId,
+        docketNumber: caseRecord.docketNumber,
         documentId: 'c54ba5a9-b37b-479d-9201-067ec6e335bc',
         documentTitle: 'Order to Show Cause',
         documentType: 'Order to Show Cause',
@@ -278,8 +278,8 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
     await fileCourtIssuedDocketEntryInteractor({
       applicationContext,
       documentMeta: {
-        caseId: caseRecord.caseId,
         date: '2019-03-01T21:40:46.415Z',
+        docketNumber: caseRecord.docketNumber,
         documentId: '7f61161c-ede8-43ba-8fab-69e15d057012',
         documentTitle: 'Transcript of [anything] on [date]',
         documentType: 'Transcript',
@@ -300,6 +300,34 @@ describe('fileCourtIssuedDocketEntryInteractor', () => {
         .caseToUpdate.documents[5],
     ).toMatchObject({
       secondaryDate: '2019-03-01T21:40:46.415Z',
+    });
+  });
+
+  it('should set isDraft to false on a document when creating a court issued docket entry', async () => {
+    await fileCourtIssuedDocketEntryInteractor({
+      applicationContext,
+      documentMeta: {
+        date: '2019-03-01T21:40:46.415Z',
+        docketNumber: caseRecord.docketNumber,
+        documentId: '7f61161c-ede8-43ba-8fab-69e15d057012',
+        documentTitle: 'Transcript of [anything] on [date]',
+        documentType: 'Transcript',
+        eventCode: 'TRAN',
+        freeText: 'Dogs',
+        generatedDocumentTitle: 'Transcript of Dogs on 03-01-19',
+        isDraft: true,
+      },
+    });
+
+    const lastDocumentIndex =
+      applicationContext.getPersistenceGateway().updateCase.mock.calls[0][0]
+        .caseToUpdate.documents.length - 1;
+
+    const newlyFiledDocument = applicationContext.getPersistenceGateway()
+      .updateCase.mock.calls[0][0].caseToUpdate.documents[lastDocumentIndex];
+
+    expect(newlyFiledDocument).toMatchObject({
+      isDraft: false,
     });
   });
 });

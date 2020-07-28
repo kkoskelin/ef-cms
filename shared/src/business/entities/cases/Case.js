@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi');
+const joi = require('joi');
 const {
   ANSWER_CUTOFF_AMOUNT_IN_DAYS,
   ANSWER_DOCUMENT_CODES,
@@ -8,13 +8,10 @@ const {
   CASE_TYPES,
   CASE_TYPES_MAP,
   CHIEF_JUDGE,
-  COURT_ISSUED_DOCUMENT_TYPES,
-  DOCKET_NUMBER_MATCHER,
   DOCKET_NUMBER_SUFFIXES,
   FILING_TYPES,
   INITIAL_DOCUMENT_TYPES,
   MAX_FILE_SIZE_MB,
-  ORDER_TYPES,
   PARTY_TYPES,
   PAYMENT_STATUS,
   PROCEDURE_TYPES,
@@ -183,7 +180,7 @@ function Case(rawCase, { applicationContext, filtered = false }) {
   this.irsNoticeDate = rawCase.irsNoticeDate;
   this.isPaper = rawCase.isPaper;
   this.isSealed = !!rawCase.sealedDate;
-  this.leadCaseId = rawCase.leadCaseId;
+  this.leadDocketNumber = rawCase.leadDocketNumber;
   this.mailingDate = rawCase.mailingDate;
   this.partyType = rawCase.partyType;
   this.petitionPaymentDate = rawCase.petitionPaymentDate;
@@ -287,6 +284,7 @@ function Case(rawCase, { applicationContext, filtered = false }) {
     this.docketNumber + (this.docketNumberSuffix || '');
 
   const contacts = ContactFactory.createContacts({
+    applicationContext,
     contactInfo: {
       otherFilers: rawCase.otherFilers,
       otherPetitioners: rawCase.otherPetitioners,
@@ -390,11 +388,9 @@ Case.VALIDATION_RULES = {
     .optional()
     .allow(null)
     .description('Damages for the case.'),
-  docketNumber: joi
-    .string()
-    .regex(DOCKET_NUMBER_MATCHER)
-    .required()
-    .description('Unique case identifier in XXXXX-YY format.'),
+  docketNumber: JoiValidationConstants.DOCKET_NUMBER.required().description(
+    'Unique case identifier in XXXXX-YY format.',
+  ),
   docketNumberSuffix: joi
     .string()
     .allow(null)
@@ -423,6 +419,7 @@ Case.VALIDATION_RULES = {
       ...FILING_TYPES[ROLES.privatePractitioner],
     )
     .optional(),
+  hasPendingItems: joi.boolean().optional(),
   hasVerifiedIrsNotice: joi
     .boolean()
     .optional()
@@ -467,8 +464,8 @@ Case.VALIDATION_RULES = {
     ),
   isPaper: joi.boolean().optional(),
   isSealed: joi.boolean().optional(),
-  leadCaseId: JoiValidationConstants.UUID.optional().description(
-    'If this case is consolidated, this is the ID of the lead case. It is the lowest docket number in the consolidated group.',
+  leadDocketNumber: JoiValidationConstants.DOCKET_NUMBER.optional().description(
+    'If this case is consolidated, this is the docket number of the lead case. It is the lowest docket number in the consolidated group.',
   ),
   litigationCosts: joi
     .number()
@@ -675,8 +672,6 @@ joiValidationDecorator(
   joi.object().keys(Case.VALIDATION_RULES),
   Case.VALIDATION_ERROR_MESSAGES,
 );
-
-const orderDocumentTypes = ORDER_TYPES.map(orderType => orderType.documentType);
 
 /**
  * builds the case caption from case contact name(s) based on party type
@@ -1539,23 +1534,23 @@ Case.prototype.canConsolidate = function (caseToConsolidate) {
 };
 
 /**
- * sets lead case id on the current case
+ * sets lead docket number on the current case
  *
- * @param {string} leadCaseId the caseId of the lead case for consolidation
+ * @param {string} leadDocketNumber the docketNumber of the lead case for consolidation
  * @returns {Case} the updated Case entity
  */
-Case.prototype.setLeadCase = function (leadCaseId) {
-  this.leadCaseId = leadCaseId;
+Case.prototype.setLeadCase = function (leadDocketNumber) {
+  this.leadDocketNumber = leadDocketNumber;
   return this;
 };
 
 /**
- * removes the consolidation from the case by setting leadCaseId to undefined
+ * removes the consolidation from the case by setting leadDocketNumber to undefined
  *
  * @returns {Case} the updated Case entity
  */
 Case.prototype.removeConsolidation = function () {
-  this.leadCaseId = undefined;
+  this.leadDocketNumber = undefined;
   return this;
 };
 
@@ -1584,7 +1579,7 @@ Case.sortByDocketNumber = function (cases) {
 
 /**
  * return the lead case for the given set of cases based on createdAt
- * (does NOT evaluate leadCaseId)
+ * (does NOT evaluate leadDocketNumber)
  *
  * @param {Array} cases the cases to check for lead case computation
  * @returns {Case} the lead Case entity
@@ -1592,32 +1587,6 @@ Case.sortByDocketNumber = function (cases) {
 Case.findLeadCaseForCases = function (cases) {
   const casesOrdered = Case.sortByDocketNumber([...cases]);
   return casesOrdered.shift();
-};
-
-/**
- * @param {string} documentId the id of the document to check
- * @returns {boolean} true if the document is draft, false otherwise
- */
-Case.prototype.isDocumentDraft = function (documentId) {
-  const document = this.getDocumentById({ documentId });
-
-  const isNotArchived = !document.archived;
-  const isNotServed = !document.servedAt;
-  const isDocumentOnDocketRecord = this.docketRecord.find(
-    docketEntry => docketEntry.documentId === document.documentId,
-  );
-  const isStipDecision = document.documentType === 'Stipulated Decision';
-  const isDraftOrder = orderDocumentTypes.includes(document.documentType);
-  const isCourtIssuedDocument = COURT_ISSUED_DOCUMENT_TYPES.includes(
-    document.documentType,
-  );
-  return (
-    isNotArchived &&
-    isNotServed &&
-    (isStipDecision ||
-      (isDraftOrder && !isDocumentOnDocketRecord) ||
-      (isCourtIssuedDocument && !isDocumentOnDocketRecord))
-  );
 };
 
 /**

@@ -36,13 +36,13 @@ exports.fileCourtIssuedDocketEntryInteractor = async ({
     throw new UnauthorizedError('Unauthorized');
   }
 
-  const { caseId, documentId } = documentMeta;
+  const { docketNumber, documentId } = documentMeta;
 
   const caseToUpdate = await applicationContext
     .getPersistenceGateway()
-    .getCaseByCaseId({
+    .getCaseByDocketNumber({
       applicationContext,
-      caseId,
+      docketNumber,
     });
 
   let caseEntity = new Case(caseToUpdate, { applicationContext });
@@ -80,6 +80,7 @@ exports.fileCourtIssuedDocketEntryInteractor = async ({
       eventCode: documentMeta.eventCode,
       filedBy: undefined,
       freeText: documentMeta.freeText,
+      isDraft: false,
       isFileAttached: true,
       judge: documentMeta.judge,
       numberOfPages,
@@ -96,7 +97,6 @@ exports.fileCourtIssuedDocketEntryInteractor = async ({
       assigneeId: null,
       assigneeName: null,
       associatedJudge: caseToUpdate.associatedJudge,
-      caseId: caseId,
       caseIsInProgress: caseEntity.inProgress,
       caseStatus: caseToUpdate.status,
       caseTitle: Case.getCaseTitle(Case.getCaseCaption(caseEntity)),

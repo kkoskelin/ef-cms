@@ -13,12 +13,8 @@ export const completeDocumentSigningAction = async ({
   get,
 }) => {
   const originalDocumentId = get(state.pdfForSigning.documentId);
-  const caseId = get(state.caseDetail.caseId);
-  const caseDetail = get(state.caseDetail);
+  const { caseId, docketNumber } = get(state.caseDetail);
   let documentIdToReturn = originalDocumentId;
-  const document = caseDetail.documents.find(
-    caseDocument => caseDocument.documentId === originalDocumentId,
-  );
 
   if (get(state.pdfForSigning.signatureData.x)) {
     const {
@@ -51,17 +47,11 @@ export const completeDocumentSigningAction = async ({
       type: 'application/pdf',
     });
 
-    let documentIdToOverwrite = null;
-    if (document.documentType !== 'Proposed Stipulated Decision') {
-      documentIdToOverwrite = originalDocumentId;
-    }
-
     const signedDocumentId = await applicationContext
       .getPersistenceGateway()
       .uploadDocumentFromClient({
         applicationContext,
         document: documentFile,
-        documentId: documentIdToOverwrite,
         onUploadProgress: () => {},
       });
 
@@ -69,7 +59,7 @@ export const completeDocumentSigningAction = async ({
 
     await applicationContext.getUseCases().saveSignedDocumentInteractor({
       applicationContext,
-      caseId,
+      docketNumber,
       nameForSigning,
       originalDocumentId,
       signedDocumentId,

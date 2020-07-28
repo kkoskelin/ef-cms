@@ -308,7 +308,7 @@ describe('Case entity', () => {
         },
       );
 
-      expect(myCase.otherPetitioners).toEqual(mockOtherPetitioners);
+      expect(myCase.otherPetitioners).toMatchObject(mockOtherPetitioners);
     });
   });
 
@@ -351,7 +351,7 @@ describe('Case entity', () => {
         },
       );
 
-      expect(myCase.toRawObject().otherFilers).toEqual(mockOtherFilers);
+      expect(myCase.toRawObject().otherFilers).toMatchObject(mockOtherFilers);
     });
 
     it('fails validation with more than one unique filer type', () => {
@@ -1547,7 +1547,6 @@ describe('Case entity', () => {
         {
           assigneeId: '8b4cd447-6278-461b-b62b-d9e357eea62c',
           assigneeName: 'bob',
-          caseId: 'c6b81f4d-1e47-423a-8caf-6d2fdc3d3859',
           caseStatus: CASE_STATUS_TYPES.new,
           caseTitle: 'Johnny Joe Jacobson',
           docketNumber: '101-18',
@@ -1564,7 +1563,6 @@ describe('Case entity', () => {
         {
           assigneeId: '8b4cd447-6278-461b-b62b-d9e357eea62c',
           assigneeName: 'bob',
-          caseId: 'c6b81f4d-1e47-423a-8caf-6d2fdc3d3859',
           caseStatus: CASE_STATUS_TYPES.new,
           caseTitle: 'Johnny Joe Jacobson',
           docketNumber: '101-18',
@@ -2959,8 +2957,8 @@ describe('Case entity', () => {
     });
 
     describe('setLeadCase', () => {
-      it('Should set the leadCaseId on the given case', async () => {
-        const leadCaseId = 'd64ba5a9-b37b-479d-9201-067ec6e335cc';
+      it('Should set the leadDocketNumber on the given case', async () => {
+        const leadDocketNumber = '101-20';
         const caseEntity = new Case(
           {
             ...MOCK_CASE,
@@ -2970,18 +2968,18 @@ describe('Case entity', () => {
           },
           { applicationContext },
         );
-        const result = caseEntity.setLeadCase(leadCaseId);
+        const result = caseEntity.setLeadCase(leadDocketNumber);
 
-        expect(result.leadCaseId).toEqual(leadCaseId);
+        expect(result.leadDocketNumber).toEqual(leadDocketNumber);
       });
     });
 
     describe('removeConsolidation', () => {
-      it('Should unset the leadCaseId on the given case', async () => {
+      it('Should unset the leadDocketNumber on the given case', async () => {
         const caseEntity = new Case(
           {
             ...MOCK_CASE,
-            leadCaseId: 'd64ba5a9-b37b-479d-9201-067ec6e335cc',
+            leadDocketNumber: '101-20',
             preferredTrialCity: 'Birmingham, Alabama',
             procedureType: 'Regular',
             status: CASE_STATUS_TYPES.submitted,
@@ -2990,7 +2988,7 @@ describe('Case entity', () => {
         );
         const result = caseEntity.removeConsolidation();
 
-        expect(result.leadCaseId).toBeUndefined();
+        expect(result.leadDocketNumber).toBeUndefined();
       });
     });
 
@@ -3106,64 +3104,6 @@ describe('Case entity', () => {
 
         expect(result.caseId).toEqual('234');
       });
-    });
-  });
-
-  describe('isDocumentDraft', () => {
-    it('should return false for non-draft documents', () => {
-      const myCase = new Case(
-        {
-          documents: [
-            {
-              documentId: '1',
-              documentType: 'Answer',
-            },
-            {
-              archived: false,
-              documentId: '2',
-              documentType: 'Order',
-            },
-            {
-              archived: false,
-              documentId: '3',
-              documentType: 'Stipulated Decision',
-            },
-          ],
-        },
-        {
-          applicationContext,
-        },
-      );
-      expect(myCase.isDocumentDraft('1')).toEqual(false);
-    });
-
-    it('should return true for draft documents', () => {
-      const myCase = new Case(
-        {
-          docketRecord: [
-            {
-              documentId: '1',
-            },
-          ],
-          documents: [
-            {
-              archived: false,
-              documentId: '2',
-              documentType: 'Order',
-            },
-            {
-              archived: false,
-              documentId: '3',
-              documentType: 'Stipulated Decision',
-            },
-          ],
-        },
-        {
-          applicationContext,
-        },
-      );
-      expect(myCase.isDocumentDraft('2')).toEqual(true);
-      expect(myCase.isDocumentDraft('3')).toEqual(true);
     });
   });
 

@@ -27,7 +27,6 @@ const addPetitionDocumentToCase = ({
       assigneeId: null,
       assigneeName: null,
       associatedJudge: caseToAdd.associatedJudge,
-      caseId: caseToAdd.caseId,
       caseIsInProgress: caseToAdd.inProgress,
       caseStatus: caseToAdd.status,
       caseTitle: Case.getCaseTitle(Case.getCaseCaption(caseToAdd)),
@@ -95,9 +94,9 @@ exports.createCaseInteractor = async ({
     .getPersistenceGateway()
     .getUserById({ applicationContext, userId: authorizedUser.userId });
 
-  const petitionEntity = new CaseExternalIncomplete(
-    petitionMetadata,
-  ).validate();
+  const petitionEntity = new CaseExternalIncomplete(petitionMetadata, {
+    applicationContext,
+  }).validate();
 
   const docketNumber = await applicationContext.docketNumberGenerator.createDocketNumber(
     {
@@ -240,7 +239,7 @@ exports.createCaseInteractor = async ({
 
   await applicationContext.getPersistenceGateway().associateUserWithCase({
     applicationContext,
-    caseId: caseToAdd.caseId,
+    docketNumber: caseToAdd.docketNumber,
     userCase: userCaseEntity.validate().toRawObject(),
     userId: user.userId,
   });

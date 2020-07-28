@@ -23,7 +23,7 @@ exports.fileCourtIssuedOrderInteractor = async ({
   primaryDocumentFileId,
 }) => {
   const authorizedUser = applicationContext.getCurrentUser();
-  const { caseId } = documentMetadata;
+  const { docketNumber } = documentMetadata;
 
   if (!isAuthorized(authorizedUser, ROLE_PERMISSIONS.COURT_ISSUED_DOCUMENT)) {
     throw new UnauthorizedError('Unauthorized');
@@ -35,9 +35,9 @@ exports.fileCourtIssuedOrderInteractor = async ({
 
   const caseToUpdate = await applicationContext
     .getPersistenceGateway()
-    .getCaseByCaseId({
+    .getCaseByDocketNumber({
       applicationContext,
-      caseId,
+      docketNumber,
     });
 
   const shouldScrapePDFContents = !documentMetadata.documentContents;
@@ -111,6 +111,7 @@ exports.fileCourtIssuedOrderInteractor = async ({
       documentId: primaryDocumentFileId,
       documentType: documentMetadata.documentType,
       filedBy: user.name,
+      isDraft: true,
       isFileAttached: true,
       relationship: DOCUMENT_RELATIONSHIPS.PRIMARY,
       userId: user.userId,
