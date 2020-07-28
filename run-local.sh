@@ -3,7 +3,7 @@
 # Usage
 #   used for running the API and necessary services (dynamo, s3, elasticsearch) locally
 
-if [[ -z "$CIRCLECI" ]]; then
+if [[ -z "$CI" ]]; then
   echo "killing dynamo if already running"
   pkill -f DynamoDBLocal
 
@@ -64,7 +64,7 @@ nodemon -e js --ignore web-client/ --ignore dist/ --ignore cypress/ --ignore cyp
 nodemon -e js --ignore web-client/ --ignore dist/ --ignore cypress/ --ignore cypress-smoketests/ --exec "node -r esm web-api/src/app-local.js" &
 nodemon -e js --ignore web-client/ --ignore dist/ --ignore cypress/ --ignore cypress-smoketests/ --exec "node -r esm web-api/src/app-public-local.js"
 
-if [ ! -e "$CIRCLECI" ]; then
+if [ ! -e "$CI" ]; then
   echo "killing dynamodb local"
   pkill -P $DYNAMO_PID
   pkill -P $ESEARCH_PID

@@ -223,7 +223,7 @@
     "test:client:integration": "npm run test:client:_integration \"web-client/integration-tests/.*\\.test\\.js\"",
     "test:client:unit:ci": "jest --runInBand --detectOpenHandles --config web-client/jest-unit.config.js \"web-client/src/.*\\.test\\.js\"",
     "test:client:unit": "npm run test:_client:parallel -- \"web-client/src/.*\\.test\\.js\"",
-    "test:client": "CI=false npm run test:_client -- \"web-client/.*\\.test\\.js\"",
+    "test:client": "npm run test:_client -- \"web-client/.*\\.test\\.js\"",
     "test:debug": "NO_SCANNER=true SKIP_VIRUS_SCAN=true AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop FILE_UPLOAD_MODAL_TIMEOUT=1 jest --detectOpenHandles --logHeapUsage --runInBand --config web-client/jest.config.js",
     "test:file": "CI=false NO_SCANNER=true SKIP_VIRUS_SCAN=true AWS_ACCESS_KEY_ID=noop AWS_SECRET_ACCESS_KEY=noop FILE_UPLOAD_MODAL_TIMEOUT=1 jest --verbose --no-coverage --runInBand --config web-client/jest.config.js -- ",
     "test:pdf-output": "npm run build:assets && PDF_OUTPUT=true jest shared/src/business/utilities/documentGenerators.test.js",
