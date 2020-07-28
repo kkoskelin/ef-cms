@@ -321,6 +321,10 @@ jobs:
         npm set progress=false
         npm ci --no-optional
         npm rebuild node-sass        
+    - name: NPM Install Pa11y
+      run: |
+        npm set progress=false
+        npm ci --no-optional --prefix=web-client/pa11y/
     - name: Setup DynamoDB Local
       uses: rrainn/dynamodb-action@v2.0.0
       with:
@@ -366,11 +370,13 @@ jobs:
         ./wait-until.sh http://localhost:1234/
         ./wait-until.sh http://localhost:5678/
     - name: Run Pa11y
-      run: |    
+      run: | 
+        cd web-client/pa11y/   
         npm run test:pa11y:1 --node-flags --max-old-space-size=1024
         npm run test:pa11y:2 --node-flags --max-old-space-size=1024
         npm run test:pa11y:3 --node-flags --max-old-space-size=1024
         npm run test:pa11y:public --node-flags --max-old-space-size=1024
+        cd ..
 
   e2e-cypress:
     name: Web Client - Cypress tests
